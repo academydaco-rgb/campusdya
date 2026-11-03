@@ -53,6 +53,8 @@ class ImportUserRow(BaseModel):
 
 class ImportRequest(BaseModel):
     users: list[ImportUserRow]
+    diploma_ids: list[uuid.UUID] = []   # inscribir a todos los importados en estos
+    enroll_all: bool = False            # o en todos los diplomados
 
 
 class ImportResult(BaseModel):

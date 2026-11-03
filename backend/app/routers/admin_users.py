@@ -96,7 +96,12 @@ async def import_users(data: ImportRequest, db: AsyncSession = Depends(get_db), 
     errores: list[str] = []
     _to_mail: list[tuple[str, str, str]] = []
     # Mapa de diplomados por slug (para inscribir)
-    diplomas = {d.slug: d for d in (await db.execute(select(Diploma))).scalars().all()}
+    _all_diplomas = (await db.execute(select(Diploma))).scalars().all()
+    diplomas = {d.slug: d for d in _all_diplomas}
+    if data.enroll_all:
+        global_dip_ids = [d.id for d in _all_diplomas]
+    else:
+        global_dip_ids = list(data.diploma_ids)
     for row in data.users:
         try:
             email = row.email.lower().strip()
@@ -125,6 +130,12 @@ async def import_users(data: ImportRequest, db: AsyncSession = Depends(get_db), 
                     Enrollment.user_id == user.id, Enrollment.diploma_id == dip.id))).scalar_one_or_none()
                 if not ya:
                     db.add(Enrollment(user_id=user.id, diploma_id=dip.id, granted_by=admin.id))
+                    inscripciones += 1
+            for did in global_dip_ids:
+                ya = (await db.execute(select(Enrollment).where(
+                    Enrollment.user_id == user.id, Enrollment.diploma_id == did))).scalar_one_or_none()
+                if not ya:
+                    db.add(Enrollment(user_id=user.id, diploma_id=did, granted_by=admin.id))
                     inscripciones += 1
         except Exception as e:  # noqa: BLE001
             errores.append(f"{row.email}: {str(e)[:120]}")

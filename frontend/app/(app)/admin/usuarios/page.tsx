@@ -57,7 +57,7 @@ export default function AdminUsers() {
       .map((l) => { const [n, e] = l.split(/[,;\t]/).map((x) => (x || "").trim()); return { name: n, email: e }; })
       .filter((u) => u.email && u.email.includes("@"));
     if (parsed.length === 0) { setMsg("No se detectaron filas válidas (usa: nombre,correo)"); return; }
-    const r = await api.post<ImportResultT>("/api/admin/users/import", { users: parsed });
+    const r = await api.post<ImportResultT>("/api/admin/users/import", { users: parsed, enroll_all: enrollAll, diploma_ids: enrollAll ? [] : Array.from(selDip) });
     setResult(r); setCsv(""); await load();
   }
 
@@ -108,6 +108,7 @@ export default function AdminUsers() {
 
       <div className="card" style={{ padding: 18 }}>
         <label className="label">Importar masivamente (migración) — una línea por usuario: <b>nombre,correo</b></label>
+        <div className="muted" style={{ fontSize: 12.5, marginTop: -4, marginBottom: 2 }}>Se inscribirán en los diplomados seleccionados arriba (Todos o los que marques) y recibirán sus credenciales por correo.</div>
         <textarea className="input" rows={5} value={csv} onChange={(e) => setCsv(e.target.value)} placeholder={"Juan Pérez,juan@gmail.com\nMaría López,maria@gmail.com"} />
         <div style={{ marginTop: 10, display: "flex", gap: 12, alignItems: "center" }}>
           <button className="btn btn-primary" onClick={importar} type="button">Importar</button>
