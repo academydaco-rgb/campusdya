@@ -7,6 +7,7 @@ from app.models.community import Comment
 from app.models.feedback import Feedback
 from app.models.announcement import Announcement
 from app.models.schedule import ScheduleEvent
+from app.models.setting import SiteSetting
 from app.models.announcement import Announcement
 
 __all__ = [
@@ -19,5 +20,5 @@ __all__ = [
     "Feedback",
     "Announcement",
     "ScheduleEvent",
-    "Announcement",
+    "SiteSetting",
 ]

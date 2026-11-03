@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { api, UserT } from "@/lib/api";
+import ImageUpload from "@/components/ImageUpload";
 
 interface ImportResultT { creados: number; actualizados: number; inscripciones: number; errores: string[]; }
 
@@ -13,9 +14,21 @@ export default function AdminUsers() {
   const [csv, setCsv] = useState("");
   const [result, setResult] = useState<ImportResultT | null>(null);
   const [msg, setMsg] = useState("");
+  const [videoUrl, setVideoUrl] = useState("");
+  const [videoCover, setVideoCover] = useState<string | null>(null);
+  const [videoMsg, setVideoMsg] = useState("");
 
   async function load() { setUsers(await api.get<UserT[]>(`/api/admin/users?q=${encodeURIComponent(q)}`)); }
-  useEffect(() => { load().catch((e) => setMsg(e.message)); }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    load().catch((e) => setMsg(e.message));
+    api.get<{ video_url?: string | null; cover_url?: string | null }>("/api/settings/dashboard-video")
+      .then((v) => { setVideoUrl(v.video_url || ""); setVideoCover(v.cover_url || null); }).catch(() => {});
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  async function guardarVideo() {
+    await api.put("/api/admin/settings/dashboard-video", { video_url: videoUrl.trim() || null, cover_url: videoCover });
+    setVideoMsg("Guardado ✓"); setTimeout(() => setVideoMsg(""), 1500);
+  }
 
   async function crear(e: React.FormEvent) {
     e.preventDefault();
@@ -39,6 +52,18 @@ export default function AdminUsers() {
 
   return (
     <div className="grid" style={{ gap: 20 }}>
+      <div className="card" style={{ padding: 18, display: "grid", gap: 12 }}>
+        <div style={{ fontWeight: 800 }}>🎬 Video de bienvenida del dashboard</div>
+        <p className="muted" style={{ fontSize: 13, marginTop: -4 }}>Aparece al costado derecho del saludo en el dashboard de los alumnos.</p>
+        <div><label className="label">Enlace del video (VideoPress / embed)</label><input className="input" value={videoUrl} onChange={(e) => setVideoUrl(e.target.value)} placeholder="https://videopress.com/embed/…" /></div>
+        <div><label className="label">Portada del video</label><ImageUpload value={videoCover} onChange={setVideoCover} ratio="wide" hint="Horizontal · 1280 × 720 px (16:9)" /></div>
+        <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
+          <button className="btn btn-primary" onClick={guardarVideo} type="button">Guardar video</button>
+          {videoCover && <button className="btn btn-ghost" onClick={() => setVideoCover(null)} type="button">Quitar portada</button>}
+          {videoMsg && <span className="muted" style={{ fontSize: 13 }}>{videoMsg}</span>}
+        </div>
+      </div>
+
       <form onSubmit={crear} className="card" style={{ padding: 18, display: "grid", gap: 12, gridTemplateColumns: "2fr 2fr 1fr auto", alignItems: "end" }}>
         <div><label className="label">Nombre</label><input className="input" value={name} onChange={(e) => setName(e.target.value)} /></div>
         <div><label className="label">Correo</label><input className="input" type="email" value={email} onChange={(e) => setEmail(e.target.value)} /></div>

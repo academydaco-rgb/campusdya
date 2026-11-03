@@ -4,7 +4,7 @@ from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
-from app.routers import auth, admin_content, admin_users, student, admin_catalog, catalog_public, admin_upload, announcements
+from app.routers import auth, admin_content, admin_users, student, admin_catalog, catalog_public, admin_upload, announcements, settings as settings_router
 
 
 @asynccontextmanager
@@ -44,3 +44,4 @@ app.include_router(admin_catalog.router)
 app.include_router(catalog_public.router)
 app.include_router(admin_upload.router)
 app.include_router(announcements.router)
+app.include_router(settings_router.router)

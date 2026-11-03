@@ -17,12 +17,15 @@ export default function DashboardPage() {
   const [news, setNews] = useState<AnnouncementT[]>([]);
   const [events, setEvents] = useState<ScheduleT[]>([]);
   const [badges, setBadges] = useState<MyBadgeT[]>([]);
+  const [video, setVideo] = useState<{ video_url?: string | null; cover_url?: string | null } | null>(null);
+  const [playing, setPlaying] = useState(false);
 
   useEffect(() => {
     api.get<DiplomaOutT[]>("/api/me/diplomas").then(setMine).catch(() => {});
     api.get<AnnouncementT[]>("/api/announcements").then(setNews).catch(() => {});
     api.get<ScheduleT[]>("/api/classroom").then(setEvents).catch(() => {});
     api.get<MyBadgeT[]>("/api/me/badges").then(setBadges).catch(() => {});
+    api.get<{ video_url?: string | null; cover_url?: string | null }>("/api/settings/dashboard-video").then(setVideo).catch(() => {});
   }, []);
 
   const firstName = user?.name?.split(" ")[0] || "crack";
@@ -35,13 +38,28 @@ export default function DashboardPage() {
     <div style={{ display: "flex", flexDirection: "column", gap: 22 }}>
       {/* Hero */}
       <section className="hero fade-up">
-        <img src="/logo.png" alt="" style={{ position: "absolute", right: 22, bottom: -20, width: 180, opacity: .12, pointerEvents: "none", zIndex: 1 }} />
-        <span className="eyebrow-gold">D&A Academy · Acceso premium</span>
-        <h1 style={{ marginTop: 12, fontSize: "clamp(26px,3.6vw,40px)", maxWidth: 640, color: "#fff" }}>Hola, {firstName}. Hoy avanzas un paso más 🚀</h1>
-        <p style={{ marginTop: 10, maxWidth: 540, color: "rgba(255,255,255,.72)" }}>Aprende, ejecuta y escala tu e-commerce. Todo tu progreso, en un solo lugar.</p>
-        <div style={{ display: "flex", gap: 10, marginTop: 20, flexWrap: "wrap" }}>
-          <Link href="/explorar" className="btn btn-primary">Continuar aprendiendo</Link>
-          <Link href="/classroom" className="btn btn-ghost" style={{ borderColor: "rgba(255,255,255,.2)", color: "#fff" }}>Ver mis clases</Link>
+        {!video?.video_url && <img src="/logo.png" alt="" style={{ position: "absolute", right: 22, bottom: -20, width: 180, opacity: .12, pointerEvents: "none", zIndex: 1 }} />}
+        <div className="hero-grid">
+          <div>
+            <span className="eyebrow-gold">D&A Academy · Acceso premium</span>
+            <h1 style={{ marginTop: 12, fontSize: "clamp(26px,3.4vw,40px)", maxWidth: 560, color: "#fff" }}>Hola, {firstName}. Hoy avanzas un paso más 🚀</h1>
+            <p style={{ marginTop: 10, maxWidth: 520, color: "rgba(255,255,255,.72)" }}>Aprende, ejecuta y escala tu e-commerce. Todo tu progreso, en un solo lugar.</p>
+            <div style={{ display: "flex", gap: 10, marginTop: 20, flexWrap: "wrap" }}>
+              <Link href="/explorar" className="btn btn-primary">Continuar aprendiendo</Link>
+              <Link href="/classroom" className="btn btn-ghost" style={{ borderColor: "rgba(255,255,255,.2)", color: "#fff" }}>Ver mis clases</Link>
+            </div>
+          </div>
+          {video?.video_url && (
+            <div className="hero-video">
+              {(playing || !video.cover_url) ? (
+                <iframe src={playing && video.video_url.includes("?") ? `${video.video_url}&autoplay=1` : playing ? `${video.video_url}?autoplay=1` : video.video_url} allow="autoplay; fullscreen; picture-in-picture" allowFullScreen />
+              ) : (
+                <button className="play" style={{ backgroundImage: `url(${video.cover_url})` }} onClick={() => setPlaying(true)} aria-label="Reproducir video">
+                  <span className="pbtn">▶</span>
+                </button>
+              )}
+            </div>
+          )}
         </div>
       </section>
 
