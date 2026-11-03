@@ -36,7 +36,7 @@ export default function DashboardPage() {
       {/* Hero */}
       <section className="hero fade-up">
         <img src="/logo.png" alt="" style={{ position: "absolute", right: 22, bottom: -20, width: 180, opacity: .12, pointerEvents: "none", zIndex: 1 }} />
-        <span className="eyebrow">D&A Academy</span>
+        <span className="eyebrow-gold">D&A Academy · Acceso premium</span>
         <h1 style={{ marginTop: 12, fontSize: "clamp(26px,3.6vw,40px)", maxWidth: 640, color: "#fff" }}>Hola, {firstName}. Hoy avanzas un paso más 🚀</h1>
         <p style={{ marginTop: 10, maxWidth: 540, color: "rgba(255,255,255,.72)" }}>Aprende, ejecuta y escala tu e-commerce. Todo tu progreso, en un solo lugar.</p>
         <div style={{ display: "flex", gap: 10, marginTop: 20, flexWrap: "wrap" }}>
