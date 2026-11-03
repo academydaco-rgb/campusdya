@@ -1,13 +1,20 @@
-"""Crea todas las tablas declaradas en los modelos. Lo llama el entrypoint."""
+"""Crea tablas y aplica migraciones ligeras idempotentes. Lo llama el entrypoint."""
 import asyncio
+from sqlalchemy import text
 from app.core.database import engine, Base
-from app import models  # noqa: F401  (registra todos los modelos en Base.metadata)
+from app import models  # noqa: F401
+
+_MIGRATIONS = [
+    "ALTER TABLE modules ADD COLUMN IF NOT EXISTS cover_url VARCHAR(500)",
+]
 
 
 async def main():
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
-    print("[init_db] Tablas creadas/verificadas OK")
+        for sql in _MIGRATIONS:
+            await conn.execute(text(sql))
+    print("[init_db] Tablas + migraciones OK")
 
 
 if __name__ == "__main__":

@@ -27,6 +27,7 @@ class Module(Base, TimestampMixin):
     description: Mapped[str | None] = mapped_column(Text, nullable=True)
     order: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
     status: Mapped[str] = mapped_column(String(20), default="draft", nullable=False)
+    cover_url: Mapped[str | None] = mapped_column(String(500), nullable=True)
 
 
 class Lesson(Base, TimestampMixin):

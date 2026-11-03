@@ -58,7 +58,7 @@ async def diploma_detail(slug: str, db: AsyncSession = Depends(get_db), user: Us
             "duration_seconds": l.duration_seconds, "order": l.order,
             "completed": l.id in done,
         } for l in lessons if (l.status == "published" or is_admin)]
-        out_mods.append({"id": str(m.id), "title": m.title, "description": m.description, "order": m.order, "lessons": out_lessons})
+        out_mods.append({"id": str(m.id), "title": m.title, "description": m.description, "cover_url": m.cover_url, "order": m.order, "lessons": out_lessons})
     total = sum(len(m["lessons"]) for m in out_mods)
     completadas = sum(1 for m in out_mods for l in m["lessons"] if l["completed"])
     return {

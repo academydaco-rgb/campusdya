@@ -41,7 +41,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
   return (
     <div className="shell">
       <aside className="sidebar">
-        <Link href="/dashboard" className="brand"><span className="brand-badge">D</span><span>Campus D&A</span></Link>
+        <Link href="/dashboard" className="brand"><img src="/logo.png" alt="Campus D&A" style={{ width: 38, height: 38, objectFit: "contain" }} /><span>Campus D&A</span></Link>
 
         <div className="nav-group">
           <div className="nav-label">Aprender</div>

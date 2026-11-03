@@ -40,6 +40,7 @@ class ModuleCreate(BaseModel):
     diploma_id: uuid.UUID
     title: str
     description: str | None = None
+    cover_url: str | None = None
     order: int = 0
     status: str = "draft"
 
@@ -47,6 +48,7 @@ class ModuleCreate(BaseModel):
 class ModuleUpdate(BaseModel):
     title: str | None = None
     description: str | None = None
+    cover_url: str | None = None
     order: int | None = None
     status: str | None = None
 
@@ -57,6 +59,7 @@ class ModuleOut(BaseModel):
     diploma_id: uuid.UUID
     title: str
     description: str | None = None
+    cover_url: str | None = None
     order: int
     status: str
 

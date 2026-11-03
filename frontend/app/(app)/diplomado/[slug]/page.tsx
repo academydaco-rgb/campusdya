@@ -34,6 +34,7 @@ export default function DiplomaPage() {
 
       {d.modules.map((m, mi) => (
         <div key={m.id} className="card" style={{ padding: 20 }}>
+          {m.cover_url && <div style={{ height: 150, borderRadius: 12, marginBottom: 14, background: `center/cover url(${m.cover_url})` }} />}
           <div style={{ fontWeight: 700, fontSize: 15 }}><span className="muted">Módulo {mi + 1} · </span>{m.title}</div>
           {m.description && <div className="muted" style={{ fontSize: 13, marginTop: 4 }}>{m.description}</div>}
           <div style={{ marginTop: 14, display: "grid", gap: 8 }}>

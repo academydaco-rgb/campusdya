@@ -44,7 +44,7 @@ export default function Insignias() {
       <div className="grid" style={{ gridTemplateColumns: "repeat(auto-fit,minmax(260px,1fr))" }}>
         {items.map((b) => (
           <div key={b.id} className="card" style={{ padding: 22, textAlign: "center" }}>
-            <div style={{ fontSize: 64, filter: "drop-shadow(0 0 16px #a855f7)" }}>{b.icon || "🏅"}</div>
+            <div style={{ fontSize: 64, filter: "drop-shadow(0 0 18px var(--cyan))" }}>{b.icon || "🏅"}</div>
             <div style={{ fontWeight: 800, marginTop: 10 }}>{b.name}</div>
             {b.description && <div className="muted" style={{ fontSize: 13, marginTop: 4 }}>{b.description}</div>}
             <div style={{ display: "flex", gap: 8, justifyContent: "center", marginTop: 16 }}>

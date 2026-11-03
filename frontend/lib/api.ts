@@ -38,7 +38,7 @@ export interface PhaseT { id: string; name: string; slug: string; description?: 
 export interface UniverseT { phases: PhaseT[]; sin_fase: DiplomaCardT[]; }
 export interface DiplomaOutT { id: string; title: string; slug: string; cover_url?: string | null; order: number; }
 export interface LessonLiteT { id: string; title: string; slug?: string | null; duration_seconds: number; order: number; completed: boolean; }
-export interface ModuleOutT { id: string; title: string; description?: string | null; order: number; lessons: LessonLiteT[]; }
+export interface ModuleOutT { id: string; title: string; description?: string | null; cover_url?: string | null; order: number; lessons: LessonLiteT[]; }
 export interface DiplomaDetailT {
   id: string; title: string; slug: string; description?: string | null; cover_url?: string | null;
   modules: ModuleOutT[]; total_lessons: number; completed_lessons: number; progress: number;
@@ -53,10 +53,30 @@ export interface FeedbackT { id: string; user_id: string; body: string; results?
 
 // ───────── Tipos admin ─────────
 export interface AdminDiplomaT { id: string; title: string; slug: string; description?: string | null; cover_url?: string | null; status: string; order: number; phase_id?: string | null; }
-export interface AdminModuleT { id: string; diploma_id: string; title: string; description?: string | null; order: number; status: string; }
+export interface AdminModuleT { id: string; diploma_id: string; title: string; description?: string | null; cover_url?: string | null; order: number; status: string; }
 export interface AdminLessonT { id: string; module_id: string; title: string; slug?: string | null; videopress_url?: string | null; content?: string | null; duration_seconds: number; order: number; status: string; materials?: unknown[] | null; }
 export interface PhaseLiteT { id: string; name: string; slug: string; order: number; icon?: string | null; color?: string | null; description?: string | null; }
 export interface EnrollmentT { id: string; user_id: string; diploma_id: string; expires_at?: string | null; }
 
 export interface ScheduleT { id: string; title: string; description?: string | null; starts_at: string; ends_at?: string | null; diploma_id?: string | null; module_id?: string | null; live_url?: string | null; }
 export interface MyBadgeT { id: string; name: string; description?: string | null; icon?: string | null; awarded_at?: string | null; diploma_title?: string | null; diploma_slug?: string | null; }
+
+
+export async function uploadImage(file: File): Promise<string> {
+  const fd = new FormData();
+  fd.append("file", file);
+  let token: string | null = null;
+  try { token = typeof window !== "undefined" ? localStorage.getItem("academia_token") : null; } catch { token = null; }
+  const res = await fetch(`${API_URL}/api/admin/upload`, {
+    method: "POST",
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
+    body: fd,
+  });
+  if (!res.ok) {
+    let detail = "No se pudo subir la imagen";
+    try { const j = await res.json(); detail = j.detail || detail; } catch { /* ignore */ }
+    throw new Error(detail);
+  }
+  const j = await res.json();
+  return j.url as string;
+}

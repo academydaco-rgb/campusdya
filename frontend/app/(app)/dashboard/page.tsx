@@ -20,7 +20,7 @@ export default function DashboardPage() {
     <div style={{ display: "flex", flexDirection: "column", gap: 30 }}>
       {/* Hero */}
       <section className="card fade-up" style={{ padding: "34px 30px", position: "relative", overflow: "hidden", border: "1px solid var(--line-2)" }}>
-        <div style={{ position: "absolute", inset: 0, background: "radial-gradient(500px 240px at 90% -20%, rgba(212,19,139,.25), transparent 60%)" }} />
+        <div style={{ position: "absolute", inset: 0, background: "radial-gradient(500px 240px at 90% -20%, rgba(34,211,238,.22), transparent 60%)" }} />
         <div style={{ position: "relative" }}>
           <div className="chip" style={{ background: "transparent", borderColor: "var(--line-2)" }}>Campus D&A</div>
           <h1 style={{ marginTop: 14, fontSize: "clamp(28px,4vw,42px)" }}>Hola, {firstName}.<br />Construyamos tu e-commerce. 🚀</h1>

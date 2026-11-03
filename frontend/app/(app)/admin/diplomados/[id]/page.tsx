@@ -2,12 +2,38 @@
 import { useCallback, useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
-import { api, AdminDiplomaT, AdminModuleT, AdminLessonT, PhaseLiteT } from "@/lib/api";
+import { api, uploadImage, AdminDiplomaT, AdminModuleT, AdminLessonT, PhaseLiteT } from "@/lib/api";
+
+function ImageUpload({ value, onChange, hint, ratio }: { value?: string | null; onChange: (url: string) => void; hint: string; ratio: string }) {
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState("");
+  async function pick(e: React.ChangeEvent<HTMLInputElement>) {
+    const f = e.target.files?.[0];
+    if (!f) return;
+    setBusy(true); setErr("");
+    try { onChange(await uploadImage(f)); }
+    catch (ex) { setErr(ex instanceof Error ? ex.message : "Error al subir"); }
+    finally { setBusy(false); e.target.value = ""; }
+  }
+  return (
+    <div>
+      <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
+        <div style={{ width: ratio === "square" ? 64 : 112, height: 64, borderRadius: 10, border: "1px solid var(--line)", flexShrink: 0,
+          background: value ? `center/cover url(${value})` : "rgba(5,8,15,.6)" }} />
+        <label className="btn btn-ghost" style={{ fontSize: 13 }}>
+          {busy ? "Subiendo…" : value ? "Cambiar imagen" : "Subir imagen"}
+          <input type="file" accept="image/png,image/jpeg,image/webp" onChange={pick} style={{ display: "none" }} />
+        </label>
+        <span className="muted" style={{ fontSize: 12 }}>{hint}</span>
+      </div>
+      {err && <div style={{ color: "var(--danger)", fontSize: 12, marginTop: 6 }}>{err}</div>}
+    </div>
+  );
+}
 
 export default function EditDiploma() {
   const params = useParams<{ id: string }>();
   const id = params?.id as string;
-
   const [dip, setDip] = useState<AdminDiplomaT | null>(null);
   const [phases, setPhases] = useState<PhaseLiteT[]>([]);
   const [modules, setModules] = useState<AdminModuleT[]>([]);
@@ -41,15 +67,12 @@ export default function EditDiploma() {
     });
     setMsg("Guardado ✓"); setTimeout(() => setMsg(""), 1500);
   }
-
   async function crearModulo() {
     if (!newModule.trim()) return;
     await api.post("/api/admin/modules", { diploma_id: id, title: newModule.trim(), status: "published", order: modules.length });
     setNewModule(""); await load();
   }
-  async function borrarModulo(mid: string) {
-    await api.del(`/api/admin/modules/${mid}`); await load();
-  }
+  async function borrarModulo(mid: string) { await api.del(`/api/admin/modules/${mid}`); await load(); }
 
   if (!dip) return <span className="muted">{msg || "Cargando…"}</span>;
 
@@ -57,10 +80,10 @@ export default function EditDiploma() {
     <div className="grid" style={{ gap: 22 }}>
       <Link href="/admin/diplomados" className="muted" style={{ fontSize: 13 }}>← Diplomados</Link>
 
-      <form onSubmit={guardarDiploma} className="card" style={{ padding: 20, display: "grid", gap: 12 }}>
+      <form onSubmit={guardarDiploma} className="card" style={{ padding: 22, display: "grid", gap: 14 }}>
         <div><label className="label">Título</label><input className="input" value={dip.title} onChange={(e) => setDip({ ...dip, title: e.target.value })} /></div>
         <div><label className="label">Descripción</label><textarea className="input" rows={2} value={dip.description || ""} onChange={(e) => setDip({ ...dip, description: e.target.value })} /></div>
-        <div style={{ display: "grid", gap: 12, gridTemplateColumns: "1fr 1fr 1fr" }}>
+        <div style={{ display: "grid", gap: 14, gridTemplateColumns: "1fr 1fr" }}>
           <div><label className="label">Fase</label>
             <select className="input" value={dip.phase_id || ""} onChange={(e) => setDip({ ...dip, phase_id: e.target.value || null })}>
               <option value="">— sin fase —</option>
@@ -72,7 +95,10 @@ export default function EditDiploma() {
               <option value="draft">Borrador</option><option value="published">Publicado</option>
             </select>
           </div>
-          <div><label className="label">Portada (URL)</label><input className="input" value={dip.cover_url || ""} onChange={(e) => setDip({ ...dip, cover_url: e.target.value })} placeholder="https://…" /></div>
+        </div>
+        <div>
+          <label className="label">Portada del diplomado</label>
+          <ImageUpload value={dip.cover_url} onChange={(url) => setDip({ ...dip, cover_url: url })} ratio="square" hint="Cuadrada · 800 × 800 px (PNG o JPG)" />
         </div>
         <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
           <button className="btn btn-primary">Guardar diplomado</button>
@@ -81,7 +107,7 @@ export default function EditDiploma() {
       </form>
 
       <div>
-        <h2 style={{ fontSize: 16, marginBottom: 12 }}>Módulos y lecciones</h2>
+        <h2 style={{ fontSize: 17, marginBottom: 12 }}>Módulos y lecciones</h2>
         <div className="card" style={{ padding: 14, display: "flex", gap: 10, marginBottom: 14 }}>
           <input className="input" value={newModule} onChange={(e) => setNewModule(e.target.value)} placeholder="Nuevo módulo…" />
           <button className="btn btn-primary" onClick={crearModulo} type="button">Agregar módulo</button>
@@ -89,7 +115,7 @@ export default function EditDiploma() {
         <div className="grid" style={{ gap: 14 }}>
           {modules.map((m, mi) => (
             <ModuleBlock key={m.id} index={mi} module={m} lessons={lessons[m.id] || []}
-              onChanged={() => loadLessons(m.id)} onDelete={() => borrarModulo(m.id)} />
+              onLessons={() => loadLessons(m.id)} onModule={load} onDelete={() => borrarModulo(m.id)} />
           ))}
           {modules.length === 0 && <span className="muted">Agrega el primer módulo arriba.</span>}
         </div>
@@ -98,35 +124,37 @@ export default function EditDiploma() {
   );
 }
 
-function ModuleBlock({ index, module, lessons, onChanged, onDelete }: {
-  index: number; module: AdminModuleT; lessons: AdminLessonT[]; onChanged: () => void; onDelete: () => void;
+function ModuleBlock({ index, module, lessons, onLessons, onModule, onDelete }: {
+  index: number; module: AdminModuleT; lessons: AdminLessonT[]; onLessons: () => void; onModule: () => void; onDelete: () => void;
 }) {
   const [title, setTitle] = useState("");
   const [video, setVideo] = useState("");
 
   async function crearLeccion() {
     if (!title.trim()) return;
-    await api.post("/api/admin/lessons", {
-      module_id: module.id, title: title.trim(), videopress_url: video.trim() || null,
-      status: "published", order: lessons.length,
-    });
-    setTitle(""); setVideo(""); onChanged();
+    await api.post("/api/admin/lessons", { module_id: module.id, title: title.trim(), videopress_url: video.trim() || null, status: "published", order: lessons.length });
+    setTitle(""); setVideo(""); onLessons();
   }
-  async function borrar(lid: string) { await api.del(`/api/admin/lessons/${lid}`); onChanged(); }
+  async function borrar(lid: string) { await api.del(`/api/admin/lessons/${lid}`); onLessons(); }
+  async function setCover(url: string) { await api.put(`/api/admin/modules/${module.id}`, { cover_url: url }); onModule(); }
 
   return (
     <div className="card" style={{ padding: 18 }}>
-      <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
         <span style={{ fontWeight: 700 }}><span className="muted">Módulo {index + 1} · </span>{module.title}</span>
         <span style={{ flex: 1 }} />
         <button className="btn btn-ghost" style={{ padding: "6px 10px", fontSize: 12 }} onClick={onDelete} type="button">Eliminar módulo</button>
       </div>
-      <div style={{ marginTop: 12, display: "grid", gap: 8 }}>
+      <div style={{ marginBottom: 14 }}>
+        <label className="label">Imagen del módulo</label>
+        <ImageUpload value={module.cover_url} onChange={setCover} ratio="wide" hint="Banner · 1280 × 720 px (16:9)" />
+      </div>
+      <div style={{ display: "grid", gap: 8 }}>
         {lessons.map((l, li) => (
-          <div key={l.id} style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 12px", borderRadius: 10, border: "1px solid var(--border)", background: "#0b0e17" }}>
+          <div key={l.id} style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 12px", borderRadius: 10, border: "1px solid var(--line)", background: "rgba(5,8,15,.5)" }}>
             <span className="muted" style={{ fontSize: 12 }}>{li + 1}</span>
             <span style={{ flex: 1, fontSize: 14 }}>{l.title}</span>
-            {l.videopress_url ? <span className="badge-pill" style={{ color: "var(--cyan)" }}>🎬 video</span> : <span className="badge-pill" style={{ color: "var(--amber)" }}>sin video</span>}
+            {l.videopress_url ? <span className="chip" style={{ color: "var(--cyan)", fontSize: 11 }}>🎬 video</span> : <span className="chip" style={{ color: "var(--f3)", fontSize: 11 }}>sin video</span>}
             <button className="btn btn-ghost" style={{ padding: "5px 9px", fontSize: 12 }} onClick={() => borrar(l.id)} type="button">✕</button>
           </div>
         ))}

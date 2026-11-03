@@ -27,8 +27,8 @@ export default function LoginPage() {
   return (
     <div style={{ minHeight: "100vh", display: "grid", placeItems: "center", padding: 20 }}>
       <div className="card" style={{ width: "100%", maxWidth: 420, padding: 32 }}>
-        <div style={{ fontSize: 28, fontWeight: 800, marginBottom: 4 }}>
-          Academia <span style={{ color: "var(--brand)" }}>D&A</span>
+        <div style={{ textAlign: "center", marginBottom: 8 }}>
+          <img src="/logo.png" alt="Campus D&A" style={{ width: 120, height: 120, objectFit: "contain" }} />
         </div>
         <p className="muted" style={{ marginTop: 0, marginBottom: 24, fontSize: 14 }}>
           Entra a tu campus de estudio
