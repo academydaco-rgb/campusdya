@@ -1,6 +1,9 @@
+import json
 import asyncio
 import smtplib
 import ssl
+import urllib.request
+import urllib.error
 from email.message import EmailMessage
 from app.core.config import settings
 
@@ -17,33 +20,67 @@ def _btn(url: str, label: str) -> str:
     return f'<a href="{url}" style="display:inline-block;margin:14px 0;padding:12px 22px;background:linear-gradient(120deg,#00ffff,#4f7cff);color:#04141c;font-weight:800;border-radius:12px;text-decoration:none">{label}</a>'
 
 
+def _resend_key() -> str:
+    """API key de Resend: explícita, o la de SMTP_PASSWORD si el host es Resend."""
+    if settings.RESEND_API_KEY:
+        return settings.RESEND_API_KEY
+    if "resend" in (settings.SMTP_HOST or "").lower() and (settings.SMTP_PASSWORD or "").startswith("re_"):
+        return settings.SMTP_PASSWORD
+    return ""
+
+
 def enabled() -> bool:
-    return bool(settings.SMTP_HOST and settings.SMTP_USER)
+    return bool(_resend_key() or (settings.SMTP_HOST and settings.SMTP_USER))
+
+
+def _send_http(to: str, subject: str, html: str, key: str):
+    payload = json.dumps({
+        "from": settings.MAIL_FROM or "onboarding@resend.dev",
+        "to": [to], "subject": subject, "html": _WRAP.format(body=html),
+    }).encode()
+    req = urllib.request.Request(
+        "https://api.resend.com/emails", data=payload, method="POST",
+        headers={"Authorization": f"Bearer {key}", "Content-Type": "application/json"},
+    )
+    with urllib.request.urlopen(req, timeout=20) as r:
+        r.read()
+
+
+def _send_smtp(to: str, subject: str, html: str):
+    msg = EmailMessage()
+    msg["Subject"] = subject
+    msg["From"] = settings.MAIL_FROM or settings.SMTP_USER
+    msg["To"] = to
+    msg.set_content("Abre este correo en un cliente compatible con HTML.")
+    msg.add_alternative(_WRAP.format(body=html), subtype="html")
+    ctx = ssl.create_default_context()
+    with smtplib.SMTP(settings.SMTP_HOST, settings.SMTP_PORT, timeout=20) as s:
+        s.ehlo(); s.starttls(context=ctx); s.ehlo()
+        s.login(settings.SMTP_USER, settings.SMTP_PASSWORD)
+        s.send_message(msg)
 
 
 async def send_email(to: str, subject: str, body_html: str) -> bool:
+    key = _resend_key()
     if not enabled():
-        print(f"[mailer] SMTP no configurado; no se envió a {to}")
+        print(f"[mailer] correo no configurado; no se envió a {to}")
         return False
-
-    def _send():
-        msg = EmailMessage()
-        msg["Subject"] = subject
-        msg["From"] = settings.MAIL_FROM or settings.SMTP_USER
-        msg["To"] = to
-        msg.set_content("Abre este correo en un cliente compatible con HTML.")
-        msg.add_alternative(_WRAP.format(body=body_html), subtype="html")
-        ctx = ssl.create_default_context()
-        with smtplib.SMTP(settings.SMTP_HOST, settings.SMTP_PORT, timeout=20) as s:
-            s.ehlo(); s.starttls(context=ctx); s.ehlo()
-            s.login(settings.SMTP_USER, settings.SMTP_PASSWORD)
-            s.send_message(msg)
-
     try:
-        await asyncio.to_thread(_send)
+        if key:
+            await asyncio.to_thread(_send_http, to, subject, body_html, key)
+        else:
+            await asyncio.to_thread(_send_smtp, to, subject, body_html)
+        print(f"[mailer] enviado a {to} ({'api' if key else 'smtp'})")
         return True
+    except urllib.error.HTTPError as e:
+        try:
+            detail = e.read().decode()[:300]
+        except Exception:
+            detail = ""
+        print(f"[mailer] HTTP {e.code} enviando a {to}: {detail}")
+        return False
     except Exception as e:  # noqa: BLE001
-        print(f"[mailer] error enviando a {to}: {e}")
+        print(f"[mailer] error enviando a {to}: {e!r}")
         return False
 
 

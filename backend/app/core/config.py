@@ -23,6 +23,7 @@ class Settings(BaseSettings):
     SMTP_USER: str = ""
     SMTP_PASSWORD: str = ""
     MAIL_FROM: str = "no-reply@academia.local"
+    RESEND_API_KEY: str = ""   # si se usa, envía por API HTTP (evita bloqueo SMTP)
 
     # Seed admin inicial
     SEED_ADMIN_EMAIL: str = "academydaco@gmail.com"
