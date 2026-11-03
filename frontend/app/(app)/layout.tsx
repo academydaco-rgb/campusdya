@@ -6,7 +6,7 @@ import { useAuth } from "@/lib/auth";
 
 const APRENDER = [
   { href: "/dashboard", label: "Inicio", ic: "◆" },
-  { href: "/explorar", label: "Explorar", ic: "◈" },
+  { href: "/explorar", label: "Diplomados", ic: "◈" },
   { href: "/classroom", label: "Classroom", ic: "▣" },
   { href: "/clases-en-vivo", label: "Clases en vivo", ic: "▶" },
   { href: "/insignias", label: "Insignias", ic: "✦" },

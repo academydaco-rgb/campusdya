@@ -66,7 +66,7 @@ export default function DashboardPage() {
         <div style={{ display: "flex", flexDirection: "column", gap: 22 }}>
           {/* Mis diplomados (máx 4, los inscritos) */}
           <section className="fade-up d2">
-            <div className="wh"><h2>Mis diplomados</h2><Link href="/explorar">Explorar todo</Link></div>
+            <div className="wh"><h2>Mis diplomados</h2><Link href="/explorar">Ver todos</Link></div>
             {misDiplomas.length === 0 ? (
               <div className="card" style={{ padding: 22 }}>
                 <div style={{ fontWeight: 700 }}>Aún no tienes diplomados asignados.</div>
