@@ -147,7 +147,7 @@ function ModuleBlock({ index, module, lessons, onLessons, onModule, onDelete }: 
       </div>
       <div style={{ marginBottom: 14 }}>
         <label className="label">Imagen del módulo</label>
-        <ImageUpload value={module.cover_url} onChange={setCover} ratio="wide" hint="Banner · 1280 × 720 px (16:9)" />
+        <ImageUpload value={module.cover_url} onChange={setCover} ratio="wide" hint="Banner · 1280 × 250 px" />
       </div>
       <div style={{ display: "grid", gap: 8 }}>
         {lessons.map((l, li) => (
