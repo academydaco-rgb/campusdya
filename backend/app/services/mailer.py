@@ -40,7 +40,7 @@ def _send_http(to: str, subject: str, html: str, key: str):
     }).encode()
     req = urllib.request.Request(
         "https://api.resend.com/emails", data=payload, method="POST",
-        headers={"Authorization": f"Bearer {key}", "Content-Type": "application/json"},
+        headers={"Authorization": f"Bearer {key}", "Content-Type": "application/json", "User-Agent": "campusdya-backend/1.0"},
     )
     with urllib.request.urlopen(req, timeout=20) as r:
         r.read()
@@ -63,24 +63,24 @@ def _send_smtp(to: str, subject: str, html: str):
 async def send_email(to: str, subject: str, body_html: str) -> bool:
     key = _resend_key()
     if not enabled():
-        print(f"[mailer] correo no configurado; no se envió a {to}")
+        print(f"[mailer] correo no configurado; no se envió a {to}", flush=True)
         return False
     try:
         if key:
             await asyncio.to_thread(_send_http, to, subject, body_html, key)
         else:
             await asyncio.to_thread(_send_smtp, to, subject, body_html)
-        print(f"[mailer] enviado a {to} ({'api' if key else 'smtp'})")
+        print(f"[mailer] enviado a {to} ({'api' if key else 'smtp'})", flush=True)
         return True
     except urllib.error.HTTPError as e:
         try:
             detail = e.read().decode()[:300]
         except Exception:
             detail = ""
-        print(f"[mailer] HTTP {e.code} enviando a {to}: {detail}")
+        print(f"[mailer] HTTP {e.code} enviando a {to}: {detail}", flush=True)
         return False
     except Exception as e:  # noqa: BLE001
-        print(f"[mailer] error enviando a {to}: {e!r}")
+        print(f"[mailer] error enviando a {to}: {e!r}", flush=True)
         return False
 
 
