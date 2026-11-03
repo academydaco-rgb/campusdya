@@ -7,6 +7,7 @@ from app.core.database import get_db
 from app.core.deps import get_current_user
 from app.models.user import User
 from app.models.content import Diploma, Module, Lesson
+from app.models.catalog import Teacher
 from app.models.learning import Enrollment, LessonProgress
 from app.models.community import Comment
 from app.models.gamification import Badge, UserBadge
@@ -61,9 +62,14 @@ async def diploma_detail(slug: str, db: AsyncSession = Depends(get_db), user: Us
         out_mods.append({"id": str(m.id), "title": m.title, "description": m.description, "cover_url": m.cover_url, "order": m.order, "lessons": out_lessons})
     total = sum(len(m["lessons"]) for m in out_mods)
     completadas = sum(1 for m in out_mods for l in m["lessons"] if l["completed"])
+    teacher = None
+    if dip.teacher_id:
+        t = (await db.execute(select(Teacher).where(Teacher.id == dip.teacher_id))).scalar_one_or_none()
+        if t:
+            teacher = {"id": str(t.id), "name": t.name, "photo_url": t.photo_url, "bio": t.bio, "whatsapp": t.whatsapp}
     return {
         "id": str(dip.id), "title": dip.title, "slug": dip.slug,
-        "description": dip.description, "cover_url": dip.cover_url,
+        "description": dip.description, "cover_url": dip.cover_url, "teacher": teacher,
         "modules": out_mods, "total_lessons": total, "completed_lessons": completadas,
         "progress": round(100 * completadas / total) if total else 0,
     }

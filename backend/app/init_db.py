@@ -10,6 +10,7 @@ _MIGRATIONS = [
     "ALTER TABLE comments ADD COLUMN IF NOT EXISTS image_url VARCHAR(500)",
     "ALTER TABLE live_classes ADD COLUMN IF NOT EXISTS cover_url VARCHAR(500)",
     "ALTER TABLE schedule_events ADD COLUMN IF NOT EXISTS teacher_id UUID",
+    "ALTER TABLE diplomas ADD COLUMN IF NOT EXISTS teacher_id UUID",
 ]
 
 

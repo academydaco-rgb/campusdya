@@ -39,8 +39,10 @@ export interface UniverseT { phases: PhaseT[]; sin_fase: DiplomaCardT[]; }
 export interface DiplomaOutT { id: string; title: string; slug: string; cover_url?: string | null; order: number; }
 export interface LessonLiteT { id: string; title: string; slug?: string | null; duration_seconds: number; order: number; completed: boolean; }
 export interface ModuleOutT { id: string; title: string; description?: string | null; cover_url?: string | null; order: number; lessons: LessonLiteT[]; }
+export interface DiplomaTeacherT { id: string; name: string; photo_url?: string | null; bio?: string | null; whatsapp?: string | null; }
 export interface DiplomaDetailT {
   id: string; title: string; slug: string; description?: string | null; cover_url?: string | null;
+  teacher?: DiplomaTeacherT | null;
   modules: ModuleOutT[]; total_lessons: number; completed_lessons: number; progress: number;
 }
 export interface LessonDetailT {
@@ -52,7 +54,7 @@ export interface LiveClassT { id: string; title: string; description?: string | 
 export interface FeedbackT { id: string; user_id: string; body: string; results?: string | null; rating?: number | null; status: string; created_at: string; author_name?: string | null; }
 
 // ───────── Tipos admin ─────────
-export interface AdminDiplomaT { id: string; title: string; slug: string; description?: string | null; cover_url?: string | null; status: string; order: number; phase_id?: string | null; }
+export interface AdminDiplomaT { id: string; title: string; slug: string; description?: string | null; cover_url?: string | null; status: string; order: number; phase_id?: string | null; teacher_id?: string | null; }
 export interface AdminModuleT { id: string; diploma_id: string; title: string; description?: string | null; cover_url?: string | null; order: number; status: string; }
 export interface AdminLessonT { id: string; module_id: string; title: string; slug?: string | null; videopress_url?: string | null; content?: string | null; duration_seconds: number; order: number; status: string; materials?: unknown[] | null; }
 export interface PhaseLiteT { id: string; name: string; slug: string; order: number; icon?: string | null; color?: string | null; description?: string | null; }

@@ -11,6 +11,7 @@ class DiplomaCreate(BaseModel):
     status: str = "draft"
     order: int = 0
     phase_id: uuid.UUID | None = None
+    teacher_id: uuid.UUID | None = None
 
 
 class DiplomaUpdate(BaseModel):
@@ -21,6 +22,7 @@ class DiplomaUpdate(BaseModel):
     status: str | None = None
     order: int | None = None
     phase_id: uuid.UUID | None = None
+    teacher_id: uuid.UUID | None = None
 
 
 class DiplomaOut(BaseModel):
@@ -33,6 +35,7 @@ class DiplomaOut(BaseModel):
     status: str
     order: int
     phase_id: uuid.UUID | None = None
+    teacher_id: uuid.UUID | None = None
 
 
 # ───── Módulo ─────

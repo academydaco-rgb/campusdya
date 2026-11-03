@@ -2,7 +2,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
-import { api, uploadImage, AdminDiplomaT, AdminModuleT, AdminLessonT, PhaseLiteT } from "@/lib/api";
+import { api, uploadImage, AdminDiplomaT, AdminModuleT, AdminLessonT, PhaseLiteT, TeacherT } from "@/lib/api";
 
 function ImageUpload({ value, onChange, hint, ratio }: { value?: string | null; onChange: (url: string) => void; hint: string; ratio: string }) {
   const [busy, setBusy] = useState(false);
@@ -36,6 +36,7 @@ export default function EditDiploma() {
   const id = params?.id as string;
   const [dip, setDip] = useState<AdminDiplomaT | null>(null);
   const [phases, setPhases] = useState<PhaseLiteT[]>([]);
+  const [teachers, setTeachers] = useState<TeacherT[]>([]);
   const [modules, setModules] = useState<AdminModuleT[]>([]);
   const [lessons, setLessons] = useState<Record<string, AdminLessonT[]>>({});
   const [msg, setMsg] = useState("");
@@ -47,12 +48,13 @@ export default function EditDiploma() {
   }, []);
 
   const load = useCallback(async () => {
-    const [d, ph, mods] = await Promise.all([
+    const [d, ph, mods, tch] = await Promise.all([
       api.get<AdminDiplomaT>(`/api/admin/diplomas/${id}`),
       api.get<PhaseLiteT[]>("/api/admin/phases"),
       api.get<AdminModuleT[]>(`/api/admin/modules?diploma_id=${id}`),
+      api.get<TeacherT[]>("/api/admin/teachers"),
     ]);
-    setDip(d); setPhases(ph); setModules(mods);
+    setDip(d); setPhases(ph); setModules(mods); setTeachers(tch);
     await Promise.all(mods.map((m) => loadLessons(m.id)));
   }, [id, loadLessons]);
 
@@ -63,7 +65,7 @@ export default function EditDiploma() {
     if (!dip) return;
     await api.put(`/api/admin/diplomas/${id}`, {
       title: dip.title, description: dip.description, cover_url: dip.cover_url,
-      status: dip.status, order: dip.order, phase_id: dip.phase_id || null,
+      status: dip.status, order: dip.order, phase_id: dip.phase_id || null, teacher_id: dip.teacher_id || null,
     });
     setMsg("Guardado ✓"); setTimeout(() => setMsg(""), 1500);
   }
@@ -83,7 +85,13 @@ export default function EditDiploma() {
       <form onSubmit={guardarDiploma} className="card" style={{ padding: 22, display: "grid", gap: 14 }}>
         <div><label className="label">Título</label><input className="input" value={dip.title} onChange={(e) => setDip({ ...dip, title: e.target.value })} /></div>
         <div><label className="label">Descripción</label><textarea className="input" rows={2} value={dip.description || ""} onChange={(e) => setDip({ ...dip, description: e.target.value })} /></div>
-        <div style={{ display: "grid", gap: 14, gridTemplateColumns: "1fr 1fr" }}>
+        <div style={{ display: "grid", gap: 14, gridTemplateColumns: "1fr 1fr 1fr" }}>
+          <div><label className="label">Profesor</label>
+            <select className="input" value={dip.teacher_id || ""} onChange={(e) => setDip({ ...dip, teacher_id: e.target.value || null })}>
+              <option value="">— sin profesor —</option>
+              {teachers.map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}
+            </select>
+          </div>
           <div><label className="label">Fase</label>
             <select className="input" value={dip.phase_id || ""} onChange={(e) => setDip({ ...dip, phase_id: e.target.value || null })}>
               <option value="">— sin fase —</option>
@@ -147,7 +155,7 @@ function ModuleBlock({ index, module, lessons, onLessons, onModule, onDelete }: 
       </div>
       <div style={{ marginBottom: 14 }}>
         <label className="label">Imagen del módulo</label>
-        <ImageUpload value={module.cover_url} onChange={setCover} ratio="wide" hint="Banner · 1280 × 250 px" />
+        <ImageUpload value={module.cover_url} onChange={setCover} ratio="square" hint="Cuadrada · 800 × 800 px" />
       </div>
       <div style={{ display: "grid", gap: 8 }}>
         {lessons.map((l, li) => (

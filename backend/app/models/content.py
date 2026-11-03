@@ -16,6 +16,7 @@ class Diploma(Base, TimestampMixin):
     status: Mapped[str] = mapped_column(String(20), default="draft", nullable=False)  # draft|published
     order: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
     phase_id: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True), ForeignKey("phases.id", ondelete="SET NULL"), index=True, nullable=True)
+    teacher_id: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True), ForeignKey("teachers.id", ondelete="SET NULL"), nullable=True)
     created_by: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True), ForeignKey("users.id", ondelete="SET NULL"), nullable=True)
 
 
