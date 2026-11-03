@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { api, LiveClassT } from "@/lib/api";
 import ImageUpload from "@/components/ImageUpload";
 
-const COVER_HINT = "Portada · 800 × 450 px (16:9)";
+const COVER_HINT = "Portada · 1920 × 1080 px (16:9)";
 
 export default function AdminLive() {
   const [items, setItems] = useState<LiveClassT[]>([]);

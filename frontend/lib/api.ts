@@ -58,7 +58,7 @@ export interface AdminLessonT { id: string; module_id: string; title: string; sl
 export interface PhaseLiteT { id: string; name: string; slug: string; order: number; icon?: string | null; color?: string | null; description?: string | null; }
 export interface EnrollmentT { id: string; user_id: string; diploma_id: string; expires_at?: string | null; }
 
-export interface ScheduleT { id: string; title: string; description?: string | null; starts_at: string; ends_at?: string | null; diploma_id?: string | null; module_id?: string | null; live_url?: string | null; }
+export interface ScheduleT { id: string; title: string; description?: string | null; starts_at: string; ends_at?: string | null; diploma_id?: string | null; module_id?: string | null; live_url?: string | null; teacher_id?: string | null; }
 export interface MyBadgeT { id: string; name: string; description?: string | null; icon?: string | null; awarded_at?: string | null; diploma_title?: string | null; diploma_slug?: string | null; }
 
 

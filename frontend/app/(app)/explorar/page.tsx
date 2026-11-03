@@ -40,7 +40,7 @@ export default function Explorar() {
                 {p.diplomas.map((d) => (
                   <div key={d.id} onClick={() => open(d)} className={`card card-hover ${d.enrolled ? "" : "lock"}`}
                     style={{ overflow: "hidden", cursor: d.enrolled ? "pointer" : "not-allowed", borderColor: d.enrolled ? "var(--line)" : "var(--line)" }}>
-                    <div style={{ height: 96, background: d.cover_url ? `center/cover url(${d.cover_url})` : `linear-gradient(135deg, ${color}44, var(--surface-3))` }} />
+                    <div style={{ width: "100%", aspectRatio: "1 / 1", background: d.cover_url ? `center/cover url(${d.cover_url})` : `linear-gradient(135deg, ${color}44, var(--surface-3))` }} />
                     <div style={{ padding: 14, display: "flex", alignItems: "center", gap: 8 }}>
                       <span style={{ flex: 1, fontWeight: 700, fontSize: 14 }}>{d.title}</span>
                       {d.enrolled ? <span className="chip" style={{ color, borderColor: color, fontSize: 11 }}>Entrar</span> : <span title="Sin acceso">🔒</span>}

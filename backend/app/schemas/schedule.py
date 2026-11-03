@@ -11,6 +11,7 @@ class ScheduleCreate(BaseModel):
     diploma_id: uuid.UUID | None = None
     module_id: uuid.UUID | None = None
     live_url: str | None = None
+    teacher_id: uuid.UUID | None = None
 
 
 class ScheduleUpdate(BaseModel):
@@ -21,6 +22,7 @@ class ScheduleUpdate(BaseModel):
     diploma_id: uuid.UUID | None = None
     module_id: uuid.UUID | None = None
     live_url: str | None = None
+    teacher_id: uuid.UUID | None = None
 
 
 class ScheduleOut(BaseModel):
@@ -33,3 +35,4 @@ class ScheduleOut(BaseModel):
     diploma_id: uuid.UUID | None = None
     module_id: uuid.UUID | None = None
     live_url: str | None = None
+    teacher_id: uuid.UUID | None = None

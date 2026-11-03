@@ -17,3 +17,4 @@ class ScheduleEvent(Base, TimestampMixin):
     diploma_id: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True), ForeignKey("diplomas.id", ondelete="CASCADE"), nullable=True)
     module_id: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True), ForeignKey("modules.id", ondelete="CASCADE"), nullable=True)
     live_url: Mapped[str | None] = mapped_column(String(600), nullable=True)
+    teacher_id: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True), ForeignKey("teachers.id", ondelete="SET NULL"), nullable=True)

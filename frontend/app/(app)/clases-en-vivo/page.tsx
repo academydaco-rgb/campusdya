@@ -38,14 +38,14 @@ export default function ClasesEnVivo() {
 
       <div className="grid-3">
         {items.map((c) => (
-          <button key={c.id} className="card card-hover" style={{ padding: 0, overflow: "hidden", textAlign: "left", display: "flex", flexDirection: "column" }} onClick={() => setActive(c)}>
+          <button key={c.id} className="card card-hover" style={{ padding: 0, overflow: "hidden", textAlign: "left", display: "flex", flexDirection: "column", color: "var(--text)" }} onClick={() => setActive(c)}>
             <div style={{ position: "relative", width: "100%", paddingTop: "56.25%",
               background: c.cover_url ? `center/cover url(${c.cover_url})` : "linear-gradient(135deg,#132038,#0b1020)" }}>
               <span style={{ position: "absolute", inset: 0, display: "grid", placeItems: "center", fontSize: 30, color: "rgba(255,255,255,.85)" }}>▶</span>
             </div>
             <div style={{ padding: 14 }}>
-              <div style={{ fontWeight: 700 }}>{c.title}</div>
-              {c.happened_at && <div className="muted" style={{ fontSize: 12, marginTop: 4 }}>{new Date(c.happened_at).toLocaleDateString("es-CO", { day: "2-digit", month: "long", year: "numeric" })}</div>}
+              <div style={{ fontWeight: 800, fontSize: 17, color: "#fff", lineHeight: 1.25 }}>{c.title}</div>
+              {c.happened_at && <div className="muted" style={{ fontSize: 12, marginTop: 6 }}>{new Date(c.happened_at).toLocaleDateString("es-CO", { day: "2-digit", month: "long", year: "numeric" })}</div>}
             </div>
           </button>
         ))}
