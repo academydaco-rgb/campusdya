@@ -82,6 +82,8 @@ async def lesson_detail(lesson_id: uuid.UUID, db: AsyncSession = Depends(get_db)
     data = LessonOut.model_validate(lesson).model_dump()
     data["completed"] = bool(prog and prog.completed)
     data["diploma_id"] = str(module.diploma_id)
+    _dip = (await db.execute(select(Diploma).where(Diploma.id == module.diploma_id))).scalar_one_or_none()
+    data["diploma_slug"] = _dip.slug if _dip else None
     return data
 
 
@@ -133,7 +135,7 @@ async def create_comment(lesson_id: uuid.UUID, data: CommentCreate, db: AsyncSes
     module = (await db.execute(select(Module).where(Module.id == lesson.module_id))).scalar_one_or_none()
     if not module or not await _is_enrolled(db, user, module.diploma_id):
         raise HTTPException(status_code=403, detail="Sin acceso")
-    c = Comment(lesson_id=lesson_id, user_id=user.id, parent_id=data.parent_id, body=data.body.strip())
+    c = Comment(lesson_id=lesson_id, user_id=user.id, parent_id=data.parent_id, body=data.body.strip(), rating=data.rating)
     db.add(c); await db.commit(); await db.refresh(c)
     item = CommentOut.model_validate(c)
     item.author_name = user.name

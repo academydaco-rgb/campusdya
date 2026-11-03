@@ -151,12 +151,7 @@ function ModuleBlock({ index, module, lessons, onLessons, onModule, onDelete }: 
       </div>
       <div style={{ display: "grid", gap: 8 }}>
         {lessons.map((l, li) => (
-          <div key={l.id} style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 12px", borderRadius: 10, border: "1px solid var(--line)", background: "rgba(5,8,15,.5)" }}>
-            <span className="muted" style={{ fontSize: 12 }}>{li + 1}</span>
-            <span style={{ flex: 1, fontSize: 14 }}>{l.title}</span>
-            {l.videopress_url ? <span className="chip" style={{ color: "var(--cyan)", fontSize: 11 }}>🎬 video</span> : <span className="chip" style={{ color: "var(--f3)", fontSize: 11 }}>sin video</span>}
-            <button className="btn btn-ghost" style={{ padding: "5px 9px", fontSize: 12 }} onClick={() => borrar(l.id)} type="button">✕</button>
-          </div>
+          <LessonRow key={l.id} index={li} lesson={l} onSaved={onLessons} onDelete={() => borrar(l.id)} />
         ))}
       </div>
       <div style={{ marginTop: 12, display: "grid", gap: 8, gridTemplateColumns: "1fr 1fr auto" }}>
@@ -167,3 +162,47 @@ function ModuleBlock({ index, module, lessons, onLessons, onModule, onDelete }: 
     </div>
   );
 }
+
+function LessonRow({ index, lesson, onSaved, onDelete }: {
+  index: number; lesson: AdminLessonT; onSaved: () => void; onDelete: () => void;
+}) {
+  const [edit, setEdit] = useState(false);
+  const [title, setTitle] = useState(lesson.title);
+  const [video, setVideo] = useState(lesson.videopress_url || "");
+  const [content, setContent] = useState(lesson.content || "");
+  const [saving, setSaving] = useState(false);
+
+  async function guardar() {
+    if (!title.trim()) return;
+    setSaving(true);
+    try {
+      await api.put(`/api/admin/lessons/${lesson.id}`, { title: title.trim(), videopress_url: video.trim() || null, content: content.trim() || null });
+      setEdit(false); onSaved();
+    } finally { setSaving(false); }
+  }
+
+  if (edit) {
+    return (
+      <div style={{ display: "grid", gap: 8, padding: "12px 14px", borderRadius: 10, border: "1px solid var(--line-2)", background: "rgba(5,8,15,.6)" }}>
+        <input className="input" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Título" />
+        <input className="input" value={video} onChange={(e) => setVideo(e.target.value)} placeholder="URL del video (VideoPress)" />
+        <textarea className="input" value={content} onChange={(e) => setContent(e.target.value)} placeholder="Contenido / descripción (opcional)" rows={3} style={{ resize: "vertical" }} />
+        <div style={{ display: "flex", gap: 8 }}>
+          <button className="btn btn-primary" onClick={guardar} disabled={saving} type="button">Guardar</button>
+          <button className="btn btn-ghost" onClick={() => { setEdit(false); setTitle(lesson.title); setVideo(lesson.videopress_url || ""); setContent(lesson.content || ""); }} type="button">Cancelar</button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 12px", borderRadius: 10, border: "1px solid var(--line)", background: "rgba(5,8,15,.5)" }}>
+      <span className="muted" style={{ fontSize: 12 }}>{index + 1}</span>
+      <span style={{ flex: 1, fontSize: 14 }}>{lesson.title}</span>
+      {lesson.videopress_url ? <span className="chip" style={{ color: "var(--cyan)", fontSize: 11 }}>🎬 video</span> : <span className="chip" style={{ color: "var(--f3)", fontSize: 11 }}>sin video</span>}
+      <button className="btn btn-ghost" style={{ padding: "5px 9px", fontSize: 12 }} onClick={() => setEdit(true)} type="button">Editar</button>
+      <button className="btn btn-ghost" style={{ padding: "5px 9px", fontSize: 12 }} onClick={onDelete} type="button">✕</button>
+    </div>
+  );
+}
+

@@ -5,6 +5,7 @@ from pydantic import BaseModel, ConfigDict
 
 class CommentCreate(BaseModel):
     body: str
+    rating: int | None = None
     parent_id: uuid.UUID | None = None
 
 
@@ -15,6 +16,7 @@ class CommentOut(BaseModel):
     user_id: uuid.UUID
     parent_id: uuid.UUID | None = None
     body: str
+    rating: int | None = None
     status: str
     created_at: datetime
     author_name: str | None = None

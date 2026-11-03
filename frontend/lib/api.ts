@@ -45,7 +45,7 @@ export interface DiplomaDetailT {
 }
 export interface LessonDetailT {
   id: string; title: string; videopress_url?: string | null; content?: string | null;
-  duration_seconds: number; completed: boolean; diploma_id: string; module_id: string;
+  duration_seconds: number; completed: boolean; diploma_id: string; module_id: string; diploma_slug?: string | null;
 }
 export interface TeacherT { id: string; name: string; bio?: string | null; photo_url?: string | null; whatsapp?: string | null; }
 export interface LiveClassT { id: string; title: string; description?: string | null; videopress_url?: string | null; happened_at?: string | null; }
