@@ -43,6 +43,7 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;ba
   radial-gradient(600px 540px at -2% 104%, rgba(246,91,160,.26), transparent 56%),
   radial-gradient(700px 580px at 106% 106%, rgba(79,124,255,.36), transparent 56%),
   radial-gradient(520px 480px at 50% 122%, rgba(246,183,60,.16), transparent 56%)}
+body::after{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;background:linear-gradient(180deg,rgba(11,15,24,.75),rgba(6,8,14,.78))}
 a{color:inherit;text-decoration:none}
 button{font-family:inherit;cursor:pointer}
 h1,h2,h3,h4{margin:0;font-family:var(--font-display);letter-spacing:-.03em;line-height:1.02}
@@ -58,7 +59,7 @@ p{line-height:1.62}
 @media (hover:none){.comet{display:none}}
 .sidebar{
   position:fixed;left:0;top:0;width:var(--sidebar-w);height:100vh;overflow-y:auto;z-index:20;
-  background:linear-gradient(180deg,rgba(11,15,24,.75),rgba(6,8,14,.78));
+  background:transparent;
   border-right:1px solid var(--line);padding:20px 14px;display:flex;flex-direction:column;gap:20px;
 }
 .brand{display:flex;align-items:center;gap:10px;font-family:var(--font-display);font-weight:800;font-size:18px;padding:4px 8px}
