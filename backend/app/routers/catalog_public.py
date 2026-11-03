@@ -75,7 +75,7 @@ async def list_feedback(db: AsyncSession = Depends(get_db), user: User = Depends
 
 @router.post("/feedback", response_model=FeedbackOut)
 async def create_feedback(data: FeedbackCreate, db: AsyncSession = Depends(get_db), user: User = Depends(get_current_user)):
-    f = Feedback(user_id=user.id, body=data.body.strip(), results=(data.results or None), rating=data.rating)
+    f = Feedback(user_id=user.id, body=data.body.strip(), results=(data.results or None), rating=data.rating, image_url=data.image_url)
     db.add(f); await db.commit(); await db.refresh(f)
     it = FeedbackOut.model_validate(f); it.author_name = user.name
     return it

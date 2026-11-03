@@ -7,6 +7,7 @@ class FeedbackCreate(BaseModel):
     body: str
     results: str | None = None
     rating: int | None = None
+    image_url: str | None = None
 
 
 class FeedbackOut(BaseModel):
@@ -16,6 +17,7 @@ class FeedbackOut(BaseModel):
     body: str
     results: str | None = None
     rating: int | None = None
+    image_url: str | None = None
     status: str
     created_at: datetime
     author_name: str | None = None

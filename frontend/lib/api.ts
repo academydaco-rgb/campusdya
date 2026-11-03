@@ -51,17 +51,17 @@ export interface LessonDetailT {
 }
 export interface TeacherT { id: string; name: string; bio?: string | null; photo_url?: string | null; whatsapp?: string | null; order?: number; status?: string; }
 export interface LiveClassT { id: string; title: string; description?: string | null; videopress_url?: string | null; cover_url?: string | null; happened_at?: string | null; diploma_id?: string | null; phase_id?: string | null; status?: string; }
-export interface FeedbackT { id: string; user_id: string; body: string; results?: string | null; rating?: number | null; status: string; created_at: string; author_name?: string | null; }
+export interface FeedbackT { id: string; user_id: string; body: string; results?: string | null; rating?: number | null; image_url?: string | null; status: string; created_at: string; author_name?: string | null; }
 
 // ───────── Tipos admin ─────────
-export interface AdminDiplomaT { id: string; title: string; slug: string; description?: string | null; cover_url?: string | null; status: string; order: number; phase_id?: string | null; teacher_id?: string | null; }
+export interface AdminDiplomaT { id: string; title: string; slug: string; description?: string | null; cover_url?: string | null; status: string; order: number; phase_id?: string | null; teacher_id?: string | null; badge_image_url?: string | null; }
 export interface AdminModuleT { id: string; diploma_id: string; title: string; description?: string | null; cover_url?: string | null; order: number; status: string; }
 export interface AdminLessonT { id: string; module_id: string; title: string; slug?: string | null; videopress_url?: string | null; content?: string | null; duration_seconds: number; order: number; status: string; materials?: unknown[] | null; }
 export interface PhaseLiteT { id: string; name: string; slug: string; order: number; icon?: string | null; color?: string | null; description?: string | null; }
 export interface EnrollmentT { id: string; user_id: string; diploma_id: string; expires_at?: string | null; }
 
 export interface ScheduleT { id: string; title: string; description?: string | null; starts_at: string; ends_at?: string | null; diploma_id?: string | null; module_id?: string | null; live_url?: string | null; teacher_id?: string | null; }
-export interface MyBadgeT { id: string; name: string; description?: string | null; icon?: string | null; awarded_at?: string | null; diploma_title?: string | null; diploma_slug?: string | null; }
+export interface MyBadgeT { id: string; name: string; description?: string | null; icon?: string | null; image_url?: string | null; awarded_at?: string | null; diploma_title?: string | null; diploma_slug?: string | null; }
 
 
 export async function uploadImage(file: File): Promise<string> {
@@ -102,4 +102,4 @@ export async function uploadImageUser(file: File): Promise<string> {
   return j.url as string;
 }
 
-export interface AnnouncementT { id: string; title: string; body: string; image_url?: string | null; status: string; starts_at: string; expires_at?: string | null; created_at: string; }
+export interface AnnouncementT { id: string; title: string; body: string; image_url?: string | null; status: string; starts_at: string; expires_at?: string | null; created_at: string; teacher_id?: string | null; teacher_name?: string | null; teacher_photo_url?: string | null; }

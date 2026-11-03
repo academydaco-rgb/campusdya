@@ -161,6 +161,7 @@ async def my_badges(db: AsyncSession = Depends(get_db), user: User = Depends(get
         dip = dmap.get(b.rule_value or "")
         out.append({
             "id": str(b.id), "name": b.name, "description": b.description, "icon": b.icon,
+            "image_url": (dip.badge_image_url if dip else None),
             "awarded_at": ub.awarded_at.isoformat() if ub.awarded_at else None,
             "diploma_title": dip.title if dip else None,
             "diploma_slug": dip.slug if dip else None,

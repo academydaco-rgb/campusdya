@@ -65,7 +65,7 @@ export default function EditDiploma() {
     if (!dip) return;
     await api.put(`/api/admin/diplomas/${id}`, {
       title: dip.title, description: dip.description, cover_url: dip.cover_url,
-      status: dip.status, order: dip.order, phase_id: dip.phase_id || null, teacher_id: dip.teacher_id || null,
+      status: dip.status, order: dip.order, phase_id: dip.phase_id || null, teacher_id: dip.teacher_id || null, badge_image_url: dip.badge_image_url || null,
     });
     setMsg("Guardado ✓"); setTimeout(() => setMsg(""), 1500);
   }
@@ -107,6 +107,10 @@ export default function EditDiploma() {
         <div>
           <label className="label">Portada del diplomado</label>
           <ImageUpload value={dip.cover_url} onChange={(url) => setDip({ ...dip, cover_url: url })} ratio="square" hint="Cuadrada · 800 × 800 px (PNG o JPG)" />
+        </div>
+        <div>
+          <label className="label">Insignia del diplomado</label>
+          <ImageUpload value={dip.badge_image_url} onChange={(url) => setDip({ ...dip, badge_image_url: url })} ratio="square" hint="Cuadrada · 512 × 512 px (PNG con fondo transparente)" />
         </div>
         <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
           <button className="btn btn-primary">Guardar diplomado</button>

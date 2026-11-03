@@ -10,11 +10,11 @@ function descargarInsignia(b: MyBadgeT, userName: string) {
   if (!ctx) return;
   ctx.fillStyle = "#05060a"; ctx.fillRect(0, 0, 1200, 800);
   const g = ctx.createLinearGradient(0, 0, 1200, 800);
-  g.addColorStop(0, "#1a1033"); g.addColorStop(1, "#06121a");
+  g.addColorStop(0, "#0a1830"); g.addColorStop(1, "#1a1140");
   ctx.fillStyle = g; ctx.fillRect(40, 40, 1120, 720);
-  ctx.strokeStyle = "#a855f7"; ctx.lineWidth = 6; ctx.strokeRect(40, 40, 1120, 720);
+  ctx.strokeStyle = "#00ffff"; ctx.lineWidth = 6; ctx.strokeRect(40, 40, 1120, 720);
   ctx.textAlign = "center";
-  ctx.fillStyle = "#22d3ee"; ctx.font = "bold 34px Arial"; ctx.fillText("ACADEMIA D&A", 600, 150);
+  ctx.fillStyle = "#00ffff"; ctx.font = "bold 34px Arial"; ctx.fillText("ACADEMIA D&A", 600, 150);
   ctx.fillStyle = "#8a93ab"; ctx.font = "24px Arial"; ctx.fillText("CERTIFICADO DE LOGRO", 600, 200);
   ctx.font = "120px Arial"; ctx.fillText(b.icon || "🏅", 600, 360);
   ctx.fillStyle = "#ffffff"; ctx.font = "bold 46px Arial"; ctx.fillText(b.name, 600, 470);
@@ -44,7 +44,9 @@ export default function Insignias() {
       <div className="grid" style={{ gridTemplateColumns: "repeat(auto-fit,minmax(260px,1fr))" }}>
         {items.map((b) => (
           <div key={b.id} className="card" style={{ padding: 22, textAlign: "center" }}>
-            <div style={{ fontSize: 64, filter: "drop-shadow(0 0 18px var(--cyan))" }}>{b.icon || "🏅"}</div>
+            {b.image_url
+              ? <img src={b.image_url} alt={b.name} style={{ width: 96, height: 96, objectFit: "contain", margin: "0 auto", display: "block", filter: "drop-shadow(0 0 16px rgba(0,255,255,.45))" }} />
+              : <div style={{ fontSize: 64, filter: "drop-shadow(0 0 18px var(--cyan))" }}>{b.icon || "🏅"}</div>}
             <div style={{ fontWeight: 800, marginTop: 10 }}>{b.name}</div>
             {b.description && <div className="muted" style={{ fontSize: 13, marginTop: 4 }}>{b.description}</div>}
             <div style={{ display: "flex", gap: 8, justifyContent: "center", marginTop: 16 }}>

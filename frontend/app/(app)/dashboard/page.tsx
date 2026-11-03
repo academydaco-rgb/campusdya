@@ -92,12 +92,21 @@ export default function DashboardPage() {
             ) : (
               <div className="grid" style={{ gap: 12 }}>
                 {news.map((n) => (
-                  <article key={n.id} className="card card-hover" style={{ overflow: "hidden", display: "flex", flexDirection: n.image_url ? "column" : "row" }}>
-                    {n.image_url && <div style={{ aspectRatio: "16 / 6", background: `center/cover url(${n.image_url})` }} />}
-                    <div style={{ padding: 18 }}>
-                      <div style={{ fontWeight: 800, color: "#fff" }}>{n.title}</div>
+                  <article key={n.id} className="card card-hover" style={{ overflow: "hidden", display: "flex", gap: 0 }}>
+                    {n.image_url && <div style={{ width: 120, flexShrink: 0, aspectRatio: "1 / 1", background: `center/cover url(${n.image_url})` }} />}
+                    <div style={{ padding: 18, minWidth: 0 }}>
+                      <div style={{ fontWeight: 800, fontSize: 19, color: "#fff", lineHeight: 1.2 }}>{n.title}</div>
                       <p className="muted" style={{ fontSize: 13.5, marginTop: 6, whiteSpace: "pre-wrap" }}>{n.body}</p>
-                      <div className="eyebrow" style={{ marginTop: 10, letterSpacing: ".1em" }}>{fdate(n.created_at)}</div>
+                      <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 10 }}>
+                        {n.teacher_name && (
+                          <>
+                            <div style={{ width: 22, height: 22, borderRadius: 999, flexShrink: 0, background: n.teacher_photo_url ? `center/cover url(${n.teacher_photo_url})` : "var(--grad)" }} />
+                            <span className="muted" style={{ fontSize: 12, fontWeight: 600 }}>{n.teacher_name}</span>
+                            <span className="muted" style={{ fontSize: 11 }}>·</span>
+                          </>
+                        )}
+                        <span className="eyebrow" style={{ letterSpacing: ".1em" }}>{fdate(n.created_at)}</span>
+                      </div>
                     </div>
                   </article>
                 ))}
@@ -136,7 +145,9 @@ export default function DashboardPage() {
               {badges.length === 0 ? <span className="muted" style={{ fontSize: 13 }}>Completa un diplomado para ganar tu primera insignia.</span> :
                 <div style={{ display: "flex", gap: 14, flexWrap: "wrap" }}>
                   {badges.slice(0, 6).map((b) => (
-                    <div key={b.id} title={b.name} style={{ fontSize: 34, filter: "drop-shadow(0 0 12px var(--gold))" }}>{b.icon || "🏅"}</div>
+                    b.image_url
+                      ? <img key={b.id} src={b.image_url} alt={b.name} title={b.name} style={{ width: 42, height: 42, objectFit: "contain", filter: "drop-shadow(0 0 10px var(--gold))" }} />
+                      : <div key={b.id} title={b.name} style={{ fontSize: 34, filter: "drop-shadow(0 0 12px var(--gold))" }}>{b.icon || "🏅"}</div>
                   ))}
                 </div>}
             </div>

@@ -14,4 +14,5 @@ class Feedback(Base, TimestampMixin):
     body: Mapped[str] = mapped_column(Text, nullable=False)              # cómo le pareció
     results: Mapped[str | None] = mapped_column(Text, nullable=True)     # resultados obtenidos
     rating: Mapped[int | None] = mapped_column(Integer, nullable=True)   # 1-5 opcional
+    image_url: Mapped[str | None] = mapped_column(String(500), nullable=True)
     status: Mapped[str] = mapped_column(String(20), default="visible", nullable=False)

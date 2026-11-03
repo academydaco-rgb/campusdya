@@ -12,6 +12,7 @@ class DiplomaCreate(BaseModel):
     order: int = 0
     phase_id: uuid.UUID | None = None
     teacher_id: uuid.UUID | None = None
+    badge_image_url: str | None = None
 
 
 class DiplomaUpdate(BaseModel):
@@ -23,6 +24,7 @@ class DiplomaUpdate(BaseModel):
     order: int | None = None
     phase_id: uuid.UUID | None = None
     teacher_id: uuid.UUID | None = None
+    badge_image_url: str | None = None
 
 
 class DiplomaOut(BaseModel):
@@ -36,6 +38,7 @@ class DiplomaOut(BaseModel):
     order: int
     phase_id: uuid.UUID | None = None
     teacher_id: uuid.UUID | None = None
+    badge_image_url: str | None = None
 
 
 # ───── Módulo ─────
