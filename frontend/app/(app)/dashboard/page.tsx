@@ -48,7 +48,7 @@ export default function DashboardPage() {
       {/* Stats bento */}
       <div className="grid-3 fade-up d1">
         <div className="card stat">
-          <span className="n" style={{ color: "var(--violet)" }}>{mine.length}</span>
+          <span className="n" style={{ color: "var(--cyan)" }}>{mine.length}</span>
           <span className="l">Diplomados activos</span>
         </div>
         <div className="card stat">
@@ -126,12 +126,12 @@ export default function DashboardPage() {
                   const expired = now > +new Date(e.starts_at) + 2 * 3600 * 1000;
                   return (
                     <div key={e.id} style={{ display: "flex", gap: 12, padding: 12, borderRadius: 10, alignItems: "center" }}>
-                      <div style={{ width: 8, height: 8, borderRadius: 999, background: "var(--violet)", boxShadow: "0 0 10px var(--violet)", flexShrink: 0 }} />
+                      <div style={{ width: 8, height: 8, borderRadius: 999, background: "var(--cyan)", boxShadow: "0 0 10px var(--cyan)", flexShrink: 0 }} />
                       <div style={{ flex: 1, minWidth: 0 }}>
                         <div style={{ fontSize: 13.5, fontWeight: 600, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{e.title}</div>
                         <div className="muted" style={{ fontSize: 11.5 }}>{fdatetime(e.starts_at)}</div>
                       </div>
-                      {e.live_url && !expired && <a className="chip" href={e.live_url} target="_blank" rel="noreferrer" style={{ color: "var(--violet)", fontSize: 11 }}>Entrar</a>}
+                      {e.live_url && !expired && <a className="chip" href={e.live_url} target="_blank" rel="noreferrer" style={{ color: "var(--cyan)", fontSize: 11 }}>Entrar</a>}
                     </div>
                   );
                 })}
@@ -146,8 +146,8 @@ export default function DashboardPage() {
                 <div style={{ display: "flex", gap: 14, flexWrap: "wrap" }}>
                   {badges.slice(0, 6).map((b) => (
                     b.image_url
-                      ? <img key={b.id} src={b.image_url} alt={b.name} title={b.name} style={{ width: 42, height: 42, objectFit: "contain", filter: "drop-shadow(0 0 10px var(--gold))" }} />
-                      : <div key={b.id} title={b.name} style={{ fontSize: 34, filter: "drop-shadow(0 0 12px var(--gold))" }}>{b.icon || "🏅"}</div>
+                      ? <img key={b.id} src={b.image_url} alt={b.name} title={b.name} style={{ width: 64, height: 64, objectFit: "contain", filter: "drop-shadow(0 0 12px var(--gold))" }} />
+                      : <div key={b.id} title={b.name} style={{ fontSize: 52, lineHeight: 1, filter: "drop-shadow(0 0 14px var(--gold))" }}>{b.icon || "🏅"}</div>
                   ))}
                 </div>}
             </div>

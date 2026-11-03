@@ -45,7 +45,6 @@ export default function AppLayout({ children }: { children: ReactNode }) {
         <Link href="/dashboard" className="brand" style={{ justifyContent: "center", padding: "6px 8px" }}><img src="/logo.png" alt="D&A Academy" style={{ width: 128, maxWidth: "100%", height: "auto", objectFit: "contain" }} /></Link>
 
         <div className="nav-group">
-          <div className="nav-label">Aprender</div>
           {APRENDER.map((n) => <Item key={n.href} {...n} active={match(n.href)} />)}
         </div>
 
