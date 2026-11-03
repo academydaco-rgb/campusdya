@@ -31,6 +31,8 @@ class UserCreate(BaseModel):
     password: str | None = None      # si no viene, se genera temporal
     role: str = "alumno"
     phone: str | None = None
+    diploma_ids: list[uuid.UUID] = []   # inscribir a estos diplomados al crear
+    enroll_all: bool = False            # o a todos de una vez
 
 
 class UserUpdate(BaseModel):

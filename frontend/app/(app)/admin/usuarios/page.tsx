@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { api, UserT } from "@/lib/api";
+import { api, UserT, AdminDiplomaT } from "@/lib/api";
 import ImageUpload from "@/components/ImageUpload";
 
 interface ImportResultT { creados: number; actualizados: number; inscripciones: number; errores: string[]; }
@@ -13,6 +13,9 @@ export default function AdminUsers() {
   const [role, setRole] = useState("alumno");
   const [pwd, setPwd] = useState("");
   const [cred, setCred] = useState("");
+  const [diplomas, setDiplomas] = useState<AdminDiplomaT[]>([]);
+  const [enrollAll, setEnrollAll] = useState(false);
+  const [selDip, setSelDip] = useState<Set<string>>(new Set());
   const [csv, setCsv] = useState("");
   const [result, setResult] = useState<ImportResultT | null>(null);
   const [msg, setMsg] = useState("");
@@ -25,7 +28,12 @@ export default function AdminUsers() {
     load().catch((e) => setMsg(e.message));
     api.get<{ video_url?: string | null; cover_url?: string | null }>("/api/settings/dashboard-video")
       .then((v) => { setVideoUrl(v.video_url || ""); setVideoCover(v.cover_url || null); }).catch(() => {});
+    api.get<AdminDiplomaT[]>("/api/admin/diplomas").then(setDiplomas).catch(() => {});
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  function toggleDip(id: string) {
+    setSelDip((prev) => { const n = new Set(prev); if (n.has(id)) n.delete(id); else n.add(id); return n; });
+  }
 
   async function guardarVideo() {
     await api.put("/api/admin/settings/dashboard-video", { video_url: videoUrl.trim() || null, cover_url: videoCover });
@@ -36,9 +44,9 @@ export default function AdminUsers() {
     e.preventDefault();
     if (!name.trim() || !email.trim()) return;
     try {
-      const r = await api.post<{ password?: string; email_sent?: boolean }>("/api/admin/users", { name: name.trim(), email: email.trim(), role, password: pwd.trim() || null });
+      const r = await api.post<{ password?: string; email_sent?: boolean }>("/api/admin/users", { name: name.trim(), email: email.trim(), role, password: pwd.trim() || null, enroll_all: enrollAll, diploma_ids: enrollAll ? [] : Array.from(selDip) });
       setCred(`Usuario creado. Contraseña: ${r.password || pwd} · ${r.email_sent ? "Enviada por correo ✓" : "Correo no configurado (comparte la contraseña manualmente)"}`);
-      setName(""); setEmail(""); setRole("alumno"); setPwd(""); await load();
+      setName(""); setEmail(""); setRole("alumno"); setPwd(""); setEnrollAll(false); setSelDip(new Set()); await load();
     } catch (err) { setMsg(err instanceof Error ? err.message : "Error"); }
   }
 
@@ -78,6 +86,24 @@ export default function AdminUsers() {
         <div><label className="label">Contraseña</label><input className="input" value={pwd} onChange={(e) => setPwd(e.target.value)} placeholder="Opcional (se genera)" /></div>
         <button className="btn btn-primary">Crear</button>
       </form>
+      <div className="card" style={{ padding: 16, display: "grid", gap: 10 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
+          <span className="label" style={{ margin: 0 }}>Inscribir al crear:</span>
+          <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13, cursor: "pointer" }}>
+            <input type="checkbox" checked={enrollAll} onChange={(e) => setEnrollAll(e.target.checked)} /> Todos los diplomados
+          </label>
+        </div>
+        {!enrollAll && (
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+            {diplomas.map((d) => (
+              <label key={d.id} className="chip" style={{ cursor: "pointer", borderColor: selDip.has(d.id) ? "var(--cyan)" : "var(--line)", color: selDip.has(d.id) ? "var(--cyan)" : "var(--muted)" }}>
+                <input type="checkbox" checked={selDip.has(d.id)} onChange={() => toggleDip(d.id)} style={{ marginRight: 4 }} /> {d.title}
+              </label>
+            ))}
+            {diplomas.length === 0 && <span className="muted" style={{ fontSize: 12 }}>No hay diplomados para inscribir.</span>}
+          </div>
+        )}
+      </div>
       {cred && <div className="card" style={{ padding: 14, borderColor: "var(--line-2)", fontSize: 13.5 }}>{cred}</div>}
 
       <div className="card" style={{ padding: 18 }}>
@@ -100,17 +126,52 @@ export default function AdminUsers() {
           <button className="btn btn-ghost" onClick={() => load()} type="button">Buscar</button>
         </div>
         <div className="grid" style={{ gap: 8 }}>
-          {users.map((u) => (
-            <div key={u.id} style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 12px", borderRadius: 10, border: "1px solid var(--border)", background: "#0b0e17" }}>
-              <span style={{ flex: 1, fontSize: 14 }}>{u.name}</span>
-              <span className="muted" style={{ fontSize: 12 }}>{u.email}</span>
-              <span className="badge-pill" style={{ fontSize: 11 }}>{u.role}</span>
-              <span className="badge-pill" style={{ fontSize: 11, color: u.status === "active" ? "var(--green)" : "var(--amber)" }}>{u.status}</span>
-            </div>
-          ))}
+          {users.map((u) => <UserRow key={u.id} user={u} onChange={load} />)}
           {users.length === 0 && <span className="muted">Sin usuarios todavía.</span>}
         </div>
       </div>
     </div>
   );
 }
+
+function UserRow({ user, onChange }: { user: UserT; onChange: () => void }) {
+  const [open, setOpen] = useState(false);
+  const [pwd, setPwd] = useState("");
+  const [msg, setMsg] = useState("");
+  const disabled = user.status === "disabled";
+
+  async function guardarClave() {
+    if (pwd.trim().length < 6) { setMsg("Mínimo 6 caracteres"); return; }
+    await api.put(`/api/admin/users/${user.id}`, { password: pwd.trim() });
+    setPwd(""); setMsg("Contraseña actualizada ✓"); setTimeout(() => setMsg(""), 1800);
+  }
+  async function toggleEstado() {
+    await api.put(`/api/admin/users/${user.id}`, { status: disabled ? "active" : "disabled" });
+    onChange();
+  }
+  async function eliminar() {
+    await api.del(`/api/admin/users/${user.id}`); onChange();
+  }
+
+  return (
+    <div style={{ borderRadius: 10, border: "1px solid var(--line)", background: "rgba(5,8,15,.5)", opacity: disabled ? .6 : 1 }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 12px" }}>
+        <span style={{ flex: 1, fontSize: 14 }}>{user.name}</span>
+        <span className="muted" style={{ fontSize: 12 }}>{user.email}</span>
+        <span className="chip" style={{ fontSize: 11 }}>{user.role}</span>
+        <span className="chip" style={{ fontSize: 11, color: disabled ? "var(--f3)" : "var(--f4)" }}>{user.status}</span>
+        <button className="btn btn-ghost" style={{ padding: "5px 9px", fontSize: 12 }} onClick={() => setOpen((v) => !v)}>Gestionar</button>
+      </div>
+      {open && (
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 10, alignItems: "center", padding: "0 12px 12px" }}>
+          <input className="input" type="text" value={pwd} onChange={(e) => setPwd(e.target.value)} placeholder="Nueva contraseña" style={{ maxWidth: 220 }} />
+          <button className="btn btn-ghost" style={{ padding: "7px 12px", fontSize: 12 }} onClick={guardarClave} type="button">Cambiar clave</button>
+          <button className="btn btn-ghost" style={{ padding: "7px 12px", fontSize: 12 }} onClick={toggleEstado} type="button">{disabled ? "Reactivar" : "Deshabilitar"}</button>
+          <button className="btn btn-ghost" style={{ padding: "7px 12px", fontSize: 12, color: "var(--danger)" }} onClick={eliminar} type="button">Eliminar</button>
+          {msg && <span className="muted" style={{ fontSize: 12 }}>{msg}</span>}
+        </div>
+      )}
+    </div>
+  );
+}
+

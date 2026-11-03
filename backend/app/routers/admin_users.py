@@ -43,6 +43,17 @@ async def create_user(data: UserCreate, db: AsyncSession = Depends(get_db), admi
         role=data.role, phone=data.phone, status="active",
     )
     db.add(user); await db.commit(); await db.refresh(user)
+    # Inscripciones al crear
+    dip_ids = list(data.diploma_ids)
+    if data.enroll_all:
+        dip_ids = [d.id for d in (await db.execute(select(Diploma))).scalars().all()]
+    for did in dip_ids:
+        exists_e = (await db.execute(select(Enrollment).where(
+            Enrollment.user_id == user.id, Enrollment.diploma_id == did))).scalar_one_or_none()
+        if not exists_e:
+            db.add(Enrollment(user_id=user.id, diploma_id=did, granted_by=admin.id))
+    if dip_ids:
+        await db.commit()
     sent = await send_credentials(user.email, user.name, pwd)
     return {
         "id": str(user.id), "email": user.email, "name": user.name, "role": user.role, "status": user.status,
@@ -65,6 +76,17 @@ async def update_user(user_id: uuid.UUID, data: UserUpdate, db: AsyncSession = D
         setattr(user, k, v)
     await db.commit(); await db.refresh(user)
     return user
+
+
+@router.delete("/users/{user_id}")
+async def delete_user(user_id: uuid.UUID, db: AsyncSession = Depends(get_db), admin: User = Depends(require_superadmin)):
+    if user_id == admin.id:
+        raise HTTPException(status_code=400, detail="No puedes eliminar tu propia cuenta")
+    user = (await db.execute(select(User).where(User.id == user_id))).scalar_one_or_none()
+    if not user:
+        raise HTTPException(status_code=404, detail="Usuario no encontrado")
+    await db.delete(user); await db.commit()
+    return {"ok": True}
 
 
 @router.post("/users/import", response_model=ImportResult)
