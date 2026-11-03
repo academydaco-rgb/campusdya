@@ -7,6 +7,8 @@ from app import models  # noqa: F401
 _MIGRATIONS = [
     "ALTER TABLE modules ADD COLUMN IF NOT EXISTS cover_url VARCHAR(500)",
     "ALTER TABLE comments ADD COLUMN IF NOT EXISTS rating INTEGER",
+    "ALTER TABLE comments ADD COLUMN IF NOT EXISTS image_url VARCHAR(500)",
+    "ALTER TABLE live_classes ADD COLUMN IF NOT EXISTS cover_url VARCHAR(500)",
 ]
 
 

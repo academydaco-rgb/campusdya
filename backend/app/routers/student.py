@@ -135,7 +135,7 @@ async def create_comment(lesson_id: uuid.UUID, data: CommentCreate, db: AsyncSes
     module = (await db.execute(select(Module).where(Module.id == lesson.module_id))).scalar_one_or_none()
     if not module or not await _is_enrolled(db, user, module.diploma_id):
         raise HTTPException(status_code=403, detail="Sin acceso")
-    c = Comment(lesson_id=lesson_id, user_id=user.id, parent_id=data.parent_id, body=data.body.strip(), rating=data.rating)
+    c = Comment(lesson_id=lesson_id, user_id=user.id, parent_id=data.parent_id, body=data.body.strip(), rating=data.rating, image_url=data.image_url)
     db.add(c); await db.commit(); await db.refresh(c)
     item = CommentOut.model_validate(c)
     item.author_name = user.name

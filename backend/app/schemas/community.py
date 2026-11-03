@@ -7,6 +7,7 @@ class CommentCreate(BaseModel):
     body: str
     rating: int | None = None
     parent_id: uuid.UUID | None = None
+    image_url: str | None = None
 
 
 class CommentOut(BaseModel):
@@ -17,6 +18,7 @@ class CommentOut(BaseModel):
     parent_id: uuid.UUID | None = None
     body: str
     rating: int | None = None
+    image_url: str | None = None
     status: str
     created_at: datetime
     author_name: str | None = None

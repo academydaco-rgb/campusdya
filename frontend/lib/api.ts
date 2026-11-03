@@ -47,8 +47,8 @@ export interface LessonDetailT {
   id: string; title: string; videopress_url?: string | null; content?: string | null;
   duration_seconds: number; completed: boolean; diploma_id: string; module_id: string; diploma_slug?: string | null;
 }
-export interface TeacherT { id: string; name: string; bio?: string | null; photo_url?: string | null; whatsapp?: string | null; }
-export interface LiveClassT { id: string; title: string; description?: string | null; videopress_url?: string | null; happened_at?: string | null; }
+export interface TeacherT { id: string; name: string; bio?: string | null; photo_url?: string | null; whatsapp?: string | null; order?: number; status?: string; }
+export interface LiveClassT { id: string; title: string; description?: string | null; videopress_url?: string | null; cover_url?: string | null; happened_at?: string | null; diploma_id?: string | null; phase_id?: string | null; status?: string; }
 export interface FeedbackT { id: string; user_id: string; body: string; results?: string | null; rating?: number | null; status: string; created_at: string; author_name?: string | null; }
 
 // ───────── Tipos admin ─────────
@@ -68,6 +68,25 @@ export async function uploadImage(file: File): Promise<string> {
   let token: string | null = null;
   try { token = typeof window !== "undefined" ? localStorage.getItem("academia_token") : null; } catch { token = null; }
   const res = await fetch(`${API_URL}/api/admin/upload`, {
+    method: "POST",
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
+    body: fd,
+  });
+  if (!res.ok) {
+    let detail = "No se pudo subir la imagen";
+    try { const j = await res.json(); detail = j.detail || detail; } catch { /* ignore */ }
+    throw new Error(detail);
+  }
+  const j = await res.json();
+  return j.url as string;
+}
+
+export async function uploadImageUser(file: File): Promise<string> {
+  const fd = new FormData();
+  fd.append("file", file);
+  let token: string | null = null;
+  try { token = typeof window !== "undefined" ? localStorage.getItem("academia_token") : null; } catch { token = null; }
+  const res = await fetch(`${API_URL}/api/upload`, {
     method: "POST",
     headers: token ? { Authorization: `Bearer ${token}` } : {},
     body: fd,

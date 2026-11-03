@@ -37,6 +37,7 @@ class LiveClass(Base, TimestampMixin):
     title: Mapped[str] = mapped_column(String(300), nullable=False)
     description: Mapped[str | None] = mapped_column(Text, nullable=True)
     videopress_url: Mapped[str | None] = mapped_column(String(600), nullable=True)
+    cover_url: Mapped[str | None] = mapped_column(String(500), nullable=True)
     happened_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     diploma_id: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True), ForeignKey("diplomas.id", ondelete="SET NULL"), nullable=True)
     phase_id: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True), ForeignKey("phases.id", ondelete="SET NULL"), nullable=True)

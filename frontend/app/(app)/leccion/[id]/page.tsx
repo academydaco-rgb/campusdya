@@ -2,9 +2,9 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import { api, LessonDetailT, DiplomaDetailT } from "@/lib/api";
+import { api, uploadImageUser, LessonDetailT, DiplomaDetailT } from "@/lib/api";
 
-interface CommentT { id: string; body: string; rating?: number | null; author_name?: string | null; created_at: string; }
+interface CommentT { id: string; body: string; rating?: number | null; image_url?: string | null; parent_id?: string | null; author_name?: string | null; created_at: string; }
 
 function Stars({ value, onPick }: { value: number; onPick?: (n: number) => void }) {
   return (
@@ -27,6 +27,7 @@ export default function LessonPage() {
   const [comments, setComments] = useState<CommentT[]>([]);
   const [text, setText] = useState("");
   const [rating, setRating] = useState(5);
+  const [img, setImg] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
@@ -39,6 +40,10 @@ export default function LessonPage() {
     api.get<CommentT[]>(`/api/lessons/${id}/comments`).then(setComments).catch(() => setComments([]));
   }, [id]);
 
+  async function reloadComments() {
+    try { setComments(await api.get<CommentT[]>(`/api/lessons/${id}/comments`)); } catch { /* ignore */ }
+  }
+
   async function completar() {
     await api.post(`/api/lessons/${id}/complete`);
     setL((p) => (p ? { ...p, completed: true } : p));
@@ -48,7 +53,7 @@ export default function LessonPage() {
     e.preventDefault();
     if (!text.trim()) return;
     setSaving(true);
-    try { const c = await api.post<CommentT>(`/api/lessons/${id}/comments`, { body: text.trim(), rating }); setComments((p) => [...p, c]); setText(""); setRating(5); }
+    try { await api.post<CommentT>(`/api/lessons/${id}/comments`, { body: text.trim(), rating, image_url: img }); setText(""); setRating(5); setImg(null); await reloadComments(); }
     finally { setSaving(false); }
   }
 
@@ -84,25 +89,22 @@ export default function LessonPage() {
           {next ? <Link href={`/leccion/${next.id}`} className="btn btn-ghost" style={{ marginLeft: "auto" }}>Siguiente →</Link> : <span style={{ marginLeft: "auto" }} />}
         </div>
 
-        {/* Comentarios + calificación */}
+        {/* Comunidad: calificación, imágenes y respuestas */}
         <section>
-          <h2 style={{ fontSize: 16, marginBottom: 12 }}>Califica y comenta esta clase</h2>
+          <h2 style={{ fontSize: 16, marginBottom: 12 }}>Comunidad · califica y comenta</h2>
           <form onSubmit={enviar} className="card" style={{ padding: 16, display: "grid", gap: 10 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 10 }}><span className="muted" style={{ fontSize: 13 }}>Tu calificación:</span><Stars value={rating} onPick={setRating} /></div>
-            <div style={{ display: "flex", gap: 10 }}>
-              <input className="input" value={text} onChange={(e) => setText(e.target.value)} placeholder="Escribe tu comentario…" />
-              <button className="btn btn-primary" disabled={saving}>Enviar</button>
+            <textarea className="input" value={text} onChange={(e) => setText(e.target.value)} placeholder="Escribe tu comentario…" rows={2} style={{ resize: "vertical" }} />
+            {img && <div style={{ position: "relative", width: 160 }}><img src={img} alt="" style={{ width: 160, borderRadius: 10, display: "block" }} /><button type="button" onClick={() => setImg(null)} className="btn btn-ghost" style={{ position: "absolute", top: 6, right: 6, padding: "2px 8px", fontSize: 12 }}>✕</button></div>}
+            <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
+              <ImgPick onPick={setImg} />
+              <span style={{ flex: 1 }} />
+              <button className="btn btn-primary" disabled={saving}>Publicar</button>
             </div>
           </form>
-          <div className="grid" style={{ gap: 10, marginTop: 14 }}>
-            {comments.map((c) => (
-              <div key={c.id} className="card" style={{ padding: 14 }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                  <span style={{ fontWeight: 600, fontSize: 13 }}>{c.author_name || "Alumno"}</span>
-                  {c.rating ? <Stars value={c.rating} /> : null}
-                </div>
-                <div style={{ fontSize: 14, marginTop: 5 }}>{c.body}</div>
-              </div>
+          <div className="grid" style={{ gap: 12, marginTop: 14 }}>
+            {comments.filter((c) => !c.parent_id).map((c) => (
+              <CommentCard key={c.id} comment={c} replies={comments.filter((r) => r.parent_id === c.id)} lessonId={id} onChange={reloadComments} />
             ))}
             {comments.length === 0 && <span className="muted" style={{ fontSize: 13 }}>Sé el primero en comentar.</span>}
           </div>
@@ -139,3 +141,77 @@ export default function LessonPage() {
     </div>
   );
 }
+
+function ImgPick({ onPick }: { onPick: (url: string) => void }) {
+  const [busy, setBusy] = useState(false);
+  async function pick(e: React.ChangeEvent<HTMLInputElement>) {
+    const f = e.target.files?.[0];
+    if (!f) return;
+    setBusy(true);
+    try { onPick(await uploadImageUser(f)); } catch { /* ignore */ } finally { setBusy(false); e.target.value = ""; }
+  }
+  return (
+    <label className="btn btn-ghost" style={{ fontSize: 13, cursor: "pointer" }}>
+      {busy ? "Subiendo…" : "📷 Imagen"}
+      <input type="file" accept="image/png,image/jpeg,image/webp" onChange={pick} style={{ display: "none" }} />
+    </label>
+  );
+}
+
+function CommentCard({ comment, replies, lessonId, onChange }: { comment: CommentT; replies: CommentT[]; lessonId: string; onChange: () => void }) {
+  const [open, setOpen] = useState(false);
+  const [text, setText] = useState("");
+  const [img, setImg] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
+
+  async function responder(e: React.FormEvent) {
+    e.preventDefault();
+    if (!text.trim()) return;
+    setSaving(true);
+    try { await api.post(`/api/lessons/${lessonId}/comments`, { body: text.trim(), parent_id: comment.id, image_url: img }); setText(""); setImg(null); setOpen(false); onChange(); }
+    finally { setSaving(false); }
+  }
+
+  return (
+    <div className="card" style={{ padding: 14 }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+        <span style={{ width: 28, height: 28, borderRadius: 999, display: "grid", placeItems: "center", background: "var(--grad-soft)", fontSize: 12, fontWeight: 700 }}>{(comment.author_name || "A").charAt(0).toUpperCase()}</span>
+        <span style={{ fontWeight: 700, fontSize: 13 }}>{comment.author_name || "Alumno"}</span>
+        {comment.rating ? <Stars value={comment.rating} /> : null}
+      </div>
+      <div style={{ fontSize: 14, marginTop: 7, whiteSpace: "pre-wrap" }}>{comment.body}</div>
+      {comment.image_url && <img src={comment.image_url} alt="" style={{ marginTop: 10, maxWidth: "100%", borderRadius: 10, display: "block" }} />}
+      <div style={{ marginTop: 8 }}>
+        <button className="btn btn-ghost" style={{ padding: "4px 10px", fontSize: 12 }} onClick={() => setOpen((o) => !o)}>↳ Responder</button>
+      </div>
+
+      {open && (
+        <form onSubmit={responder} style={{ display: "grid", gap: 8, marginTop: 10, paddingLeft: 12, borderLeft: "2px solid var(--line-2)" }}>
+          <textarea className="input" value={text} onChange={(e) => setText(e.target.value)} placeholder="Escribe una respuesta…" rows={2} style={{ resize: "vertical" }} />
+          {img && <img src={img} alt="" style={{ width: 140, borderRadius: 10 }} />}
+          <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+            <ImgPick onPick={setImg} />
+            <span style={{ flex: 1 }} />
+            <button className="btn btn-primary" style={{ padding: "7px 14px", fontSize: 13 }} disabled={saving}>Responder</button>
+          </div>
+        </form>
+      )}
+
+      {replies.length > 0 && (
+        <div style={{ marginTop: 12, display: "grid", gap: 10, paddingLeft: 14, borderLeft: "2px solid var(--line)" }}>
+          {replies.map((r) => (
+            <div key={r.id}>
+              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <span style={{ width: 24, height: 24, borderRadius: 999, display: "grid", placeItems: "center", background: "rgba(255,255,255,.06)", fontSize: 11, fontWeight: 700 }}>{(r.author_name || "A").charAt(0).toUpperCase()}</span>
+                <span style={{ fontWeight: 700, fontSize: 12.5 }}>{r.author_name || "Alumno"}</span>
+              </div>
+              <div style={{ fontSize: 13.5, marginTop: 5, whiteSpace: "pre-wrap" }}>{r.body}</div>
+              {r.image_url && <img src={r.image_url} alt="" style={{ marginTop: 8, maxWidth: "100%", borderRadius: 9, display: "block" }} />}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+

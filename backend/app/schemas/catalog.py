@@ -68,6 +68,7 @@ class LiveClassCreate(BaseModel):
     title: str
     description: str | None = None
     videopress_url: str | None = None
+    cover_url: str | None = None
     happened_at: datetime | None = None
     diploma_id: uuid.UUID | None = None
     phase_id: uuid.UUID | None = None
@@ -78,6 +79,7 @@ class LiveClassUpdate(BaseModel):
     title: str | None = None
     description: str | None = None
     videopress_url: str | None = None
+    cover_url: str | None = None
     happened_at: datetime | None = None
     diploma_id: uuid.UUID | None = None
     phase_id: uuid.UUID | None = None
@@ -90,6 +92,7 @@ class LiveClassOut(BaseModel):
     title: str
     description: str | None = None
     videopress_url: str | None = None
+    cover_url: str | None = None
     happened_at: datetime | None = None
     diploma_id: uuid.UUID | None = None
     phase_id: uuid.UUID | None = None
