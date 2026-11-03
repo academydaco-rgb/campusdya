@@ -31,7 +31,7 @@ export default function LoginPage() {
           Academia <span style={{ color: "var(--brand)" }}>D&A</span>
         </div>
         <p className="muted" style={{ marginTop: 0, marginBottom: 24, fontSize: 14 }}>
-          Entra a tu universo de aprendizaje
+          Entra a tu campus de estudio
         </p>
         <form onSubmit={onSubmit}>
           <label className="label">Correo</label>

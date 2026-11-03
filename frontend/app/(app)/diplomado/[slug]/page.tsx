@@ -21,7 +21,7 @@ export default function DiplomaPage() {
   return (
     <div className="grid" style={{ gap: 22 }}>
       <div>
-        <Link href="/universo" className="muted" style={{ fontSize: 13 }}>← Universo</Link>
+        <Link href="/explorar" className="muted" style={{ fontSize: 13 }}>← Explorar</Link>
         <h1 style={{ fontSize: 28, fontWeight: 800, marginTop: 8 }}>{d.title}</h1>
         {d.description && <p className="muted" style={{ marginTop: 6 }}>{d.description}</p>}
         <div style={{ marginTop: 14 }}>

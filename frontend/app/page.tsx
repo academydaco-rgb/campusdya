@@ -10,5 +10,5 @@ export default function Home() {
     if (loading) return;
     router.replace(user ? "/dashboard" : "/login");
   }, [user, loading, router]);
-  return <div className="container" style={{ padding: 60 }}><span className="muted">Cargando el universo…</span></div>;
+  return <div className="container" style={{ padding: 60 }}><span className="muted">Cargando…</span></div>;
 }

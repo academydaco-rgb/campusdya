@@ -4,63 +4,71 @@ import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/lib/auth";
 
-const NAV = [
-  { href: "/dashboard", label: "Inicio", icon: "🏠", built: true },
-  { href: "/universo", label: "Universo", icon: "🌌", built: true },
-  { href: "/classroom", label: "Classroom", icon: "📅", built: true },
-  { href: "/clases-en-vivo", label: "En vivo", icon: "🎥", built: true },
-  { href: "/insignias", label: "Insignias", icon: "🏅", built: true },
-  { href: "/profesores", label: "Profesores", icon: "🎓", built: true },
-  { href: "/feedback", label: "Comunidad", icon: "💬", built: true },
+const APRENDER = [
+  { href: "/dashboard", label: "Inicio", ic: "◆" },
+  { href: "/explorar", label: "Explorar", ic: "◈" },
+  { href: "/classroom", label: "Classroom", ic: "▣" },
+  { href: "/clases-en-vivo", label: "Clases en vivo", ic: "▶" },
+  { href: "/insignias", label: "Insignias", ic: "✦" },
+  { href: "/profesores", label: "Profesores", ic: "◉" },
+  { href: "/feedback", label: "Comunidad", ic: "✶" },
 ];
+const ADMIN = [
+  { href: "/admin/diplomados", label: "Diplomados", ic: "▤" },
+  { href: "/admin/usuarios", label: "Usuarios", ic: "◎" },
+  { href: "/admin/inscripciones", label: "Inscripciones", ic: "⚿" },
+  { href: "/admin/profesores", label: "Profesores", ic: "◉" },
+  { href: "/admin/clases-en-vivo", label: "Clases en vivo", ic: "▶" },
+  { href: "/admin/classroom", label: "Classroom", ic: "▣" },
+  { href: "/admin/moderacion", label: "Moderación", ic: "⚑" },
+];
+
+function Item({ href, label, ic, active }: { href: string; label: string; ic: string; active: boolean }) {
+  return <Link href={href} className={`nav-item${active ? " active" : ""}`}><span className="ic">{ic}</span>{label}</Link>;
+}
 
 export default function AppLayout({ children }: { children: ReactNode }) {
   const { user, loading, logout } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
 
-  useEffect(() => {
-    if (!loading && !user) router.replace("/login");
-  }, [user, loading, router]);
+  useEffect(() => { if (!loading && !user) router.replace("/login"); }, [user, loading, router]);
+  if (loading || !user) return <div className="main"><span className="muted">Cargando…</span></div>;
 
-  if (loading || !user) {
-    return <div className="container" style={{ padding: 60 }}><span className="muted">Cargando…</span></div>;
-  }
+  const isAdmin = user.role === "admin" || user.role === "instructor";
+  const match = (h: string) => pathname === h || pathname.startsWith(h + "/");
 
   return (
-    <div style={{ minHeight: "100vh" }}>
-      <header style={{ position: "sticky", top: 0, zIndex: 20, backdropFilter: "blur(12px)",
-        background: "rgba(5,6,10,.7)", borderBottom: "1px solid var(--border)" }}>
-        <div className="container" style={{ display: "flex", alignItems: "center", gap: 18, height: 64 }}>
-          <Link href="/dashboard" style={{ fontWeight: 800, fontSize: 18 }}>
-            Academia <span style={{ color: "var(--brand)" }}>D&A</span>
-          </Link>
-          <nav style={{ display: "flex", gap: 6, flex: 1, overflowX: "auto" }}>
-            {NAV.map((n) => {
-              const active = pathname === n.href || pathname.startsWith(n.href + "/");
-              const base: React.CSSProperties = {
-                display: "inline-flex", alignItems: "center", gap: 7, padding: "8px 12px",
-                borderRadius: 10, fontSize: 13, fontWeight: 600, whiteSpace: "nowrap",
-                color: active ? "#fff" : "var(--muted)",
-                background: active ? "rgba(168,85,247,.15)" : "transparent",
-                border: `1px solid ${active ? "var(--brand)" : "transparent"}`,
-              };
-              if (!n.built) {
-                return <span key={n.href} style={{ ...base, opacity: .45, cursor: "not-allowed" }} title="Próximamente">
-                  <span>{n.icon}</span>{n.label}</span>;
-              }
-              return <Link key={n.href} href={n.href} style={base}><span>{n.icon}</span>{n.label}</Link>;
-            })}
-          </nav>
-          {user.role !== "alumno" && (
-            <Link href="/admin" className="badge-pill" style={{ color: "var(--cyan)", borderColor: "var(--cyan)" }}>Admin</Link>
-          )}
-          <button className="btn btn-ghost" style={{ padding: "7px 12px", fontSize: 13 }} onClick={() => { logout(); router.replace("/login"); }}>
-            Salir
-          </button>
+    <div className="shell">
+      <aside className="sidebar">
+        <Link href="/dashboard" className="brand"><span className="brand-badge">D</span><span>Campus D&A</span></Link>
+
+        <div className="nav-group">
+          <div className="nav-label">Aprender</div>
+          {APRENDER.map((n) => <Item key={n.href} {...n} active={match(n.href)} />)}
         </div>
-      </header>
-      <main className="container" style={{ padding: "28px 20px 60px" }}>{children}</main>
+
+        {isAdmin && (
+          <div className="nav-group">
+            <div className="nav-label">Administración</div>
+            {ADMIN.map((n) => <Item key={n.href} {...n} active={match(n.href)} />)}
+          </div>
+        )}
+
+        <div style={{ marginTop: "auto", borderTop: "1px solid var(--line)", paddingTop: 14 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "0 6px 10px" }}>
+            <div style={{ width: 34, height: 34, borderRadius: 999, background: "var(--grad)", display: "grid", placeItems: "center", fontWeight: 800, fontSize: 14 }}>
+              {(user.name || "U").charAt(0).toUpperCase()}
+            </div>
+            <div style={{ minWidth: 0 }}>
+              <div style={{ fontSize: 13, fontWeight: 700, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{user.name}</div>
+              <div className="muted" style={{ fontSize: 11 }}>{isAdmin ? "Administrador" : "Alumno"}</div>
+            </div>
+          </div>
+          <button className="btn btn-ghost" style={{ width: "100%", justifyContent: "center", padding: "9px" }} onClick={() => { logout(); router.replace("/login"); }}>Cerrar sesión</button>
+        </div>
+      </aside>
+      <main className="main">{children}</main>
     </div>
   );
 }
