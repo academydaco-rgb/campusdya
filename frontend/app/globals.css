@@ -52,7 +52,7 @@ p{line-height:1.62}
 
 /* ── Shell / sidebar ── */
 .shell{display:grid;grid-template-columns:var(--sidebar-w) 1fr;min-height:100vh;position:relative;z-index:1}
-.cursor-glow{position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(400px at var(--mx,70%) var(--my,20%), rgba(0,255,255,.14), rgba(167,85,247,.08) 42%, transparent 72%)}
+.cursor-glow{position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(340px at var(--mx,70%) var(--my,20%), rgba(0,255,255,.06), rgba(167,85,247,.035) 42%, transparent 72%)}
 .sidebar{
   position:sticky;top:0;height:100vh;overflow-y:auto;
   background:transparent;
