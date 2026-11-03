@@ -11,6 +11,8 @@ export default function AdminUsers() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [role, setRole] = useState("alumno");
+  const [pwd, setPwd] = useState("");
+  const [cred, setCred] = useState("");
   const [csv, setCsv] = useState("");
   const [result, setResult] = useState<ImportResultT | null>(null);
   const [msg, setMsg] = useState("");
@@ -34,8 +36,9 @@ export default function AdminUsers() {
     e.preventDefault();
     if (!name.trim() || !email.trim()) return;
     try {
-      await api.post("/api/admin/users", { name: name.trim(), email: email.trim(), role });
-      setName(""); setEmail(""); setRole("alumno"); await load();
+      const r = await api.post<{ password?: string; email_sent?: boolean }>("/api/admin/users", { name: name.trim(), email: email.trim(), role, password: pwd.trim() || null });
+      setCred(`Usuario creado. Contraseña: ${r.password || pwd} · ${r.email_sent ? "Enviada por correo ✓" : "Correo no configurado (comparte la contraseña manualmente)"}`);
+      setName(""); setEmail(""); setRole("alumno"); setPwd(""); await load();
     } catch (err) { setMsg(err instanceof Error ? err.message : "Error"); }
   }
 
@@ -64,7 +67,7 @@ export default function AdminUsers() {
         </div>
       </div>
 
-      <form onSubmit={crear} className="card" style={{ padding: 18, display: "grid", gap: 12, gridTemplateColumns: "2fr 2fr 1fr auto", alignItems: "end" }}>
+      <form onSubmit={crear} className="card" style={{ padding: 18, display: "grid", gap: 12, gridTemplateColumns: "2fr 2fr 1fr 1.4fr auto", alignItems: "end" }}>
         <div><label className="label">Nombre</label><input className="input" value={name} onChange={(e) => setName(e.target.value)} /></div>
         <div><label className="label">Correo</label><input className="input" type="email" value={email} onChange={(e) => setEmail(e.target.value)} /></div>
         <div><label className="label">Rol</label>
@@ -72,8 +75,10 @@ export default function AdminUsers() {
             <option value="alumno">Alumno</option><option value="instructor">Instructor</option><option value="admin">Admin</option>
           </select>
         </div>
+        <div><label className="label">Contraseña</label><input className="input" value={pwd} onChange={(e) => setPwd(e.target.value)} placeholder="Opcional (se genera)" /></div>
         <button className="btn btn-primary">Crear</button>
       </form>
+      {cred && <div className="card" style={{ padding: 14, borderColor: "var(--line-2)", fontSize: 13.5 }}>{cred}</div>}
 
       <div className="card" style={{ padding: 18 }}>
         <label className="label">Importar masivamente (migración) — una línea por usuario: <b>nombre,correo</b></label>

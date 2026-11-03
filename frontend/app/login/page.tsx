@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth";
+import { api } from "@/lib/api";
 
 export default function LoginPage() {
   const { login } = useAuth();
@@ -10,6 +11,9 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [forgot, setForgot] = useState(false);
+  const [fmail, setFmail] = useState("");
+  const [fmsg, setFmsg] = useState("");
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -22,6 +26,12 @@ export default function LoginPage() {
     } finally {
       setLoading(false);
     }
+  }
+
+  async function enviarReset(e: React.FormEvent) {
+    e.preventDefault(); setFmsg("Enviando…");
+    try { await api.post("/api/auth/forgot-password", { email: fmail.trim() }); setFmsg("Si el correo existe, te enviamos un enlace para restablecer tu contraseña."); }
+    catch { setFmsg("Si el correo existe, te enviamos un enlace para restablecer tu contraseña."); }
   }
 
   return (
@@ -53,6 +63,16 @@ export default function LoginPage() {
             {loading ? "Entrando…" : "Iniciar sesión"}
           </button>
         </form>
+        <div style={{ textAlign: "center", marginTop: 14 }}>
+          <button type="button" onClick={() => { setForgot((v) => !v); setFmsg(""); }} style={{ background: "transparent", border: 0, color: "var(--cyan)", cursor: "pointer", fontSize: 13 }}>¿Olvidaste tu contraseña?</button>
+        </div>
+        {forgot && (
+          <form onSubmit={enviarReset} style={{ marginTop: 12, display: "grid", gap: 10 }}>
+            <input className="input" type="email" value={fmail} onChange={(e) => setFmail(e.target.value)} placeholder="Tu correo registrado" required />
+            <button className="btn btn-ghost" style={{ justifyContent: "center", color: "#fff", borderColor: "rgba(255,255,255,.2)" }}>Enviar enlace de recuperación</button>
+            {fmsg && <div className="muted" style={{ fontSize: 12.5, textAlign: "center" }}>{fmsg}</div>}
+          </form>
+        )}
         <div className="muted" style={{ textAlign: "center", fontSize: 12, marginTop: 18 }}>D&A Academy · campusdya.com</div>
       </div>
     </div>

@@ -203,3 +203,21 @@ async def update_profile(data: ProfileUpdate, db: AsyncSession = Depends(get_db)
         user.name = data.name.strip()
     await db.commit(); await db.refresh(user)
     return {"id": str(user.id), "name": user.name, "avatar_url": user.avatar_url, "bio": user.bio, "email": user.email, "role": user.role, "status": user.status}
+
+
+@router.get("/users/{user_id}/public")
+async def public_user_profile(user_id: uuid.UUID, db: AsyncSession = Depends(get_db), viewer: User = Depends(get_current_user)):
+    u = (await db.execute(select(User).where(User.id == user_id))).scalar_one_or_none()
+    if not u:
+        raise HTTPException(status_code=404, detail="Usuario no encontrado")
+    rows = (await db.execute(
+        select(UserBadge, Badge).join(Badge, Badge.id == UserBadge.badge_id)
+        .where(UserBadge.user_id == u.id).order_by(UserBadge.awarded_at.desc())
+    )).all()
+    dmap = {str(d.id): d for d in (await db.execute(select(Diploma))).scalars().all()}
+    badges = []
+    for ub, b in rows:
+        dip = dmap.get(b.rule_value or "")
+        badges.append({"id": str(b.id), "name": b.name, "icon": b.icon,
+                       "image_url": (dip.badge_image_url if dip else None)})
+    return {"id": str(u.id), "name": u.name, "avatar_url": u.avatar_url, "bio": u.bio, "badges": badges}

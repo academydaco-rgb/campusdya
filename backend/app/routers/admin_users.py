@@ -11,6 +11,7 @@ from app.models.content import Diploma
 from app.models.learning import Enrollment
 from app.schemas.auth import UserCreate, UserUpdate, UserOut, ImportRequest, ImportResult
 from app.schemas.learning import EnrollmentCreate, EnrollmentOut
+from app.services.mailer import send_credentials, enabled as mail_enabled
 
 router = APIRouter(prefix="/api/admin", tags=["admin-users"])
 
@@ -30,7 +31,7 @@ async def list_users(q: str = Query(default=""), db: AsyncSession = Depends(get_
     return rows
 
 
-@router.post("/users", response_model=UserOut)
+@router.post("/users")
 async def create_user(data: UserCreate, db: AsyncSession = Depends(get_db), admin: User = Depends(require_superadmin)):
     email = data.email.lower().strip()
     exists = (await db.execute(select(User).where(User.email == email))).scalar_one_or_none()
@@ -39,11 +40,14 @@ async def create_user(data: UserCreate, db: AsyncSession = Depends(get_db), admi
     pwd = data.password or _temp_password()
     user = User(
         email=email, name=data.name, password_hash=hash_password(pwd),
-        role=data.role, phone=data.phone,
-        status="active" if data.password else "invited",
+        role=data.role, phone=data.phone, status="active",
     )
     db.add(user); await db.commit(); await db.refresh(user)
-    return user
+    sent = await send_credentials(user.email, user.name, pwd)
+    return {
+        "id": str(user.id), "email": user.email, "name": user.name, "role": user.role, "status": user.status,
+        "password": pwd, "email_sent": sent,
+    }
 
 
 @router.put("/users/{user_id}", response_model=UserOut)
@@ -68,6 +72,7 @@ async def import_users(data: ImportRequest, db: AsyncSession = Depends(get_db), 
     """Carga masiva para migrar de la plataforma vieja. Idempotente por email."""
     creados = actualizados = inscripciones = 0
     errores: list[str] = []
+    _to_mail: list[tuple[str, str, str]] = []
     # Mapa de diplomados por slug (para inscribir)
     diplomas = {d.slug: d for d in (await db.execute(select(Diploma))).scalars().all()}
     for row in data.users:
@@ -79,13 +84,15 @@ async def import_users(data: ImportRequest, db: AsyncSession = Depends(get_db), 
                     user.name = row.name
                 actualizados += 1
             else:
+                pwd = row.password or _temp_password()
                 user = User(
                     email=email, name=row.name,
-                    password_hash=hash_password(row.password or _temp_password()),
-                    role="alumno", status="invited",
+                    password_hash=hash_password(pwd),
+                    role="alumno", status="active",
                 )
                 db.add(user)
                 await db.flush()  # para obtener user.id
+                _to_mail.append((email, row.name, pwd))
                 creados += 1
             for slug in row.diploma_slugs:
                 dip = diplomas.get(slug)
@@ -100,6 +107,10 @@ async def import_users(data: ImportRequest, db: AsyncSession = Depends(get_db), 
         except Exception as e:  # noqa: BLE001
             errores.append(f"{row.email}: {str(e)[:120]}")
     await db.commit()
+    for (em, nm, pw) in _to_mail:
+        await send_credentials(em, nm, pw)
+    if _to_mail and not mail_enabled():
+        errores.append("Correo no configurado: no se enviaron credenciales por email (configura SMTP en el servidor).")
     return ImportResult(creados=creados, actualizados=actualizados, inscripciones=inscripciones, errores=errores)
 
 

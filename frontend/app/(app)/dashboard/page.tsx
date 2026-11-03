@@ -65,16 +65,16 @@ export default function DashboardPage() {
 
       {/* Stats bento */}
       <div className="grid-3 fade-up d1">
-        <div className="card stat">
+        <div className="card stat stat-cyan">
           <span className="n" style={{ color: "var(--cyan)" }}>{mine.length}</span>
           <span className="l">Diplomados activos</span>
         </div>
-        <div className="card stat">
+        <div className="card stat stat-gold">
           <span className="n" style={{ color: "var(--gold)" }}>{badges.length}</span>
           <span className="l">Insignias ganadas</span>
         </div>
-        <div className="card stat">
-          <span className="n" style={{ color: "var(--cyan)", fontSize: upcoming[0] ? 18 : 26 }}>{upcoming[0] ? fdatetime(upcoming[0].starts_at) : "—"}</span>
+        <div className="card stat stat-violet">
+          <span className="n" style={{ color: "var(--violet)", fontSize: upcoming[0] ? 18 : 26 }}>{upcoming[0] ? fdatetime(upcoming[0].starts_at) : "—"}</span>
           <span className="l">Próxima clase</span>
         </div>
       </div>

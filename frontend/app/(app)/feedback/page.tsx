@@ -11,6 +11,12 @@ export default function Comunidad() {
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState("");
   const [profile, setProfile] = useState<FeedbackT | null>(null);
+  const [profileData, setProfileData] = useState<{ name: string; avatar_url?: string | null; bio?: string | null; badges: { id: string; name: string; icon?: string | null; image_url?: string | null }[] } | null>(null);
+
+  function abrirPerfil(f: FeedbackT) {
+    setProfile(f); setProfileData(null);
+    api.get<{ name: string; avatar_url?: string | null; bio?: string | null; badges: { id: string; name: string; icon?: string | null; image_url?: string | null }[] }>(`/api/users/${f.user_id}/public`).then(setProfileData).catch(() => {});
+  }
 
   async function load() { setItems(await api.get<FeedbackT[]>("/api/feedback")); }
   useEffect(() => { load().catch(() => setItems([])); }, []);
@@ -69,7 +75,7 @@ export default function Comunidad() {
             <p style={{ fontSize: 14, marginTop: 8 }}>{f.body}</p>
             {f.results && <p className="muted" style={{ fontSize: 13, marginTop: 6 }}>📈 {f.results}</p>}
             {f.image_url && <img src={f.image_url} alt="" style={{ marginTop: 10, width: "100%", borderRadius: 10, display: "block" }} />}
-            <button onClick={() => setProfile(f)} style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 12, background: "transparent", border: 0, cursor: "pointer", padding: 0, color: "var(--text)" }}>
+            <button onClick={() => abrirPerfil(f)} style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 12, background: "transparent", border: 0, cursor: "pointer", padding: 0, color: "var(--text)" }}>
               <span style={{ width: 26, height: 26, borderRadius: 999, flexShrink: 0, display: "grid", placeItems: "center", fontSize: 12, fontWeight: 800, color: "#04141c", background: f.author_avatar ? `center/cover url(${f.author_avatar})` : "var(--grad)" }}>{!f.author_avatar && (f.author_name || "A").charAt(0).toUpperCase()}</span>
               <span style={{ fontSize: 12.5, fontWeight: 700 }}>{f.author_name || "Alumno"}</span>
               <span className="muted" style={{ fontSize: 11 }}>· ver perfil</span>
@@ -83,9 +89,21 @@ export default function Comunidad() {
         <div onClick={() => setProfile(null)} style={{ position: "fixed", inset: 0, zIndex: 100, background: "rgba(3,5,10,.72)", display: "grid", placeItems: "center", padding: 20 }}>
           <div onClick={(e) => e.stopPropagation()} className="card" style={{ width: "100%", maxWidth: 420, padding: 26, textAlign: "center", position: "relative" }}>
             <button onClick={() => setProfile(null)} className="btn btn-ghost" style={{ position: "absolute", top: 12, right: 12, padding: "4px 10px", fontSize: 13 }}>✕</button>
-            <div style={{ width: 92, height: 92, borderRadius: 999, margin: "0 auto", border: "1px solid var(--line-2)", display: "grid", placeItems: "center", fontWeight: 800, fontSize: 34, color: "#04141c", background: profile.author_avatar ? `center/cover url(${profile.author_avatar})` : "var(--grad)" }}>{!profile.author_avatar && (profile.author_name || "A").charAt(0).toUpperCase()}</div>
-            <div style={{ fontWeight: 800, fontSize: 18, marginTop: 14, color: "#fff" }}>{profile.author_name || "Alumno"}</div>
-            <p className="muted" style={{ fontSize: 13.5, marginTop: 8, whiteSpace: "pre-wrap" }}>{profile.author_bio || "Este alumno aún no ha escrito su descripción."}</p>
+            {(() => { const av = profileData?.avatar_url ?? profile.author_avatar; const nm = profileData?.name || profile.author_name || "Alumno"; const bio = profileData?.bio ?? profile.author_bio; const badges = profileData?.badges || []; return (<>
+            <div style={{ width: 92, height: 92, borderRadius: 999, margin: "0 auto", border: "1px solid var(--line-2)", display: "grid", placeItems: "center", fontWeight: 800, fontSize: 34, color: "#04141c", background: av ? `center/cover url(${av})` : "var(--grad)" }}>{!av && nm.charAt(0).toUpperCase()}</div>
+            <div style={{ fontWeight: 800, fontSize: 18, marginTop: 14, color: "#fff" }}>{nm}</div>
+            <p className="muted" style={{ fontSize: 13.5, marginTop: 8, whiteSpace: "pre-wrap" }}>{bio || "Este alumno aún no ha escrito su descripción."}</p>
+            {badges.length > 0 && (
+              <div style={{ marginTop: 16 }}>
+                <div className="eyebrow" style={{ marginBottom: 10 }}>Insignias</div>
+                <div style={{ display: "flex", gap: 12, flexWrap: "wrap", justifyContent: "center" }}>
+                  {badges.map((b) => b.image_url
+                    ? <img key={b.id} src={b.image_url} alt={b.name} title={b.name} style={{ width: 46, height: 46, objectFit: "contain", filter: "drop-shadow(0 0 10px var(--gold))" }} />
+                    : <div key={b.id} title={b.name} style={{ fontSize: 34, filter: "drop-shadow(0 0 10px var(--gold))" }}>{b.icon || "🏅"}</div>)}
+                </div>
+              </div>
+            )}
+            </>); })()}
           </div>
         </div>
       )}
