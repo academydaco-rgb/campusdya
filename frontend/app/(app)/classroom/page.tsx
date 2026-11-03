@@ -108,12 +108,14 @@ export default function Classroom() {
             const hora = new Date(e.starts_at).toLocaleTimeString("es-CO", { hour: "2-digit", minute: "2-digit" });
             return (
               <div key={e.id} className="card" style={{ overflow: "hidden", display: "flex", flexDirection: "column" }}>
-                <div style={{ position: "relative", width: "100%", height: 150,
-                  background: t?.photo_url ? `center/cover url(${t.photo_url})` : "linear-gradient(135deg,#132038,#0b1020)" }}>
-                  <div style={{ position: "absolute", inset: 0, background: "linear-gradient(0deg,rgba(5,5,7,.92),rgba(5,5,7,.1) 70%)" }} />
-                  <div style={{ position: "absolute", left: 16, right: 16, bottom: 12 }}>
+                <div className="starfield" style={{ position: "relative", padding: 18, display: "flex", alignItems: "center", gap: 14, background: "var(--aurora)" }}>
+                  <div style={{ width: 60, height: 60, borderRadius: 999, flexShrink: 0, border: "2px solid rgba(255,255,255,.28)", boxShadow: "0 8px 22px -6px rgba(0,0,0,.6)", display: "grid", placeItems: "center", color: "#fff", fontWeight: 800, fontSize: 22,
+                    background: t?.photo_url ? `center/cover url(${t.photo_url})` : "var(--grad)" }}>
+                    {!t?.photo_url && (t?.name?.charAt(0).toUpperCase() || "📚")}
+                  </div>
+                  <div style={{ minWidth: 0 }}>
                     <div style={{ fontWeight: 800, fontSize: 18, color: "#fff" }}>{e.title}</div>
-                    <div style={{ fontSize: 12.5, color: "rgba(255,255,255,.75)", marginTop: 2 }}>{hora}{t ? ` · ${t.name}` : ""}</div>
+                    <div style={{ fontSize: 12.5, color: "rgba(255,255,255,.78)", marginTop: 2 }}>{hora}{t ? ` · ${t.name}` : ""}</div>
                   </div>
                 </div>
                 <div style={{ padding: 16, display: "flex", alignItems: "center", gap: 12 }}>
