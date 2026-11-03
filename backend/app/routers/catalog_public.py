@@ -6,11 +6,13 @@ from app.core.database import get_db
 from app.core.deps import get_current_user
 from app.models.user import User
 from app.models.catalog import Phase, Teacher, LiveClass
+from app.models.provider import Provider
 from app.models.content import Diploma
 from app.models.learning import Enrollment
 from app.models.feedback import Feedback
 from app.models.schedule import ScheduleEvent
 from app.schemas.catalog import TeacherOut, LiveClassOut
+from app.schemas.provider import ProviderOut
 from app.schemas.schedule import ScheduleOut
 from app.schemas.feedback import FeedbackCreate, FeedbackOut
 
@@ -58,6 +60,11 @@ async def public_live(db: AsyncSession = Depends(get_db), user: User = Depends(g
     return (await db.execute(select(LiveClass).where(LiveClass.status == "published").order_by(LiveClass.happened_at.desc().nullslast()))).scalars().all()
 
 
+@router.get("/providers", response_model=list[ProviderOut])
+async def public_providers(db: AsyncSession = Depends(get_db), user: User = Depends(get_current_user)):
+    return (await db.execute(select(Provider).where(Provider.status == "published").order_by(Provider.created_at.desc()))).scalars().all()
+
+
 @router.get("/classroom", response_model=list[ScheduleOut])
 async def classroom(db: AsyncSession = Depends(get_db), user: User = Depends(get_current_user)):
     return (await db.execute(select(ScheduleEvent).order_by(ScheduleEvent.starts_at))).scalars().all()
@@ -66,10 +73,14 @@ async def classroom(db: AsyncSession = Depends(get_db), user: User = Depends(get
 @router.get("/feedback", response_model=list[FeedbackOut])
 async def list_feedback(db: AsyncSession = Depends(get_db), user: User = Depends(get_current_user)):
     rows = (await db.execute(select(Feedback).where(Feedback.status == "visible").order_by(Feedback.created_at.desc()).limit(200))).scalars().all()
-    names = {u.id: u.name for u in (await db.execute(select(User))).scalars().all()}
+    umap = {u.id: u for u in (await db.execute(select(User))).scalars().all()}
     out = []
     for f in rows:
-        it = FeedbackOut.model_validate(f); it.author_name = names.get(f.user_id); out.append(it)
+        it = FeedbackOut.model_validate(f)
+        u = umap.get(f.user_id)
+        if u:
+            it.author_name = u.name; it.author_avatar = u.avatar_url; it.author_bio = u.bio
+        out.append(it)
     return out
 
 
@@ -77,5 +88,5 @@ async def list_feedback(db: AsyncSession = Depends(get_db), user: User = Depends
 async def create_feedback(data: FeedbackCreate, db: AsyncSession = Depends(get_db), user: User = Depends(get_current_user)):
     f = Feedback(user_id=user.id, body=data.body.strip(), results=(data.results or None), rating=data.rating, image_url=data.image_url)
     db.add(f); await db.commit(); await db.refresh(f)
-    it = FeedbackOut.model_validate(f); it.author_name = user.name
+    it = FeedbackOut.model_validate(f); it.author_name = user.name; it.author_avatar = user.avatar_url; it.author_bio = user.bio
     return it

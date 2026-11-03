@@ -10,6 +10,7 @@ export default function Comunidad() {
   const [image, setImage] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState("");
+  const [profile, setProfile] = useState<FeedbackT | null>(null);
 
   async function load() { setItems(await api.get<FeedbackT[]>("/api/feedback")); }
   useEffect(() => { load().catch(() => setItems([])); }, []);
@@ -68,11 +69,26 @@ export default function Comunidad() {
             <p style={{ fontSize: 14, marginTop: 8 }}>{f.body}</p>
             {f.results && <p className="muted" style={{ fontSize: 13, marginTop: 6 }}>📈 {f.results}</p>}
             {f.image_url && <img src={f.image_url} alt="" style={{ marginTop: 10, width: "100%", borderRadius: 10, display: "block" }} />}
-            <div className="muted" style={{ fontSize: 12, marginTop: 10 }}>— {f.author_name || "Alumno"}</div>
+            <button onClick={() => setProfile(f)} style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 12, background: "transparent", border: 0, cursor: "pointer", padding: 0, color: "var(--text)" }}>
+              <span style={{ width: 26, height: 26, borderRadius: 999, flexShrink: 0, display: "grid", placeItems: "center", fontSize: 12, fontWeight: 800, color: "#04141c", background: f.author_avatar ? `center/cover url(${f.author_avatar})` : "var(--grad)" }}>{!f.author_avatar && (f.author_name || "A").charAt(0).toUpperCase()}</span>
+              <span style={{ fontSize: 12.5, fontWeight: 700 }}>{f.author_name || "Alumno"}</span>
+              <span className="muted" style={{ fontSize: 11 }}>· ver perfil</span>
+            </button>
           </div>
         ))}
         {items.length === 0 && <span className="muted">Sé el primero en dejar tu opinión.</span>}
       </div>
+
+      {profile && (
+        <div onClick={() => setProfile(null)} style={{ position: "fixed", inset: 0, zIndex: 100, background: "rgba(3,5,10,.72)", display: "grid", placeItems: "center", padding: 20 }}>
+          <div onClick={(e) => e.stopPropagation()} className="card" style={{ width: "100%", maxWidth: 420, padding: 26, textAlign: "center", position: "relative" }}>
+            <button onClick={() => setProfile(null)} className="btn btn-ghost" style={{ position: "absolute", top: 12, right: 12, padding: "4px 10px", fontSize: 13 }}>✕</button>
+            <div style={{ width: 92, height: 92, borderRadius: 999, margin: "0 auto", border: "1px solid var(--line-2)", display: "grid", placeItems: "center", fontWeight: 800, fontSize: 34, color: "#04141c", background: profile.author_avatar ? `center/cover url(${profile.author_avatar})` : "var(--grad)" }}>{!profile.author_avatar && (profile.author_name || "A").charAt(0).toUpperCase()}</div>
+            <div style={{ fontWeight: 800, fontSize: 18, marginTop: 14, color: "#fff" }}>{profile.author_name || "Alumno"}</div>
+            <p className="muted" style={{ fontSize: 13.5, marginTop: 8, whiteSpace: "pre-wrap" }}>{profile.author_bio || "Este alumno aún no ha escrito su descripción."}</p>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

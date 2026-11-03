@@ -8,6 +8,7 @@ from app.models.feedback import Feedback
 from app.models.announcement import Announcement
 from app.models.schedule import ScheduleEvent
 from app.models.setting import SiteSetting
+from app.models.provider import Provider
 from app.models.announcement import Announcement
 
 __all__ = [
@@ -21,4 +22,5 @@ __all__ = [
     "Announcement",
     "ScheduleEvent",
     "SiteSetting",
+    "Provider",
 ]

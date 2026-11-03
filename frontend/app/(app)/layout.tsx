@@ -9,9 +9,11 @@ const APRENDER = [
   { href: "/explorar", label: "Diplomados", ic: "◈" },
   { href: "/classroom", label: "Classroom", ic: "▣" },
   { href: "/clases-en-vivo", label: "Clases en vivo", ic: "▶" },
+  { href: "/proveedores", label: "Proveedores", ic: "▦" },
   { href: "/insignias", label: "Insignias", ic: "✦" },
   { href: "/profesores", label: "Profesores", ic: "◉" },
   { href: "/feedback", label: "Comunidad", ic: "✶" },
+  { href: "/perfil", label: "Mi perfil", ic: "◍" },
 ];
 const ADMIN = [
   { href: "/admin/diplomados", label: "Diplomados", ic: "▤" },
@@ -19,6 +21,7 @@ const ADMIN = [
   { href: "/admin/inscripciones", label: "Inscripciones", ic: "⚿" },
   { href: "/admin/profesores", label: "Profesores", ic: "◉" },
   { href: "/admin/clases-en-vivo", label: "Clases en vivo", ic: "▶" },
+  { href: "/admin/proveedores", label: "Proveedores", ic: "▦" },
   { href: "/admin/classroom", label: "Classroom", ic: "▣" },
   { href: "/admin/comunicados", label: "Comunicados", ic: "✸" },
   { href: "/admin/moderacion", label: "Moderación", ic: "⚑" },
@@ -42,7 +45,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
   return (
     <div className="shell">
       <aside className="sidebar">
-        <Link href="/dashboard" className="brand" style={{ justifyContent: "center", padding: "6px 8px" }}><img src="/logo.png" alt="D&A Academy" style={{ width: 128, maxWidth: "100%", height: "auto", objectFit: "contain" }} /></Link>
+        <Link href="/dashboard" className="brand" style={{ justifyContent: "center", padding: "6px 8px" }}><img src="/logo.png" alt="D&A Academy" style={{ width: 180, maxWidth: "100%", height: "auto", objectFit: "contain" }} /></Link>
 
         <div className="nav-group">
           {APRENDER.map((n) => <Item key={n.href} {...n} active={match(n.href)} />)}
@@ -57,8 +60,8 @@ export default function AppLayout({ children }: { children: ReactNode }) {
 
         <div style={{ marginTop: "auto", borderTop: "1px solid var(--line)", paddingTop: 14 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "0 6px 10px" }}>
-            <div style={{ width: 34, height: 34, borderRadius: 999, background: "var(--grad)", display: "grid", placeItems: "center", fontWeight: 800, fontSize: 14 }}>
-              {(user.name || "U").charAt(0).toUpperCase()}
+            <div style={{ width: 34, height: 34, borderRadius: 999, flexShrink: 0, display: "grid", placeItems: "center", fontWeight: 800, fontSize: 14, color: "#04141c", background: user.avatar_url ? `center/cover url(${user.avatar_url})` : "var(--grad)" }}>
+              {!user.avatar_url && (user.name || "U").charAt(0).toUpperCase()}
             </div>
             <div style={{ minWidth: 0 }}>
               <div style={{ fontSize: 13, fontWeight: 700, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{user.name}</div>

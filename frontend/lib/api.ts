@@ -32,7 +32,7 @@ export const api = {
 };
 
 // ───────── Tipos ─────────
-export interface UserT { id: string; email: string; name: string; role: string; status: string; avatar_url?: string | null; }
+export interface UserT { id: string; email: string; name: string; role: string; status: string; avatar_url?: string | null; bio?: string | null; }
 export interface DiplomaCardT { id: string; title: string; slug: string; cover_url?: string | null; order: number; enrolled: boolean; }
 export interface PhaseT { id: string; name: string; slug: string; description?: string | null; icon?: string | null; color?: string | null; order: number; diplomas: DiplomaCardT[]; }
 export interface UniverseT { phases: PhaseT[]; sin_fase: DiplomaCardT[]; }
@@ -51,7 +51,8 @@ export interface LessonDetailT {
 }
 export interface TeacherT { id: string; name: string; bio?: string | null; photo_url?: string | null; whatsapp?: string | null; order?: number; status?: string; }
 export interface LiveClassT { id: string; title: string; description?: string | null; videopress_url?: string | null; cover_url?: string | null; happened_at?: string | null; diploma_id?: string | null; phase_id?: string | null; status?: string; }
-export interface FeedbackT { id: string; user_id: string; body: string; results?: string | null; rating?: number | null; image_url?: string | null; status: string; created_at: string; author_name?: string | null; }
+export interface ProviderT { id: string; title: string; description?: string | null; videopress_url?: string | null; cover_url?: string | null; order?: number; status?: string; }
+export interface FeedbackT { id: string; user_id: string; body: string; results?: string | null; rating?: number | null; image_url?: string | null; status: string; created_at: string; author_name?: string | null; author_avatar?: string | null; author_bio?: string | null; }
 
 // ───────── Tipos admin ─────────
 export interface AdminDiplomaT { id: string; title: string; slug: string; description?: string | null; cover_url?: string | null; status: string; order: number; phase_id?: string | null; teacher_id?: string | null; badge_image_url?: string | null; }

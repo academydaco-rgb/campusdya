@@ -14,6 +14,8 @@ _MIGRATIONS = [
     "ALTER TABLE diplomas ADD COLUMN IF NOT EXISTS badge_image_url VARCHAR(500)",
     "ALTER TABLE feedback ADD COLUMN IF NOT EXISTS image_url VARCHAR(500)",
     "ALTER TABLE announcements ADD COLUMN IF NOT EXISTS teacher_id UUID",
+    "ALTER TABLE users ADD COLUMN IF NOT EXISTS bio TEXT",
+    "ALTER TABLE users ADD COLUMN IF NOT EXISTS avatar_url VARCHAR(500)",
 ]
 
 

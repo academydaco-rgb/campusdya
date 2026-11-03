@@ -6,6 +6,7 @@ from app.core.database import get_db
 from app.core.deps import require_admin
 from app.models.user import User
 from app.models.catalog import Phase, Teacher, LiveClass
+from app.models.provider import Provider
 from app.models.community import Comment
 from app.models.feedback import Feedback
 from app.models.schedule import ScheduleEvent
@@ -14,6 +15,7 @@ from app.schemas.catalog import (
     TeacherCreate, TeacherUpdate, TeacherOut,
     LiveClassCreate, LiveClassUpdate, LiveClassOut,
 )
+from app.schemas.provider import ProviderCreate, ProviderUpdate, ProviderOut
 from app.schemas.schedule import ScheduleCreate, ScheduleUpdate, ScheduleOut
 from app.schemas.feedback import FeedbackOut
 from app.schemas.community import CommentOut
@@ -104,6 +106,30 @@ async def update_live(live_id: uuid.UUID, data: LiveClassUpdate, db: AsyncSessio
 @router.delete("/live-classes/{live_id}")
 async def delete_live(live_id: uuid.UUID, db: AsyncSession = Depends(get_db), a: User = Depends(require_admin)):
     obj = await _get(db, LiveClass, live_id); await db.delete(obj); await db.commit()
+    return {"ok": True}
+
+
+# ───────── Proveedores ─────────
+@router.post("/providers", response_model=ProviderOut)
+async def create_provider(data: ProviderCreate, db: AsyncSession = Depends(get_db), a: User = Depends(require_admin)):
+    obj = Provider(**data.model_dump()); db.add(obj); await db.commit(); await db.refresh(obj)
+    return obj
+
+
+@router.get("/providers", response_model=list[ProviderOut])
+async def list_providers_admin(db: AsyncSession = Depends(get_db), a: User = Depends(require_admin)):
+    return (await db.execute(select(Provider).order_by(Provider.created_at.desc()))).scalars().all()
+
+
+@router.put("/providers/{provider_id}", response_model=ProviderOut)
+async def update_provider(provider_id: uuid.UUID, data: ProviderUpdate, db: AsyncSession = Depends(get_db), a: User = Depends(require_admin)):
+    obj = await _get(db, Provider, provider_id); _apply(obj, data); await db.commit(); await db.refresh(obj)
+    return obj
+
+
+@router.delete("/providers/{provider_id}")
+async def delete_provider(provider_id: uuid.UUID, db: AsyncSession = Depends(get_db), a: User = Depends(require_admin)):
+    obj = await _get(db, Provider, provider_id); await db.delete(obj); await db.commit()
     return {"ok": True}
 
 

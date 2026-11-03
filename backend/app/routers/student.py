@@ -1,10 +1,12 @@
 import uuid
+from pydantic import BaseModel
 from datetime import datetime, timezone
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.database import get_db
 from app.core.deps import get_current_user
+from app.core.security import hash_password, verify_password
 from app.models.user import User
 from app.models.content import Diploma, Module, Lesson
 from app.models.catalog import Teacher
@@ -167,3 +169,37 @@ async def my_badges(db: AsyncSession = Depends(get_db), user: User = Depends(get
             "diploma_slug": dip.slug if dip else None,
         })
     return out
+
+
+class PasswordChange(BaseModel):
+    current_password: str
+    new_password: str
+
+
+class ProfileUpdate(BaseModel):
+    avatar_url: str | None = None
+    bio: str | None = None
+    name: str | None = None
+
+
+@router.put("/me/password")
+async def change_password(data: PasswordChange, db: AsyncSession = Depends(get_db), user: User = Depends(get_current_user)):
+    if not verify_password(data.current_password, user.password_hash):
+        raise HTTPException(status_code=400, detail="La contraseña actual no es correcta")
+    if len(data.new_password) < 6:
+        raise HTTPException(status_code=400, detail="La nueva contraseña debe tener al menos 6 caracteres")
+    user.password_hash = hash_password(data.new_password)
+    await db.commit()
+    return {"ok": True}
+
+
+@router.put("/me/profile")
+async def update_profile(data: ProfileUpdate, db: AsyncSession = Depends(get_db), user: User = Depends(get_current_user)):
+    if data.avatar_url is not None:
+        user.avatar_url = data.avatar_url or None
+    if data.bio is not None:
+        user.bio = data.bio or None
+    if data.name is not None and data.name.strip():
+        user.name = data.name.strip()
+    await db.commit(); await db.refresh(user)
+    return {"id": str(user.id), "name": user.name, "avatar_url": user.avatar_url, "bio": user.bio, "email": user.email, "role": user.role, "status": user.status}

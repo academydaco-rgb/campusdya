@@ -7,10 +7,11 @@ interface AuthCtx {
   loading: boolean;
   login: (email: string, password: string) => Promise<void>;
   logout: () => void;
+  refresh: () => Promise<void>;
 }
 
 const Ctx = createContext<AuthCtx>({
-  user: null, loading: true, login: async () => {}, logout: () => {},
+  user: null, loading: true, login: async () => {}, logout: () => {}, refresh: async () => {},
 });
 
 export function AuthProvider({ children }: { children: ReactNode }) {
@@ -36,12 +37,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(r.user);
   }
 
+  async function refresh() {
+    try { setUser(await api.get<UserT>("/api/auth/me")); } catch { /* ignore */ }
+  }
+
   function logout() {
     try { localStorage.removeItem("academia_token"); } catch { /* ignore */ }
     setUser(null);
   }
 
-  return <Ctx.Provider value={{ user, loading, login, logout }}>{children}</Ctx.Provider>;
+  return <Ctx.Provider value={{ user, loading, login, logout, refresh }}>{children}</Ctx.Provider>;
 }
 
 export const useAuth = () => useContext(Ctx);

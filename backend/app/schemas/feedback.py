@@ -21,3 +21,5 @@ class FeedbackOut(BaseModel):
     status: str
     created_at: datetime
     author_name: str | None = None
+    author_avatar: str | None = None
+    author_bio: str | None = None
