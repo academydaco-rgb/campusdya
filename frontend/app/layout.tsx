@@ -1,6 +1,7 @@
 import "./globals.css";
 import type { Metadata } from "next";
 import { AuthProvider } from "@/lib/auth";
+import CometCursor from "@/components/CometCursor";
 
 export const metadata: Metadata = {
   title: "Campus D&A — Academia",
@@ -10,7 +11,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="es">
-      <body><AuthProvider>{children}</AuthProvider></body>
+      <body><CometCursor /><AuthProvider>{children}</AuthProvider></body>
     </html>
   );
 }

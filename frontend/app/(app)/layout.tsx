@@ -1,5 +1,5 @@
 "use client";
-import { ReactNode, useEffect, useRef } from "react";
+import { ReactNode, useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/lib/auth";
@@ -35,22 +35,6 @@ export default function AppLayout({ children }: { children: ReactNode }) {
   const { user, loading, logout } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
-  const glowRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const el = glowRef.current;
-    if (!el) return;
-    let raf = 0;
-    const move = (e: MouseEvent) => {
-      cancelAnimationFrame(raf);
-      raf = requestAnimationFrame(() => {
-        el.style.setProperty("--mx", e.clientX + "px");
-        el.style.setProperty("--my", e.clientY + "px");
-      });
-    };
-    window.addEventListener("mousemove", move);
-    return () => { window.removeEventListener("mousemove", move); cancelAnimationFrame(raf); };
-  }, []);
 
   useEffect(() => { if (!loading && !user) router.replace("/login"); }, [user, loading, router]);
   if (loading || !user) return <div className="main"><span className="muted">Cargando…</span></div>;
@@ -59,11 +43,9 @@ export default function AppLayout({ children }: { children: ReactNode }) {
   const match = (h: string) => pathname === h || pathname.startsWith(h + "/");
 
   return (
-    <>
-      <div className="cursor-glow" ref={glowRef} aria-hidden />
     <div className="shell">
       <aside className="sidebar">
-        <Link href="/dashboard" className="brand" style={{ justifyContent: "center", padding: "6px 8px" }}><img src="/logo.png" alt="D&A Academy" style={{ width: 180, maxWidth: "100%", height: "auto", objectFit: "contain" }} /></Link>
+        <Link href="/dashboard" className="brand" style={{ justifyContent: "flex-start", padding: "6px 8px" }}><img src="/logo.png" alt="D&A Academy" style={{ width: 180, maxWidth: "100%", height: "auto", objectFit: "contain" }} /></Link>
 
         <div className="nav-group">
           {APRENDER.map((n) => <Item key={n.href} {...n} active={match(n.href)} />)}
@@ -91,6 +73,5 @@ export default function AppLayout({ children }: { children: ReactNode }) {
       </aside>
       <main className="main">{children}</main>
     </div>
-    </>
   );
 }
