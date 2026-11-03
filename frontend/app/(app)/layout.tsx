@@ -20,6 +20,7 @@ const ADMIN = [
   { href: "/admin/profesores", label: "Profesores", ic: "◉" },
   { href: "/admin/clases-en-vivo", label: "Clases en vivo", ic: "▶" },
   { href: "/admin/classroom", label: "Classroom", ic: "▣" },
+  { href: "/admin/comunicados", label: "Comunicados", ic: "✸" },
   { href: "/admin/moderacion", label: "Moderación", ic: "⚑" },
 ];
 
@@ -41,7 +42,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
   return (
     <div className="shell">
       <aside className="sidebar">
-        <Link href="/dashboard" className="brand"><img src="/logo.png" alt="Campus D&A" style={{ width: 38, height: 38, objectFit: "contain" }} /><span>Campus D&A</span></Link>
+        <Link href="/dashboard" className="brand" style={{ justifyContent: "center", padding: "6px 8px" }}><img src="/logo.png" alt="D&A Academy" style={{ width: 128, maxWidth: "100%", height: "auto", objectFit: "contain" }} /></Link>
 
         <div className="nav-group">
           <div className="nav-label">Aprender</div>
