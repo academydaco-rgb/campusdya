@@ -43,7 +43,7 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;ba
   radial-gradient(600px 540px at -2% 104%, rgba(246,91,160,.26), transparent 56%),
   radial-gradient(700px 580px at 106% 106%, rgba(79,124,255,.36), transparent 56%),
   radial-gradient(520px 480px at 50% 122%, rgba(246,183,60,.16), transparent 56%)}
-body::after{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;background:linear-gradient(180deg,rgba(11,15,24,.75),rgba(6,8,14,.78))}
+body::after{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;background:linear-gradient(180deg,rgba(11,15,24,.48),rgba(6,8,14,.52))}
 a{color:inherit;text-decoration:none}
 button{font-family:inherit;cursor:pointer}
 h1,h2,h3,h4{margin:0;font-family:var(--font-display);letter-spacing:-.03em;line-height:1.02}
