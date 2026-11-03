@@ -57,7 +57,7 @@ export default function Classroom() {
 
       {/* Calendario */}
       <div className="card" style={{ padding: 14 }}>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(7,1fr)", gap: 6 }}>
+        <div className="calgrid" style={{ display: "grid", gridTemplateColumns: "repeat(7,1fr)", gap: 6 }}>
           {WEEK.map((w) => <div key={w} style={{ textAlign: "center", fontSize: 11, fontWeight: 700, color: "var(--muted-soft)", textTransform: "uppercase", letterSpacing: ".06em", padding: "2px 0 6px" }}>{w}</div>)}
           {cells.map((day, i) => {
             if (!day) return <div key={i} />;
@@ -78,13 +78,13 @@ export default function Classroom() {
                   const t = e.teacher_id ? teachers[e.teacher_id] : undefined;
                   const expired = Date.now() > +new Date(e.starts_at) + TWO_H;
                   return (
-                    <span key={e.id} style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 10.5, fontWeight: 600,
+                    <span key={e.id} className="calev" style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 10.5, fontWeight: 600,
                       padding: "2px 4px", borderRadius: 6, background: expired ? "rgba(255,255,255,.04)" : "rgba(34,211,238,.14)",
                       color: expired ? "var(--muted-soft)" : "#bdeffb", overflow: "hidden", whiteSpace: "nowrap", textOverflow: "ellipsis" }}>
                       {t?.photo_url
                         ? <span style={{ width: 14, height: 14, borderRadius: 999, flexShrink: 0, background: `center/cover url(${t.photo_url})` }} />
                         : <span style={{ width: 6, height: 6, borderRadius: 999, flexShrink: 0, background: expired ? "var(--muted-soft)" : "var(--cyan)" }} />}
-                      <span style={{ overflow: "hidden", textOverflow: "ellipsis" }}>{e.title}</span>
+                      <span className="calev-t" style={{ overflow: "hidden", textOverflow: "ellipsis" }}>{e.title}</span>
                     </span>
                   );
                 })}
