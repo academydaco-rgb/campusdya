@@ -20,6 +20,8 @@ from app.schemas.schedule import ScheduleCreate, ScheduleUpdate, ScheduleOut
 from app.schemas.feedback import FeedbackOut
 from app.schemas.community import CommentOut
 from app.services.text import slugify
+from app.services.notify import broadcast_announcement
+from app.core.config import settings as _settings
 
 router = APIRouter(prefix="/api/admin", tags=["admin-catalog"])
 
@@ -136,7 +138,12 @@ async def delete_provider(provider_id: uuid.UUID, db: AsyncSession = Depends(get
 # ───────── Classroom / cronograma ─────────
 @router.post("/schedule", response_model=ScheduleOut)
 async def create_event(data: ScheduleCreate, db: AsyncSession = Depends(get_db), a: User = Depends(require_admin)):
-    obj = ScheduleEvent(**data.model_dump()); db.add(obj); await db.commit(); await db.refresh(obj)
+    payload = data.model_dump(); notify = payload.pop("notify_email", False)
+    obj = ScheduleEvent(**payload); db.add(obj); await db.commit(); await db.refresh(obj)
+    if notify:
+        when = obj.starts_at.astimezone().strftime("%d/%m %I:%M %p") if obj.starts_at else ""
+        msg = f"Nueva clase en vivo: {obj.title} — {when}." + (f"\n{obj.description}" if obj.description else "")
+        await broadcast_announcement(db, "Nueva clase en vivo 🎥", msg, f"{_settings.FRONTEND_URL}/classroom")
     return obj
 
 

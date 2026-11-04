@@ -1,4 +1,5 @@
 import uuid
+import secrets
 from pydantic import BaseModel
 from datetime import datetime, timezone
 from fastapi import APIRouter, Depends, HTTPException
@@ -14,6 +15,8 @@ from app.models.learning import Enrollment, LessonProgress
 from app.models.community import Comment
 from app.models.gamification import Badge, UserBadge
 from app.services.badges import award_diploma_if_complete
+from app.services.mailer import send_reply_notice
+from app.core.config import settings as _settings
 from app.schemas.content import DiplomaOut, LessonOut
 from app.schemas.community import CommentCreate, CommentOut
 
@@ -28,15 +31,68 @@ async def _is_enrolled(db: AsyncSession, user: User, diploma_id: uuid.UUID) -> b
     return row is not None
 
 
-@router.get("/me/diplomas", response_model=list[DiplomaOut])
+async def _diploma_progress(db: AsyncSession, user_id, diploma_id, is_admin: bool):
+    """(total_lecciones, completadas, siguiente_leccion_pendiente|None)."""
+    mods = (await db.execute(select(Module).where(Module.diploma_id == diploma_id).order_by(Module.order))).scalars().all()
+    done = set((await db.execute(select(LessonProgress.lesson_id).where(
+        LessonProgress.user_id == user_id, LessonProgress.completed == True))).scalars().all())  # noqa: E712
+    total = 0; completed = 0; next_lesson = None
+    for m in mods:
+        if m.status != "published" and not is_admin:
+            continue
+        lessons = (await db.execute(select(Lesson).where(Lesson.module_id == m.id).order_by(Lesson.order))).scalars().all()
+        for l in lessons:
+            if l.status != "published" and not is_admin:
+                continue
+            total += 1
+            if l.id in done:
+                completed += 1
+            elif next_lesson is None:
+                next_lesson = l
+    return total, completed, next_lesson
+
+
+@router.get("/me/diplomas")
 async def my_diplomas(db: AsyncSession = Depends(get_db), user: User = Depends(get_current_user)):
-    if user.role in ("admin", "instructor"):
-        stmt = select(Diploma).order_by(Diploma.order)
+    is_admin = user.role in ("admin", "instructor")
+    if is_admin:
+        dips = (await db.execute(select(Diploma).order_by(Diploma.order))).scalars().all()
     else:
-        stmt = (select(Diploma).join(Enrollment, Enrollment.diploma_id == Diploma.id)
+        dips = (await db.execute(select(Diploma).join(Enrollment, Enrollment.diploma_id == Diploma.id)
                 .where(Enrollment.user_id == user.id, Diploma.status == "published")
-                .order_by(Diploma.order))
-    return (await db.execute(stmt)).scalars().all()
+                .order_by(Diploma.order))).scalars().all()
+    out = []
+    for d in dips:
+        total, completed, _ = await _diploma_progress(db, user.id, d.id, is_admin)
+        out.append({"id": str(d.id), "title": d.title, "slug": d.slug, "cover_url": d.cover_url,
+                    "order": d.order, "total_lessons": total, "completed_lessons": completed,
+                    "progress": round(100 * completed / total) if total else 0})
+    return out
+
+
+@router.get("/me/continue")
+async def continue_learning(db: AsyncSession = Depends(get_db), user: User = Depends(get_current_user)):
+    """Siguiente lección pendiente del diplomado con más avance (para 'continuar donde quedaste')."""
+    is_admin = user.role in ("admin", "instructor")
+    if is_admin:
+        dips = (await db.execute(select(Diploma).order_by(Diploma.order))).scalars().all()
+    else:
+        dips = (await db.execute(select(Diploma).join(Enrollment, Enrollment.diploma_id == Diploma.id)
+                .where(Enrollment.user_id == user.id, Diploma.status == "published")
+                .order_by(Diploma.order))).scalars().all()
+    best = None  # (score, dict)
+    for d in dips:
+        total, completed, nxt = await _diploma_progress(db, user.id, d.id, is_admin)
+        if total == 0 or nxt is None:
+            continue
+        # prioriza diplomado empezado (completed>0), luego el primero
+        score = (1 if completed > 0 else 0, completed)
+        item = {"diploma_slug": d.slug, "diploma_title": d.title,
+                "lesson_id": str(nxt.id), "lesson_title": nxt.title,
+                "progress": round(100 * completed / total) if total else 0}
+        if best is None or score > best[0]:
+            best = (score, item)
+    return best[1] if best else None
 
 
 @router.get("/diplomas/{slug}")
@@ -145,6 +201,14 @@ async def create_comment(lesson_id: uuid.UUID, data: CommentCreate, db: AsyncSes
         raise HTTPException(status_code=403, detail="Sin acceso")
     c = Comment(lesson_id=lesson_id, user_id=user.id, parent_id=data.parent_id, body=data.body.strip(), rating=data.rating, image_url=data.image_url)
     db.add(c); await db.commit(); await db.refresh(c)
+    # Notificar por correo al autor del comentario padre (si es otra persona)
+    if data.parent_id:
+        parent = (await db.execute(select(Comment).where(Comment.id == data.parent_id))).scalar_one_or_none()
+        if parent and parent.user_id != user.id:
+            padre = (await db.execute(select(User).where(User.id == parent.user_id))).scalar_one_or_none()
+            if padre and padre.email:
+                url = f"{_settings.FRONTEND_URL}/leccion/{lesson_id}"
+                await send_reply_notice(padre.email, padre.name, lesson.title, url)
     item = CommentOut.model_validate(c)
     item.author_name = user.name
     return item
@@ -158,16 +222,22 @@ async def my_badges(db: AsyncSession = Depends(get_db), user: User = Depends(get
     )).all()
     # mapa de diplomas por id (para slug/título en insignias de diplomado)
     dmap = {str(d.id): d for d in (await db.execute(select(Diploma))).scalars().all()}
+    changed = False
     out = []
     for ub, b in rows:
+        if not ub.code:
+            ub.code = secrets.token_hex(5).upper(); changed = True
         dip = dmap.get(b.rule_value or "")
         out.append({
             "id": str(b.id), "name": b.name, "description": b.description, "icon": b.icon,
             "image_url": (dip.badge_image_url if dip else None),
+            "code": ub.code,
             "awarded_at": ub.awarded_at.isoformat() if ub.awarded_at else None,
             "diploma_title": dip.title if dip else None,
             "diploma_slug": dip.slug if dip else None,
         })
+    if changed:
+        await db.commit()
     return out
 
 

@@ -13,7 +13,7 @@ export default function AdminClassroom() {
   const [items, setItems] = useState<ScheduleT[]>([]);
   const [teachers, setTeachers] = useState<TeacherT[]>([]);
   const [title, setTitle] = useState(""); const [desc, setDesc] = useState("");
-  const [starts, setStarts] = useState(""); const [live, setLive] = useState(""); const [teacher, setTeacher] = useState("");
+  const [starts, setStarts] = useState(""); const [live, setLive] = useState(""); const [teacher, setTeacher] = useState(""); const [notify, setNotify] = useState(false);
   async function load() { setItems(await api.get<ScheduleT[]>("/api/admin/schedule")); }
   useEffect(() => {
     load().catch(() => {});
@@ -21,8 +21,8 @@ export default function AdminClassroom() {
   }, []);
   async function crear(e: React.FormEvent) {
     e.preventDefault(); if (!title.trim() || !starts) return;
-    await api.post("/api/admin/schedule", { title: title.trim(), description: desc.trim() || null, starts_at: new Date(starts).toISOString(), live_url: live.trim() || null, teacher_id: teacher || null });
-    setTitle(""); setDesc(""); setStarts(""); setLive(""); setTeacher(""); await load();
+    await api.post("/api/admin/schedule", { title: title.trim(), description: desc.trim() || null, starts_at: new Date(starts).toISOString(), live_url: live.trim() || null, teacher_id: teacher || null, notify_email: notify });
+    setTitle(""); setDesc(""); setStarts(""); setLive(""); setTeacher(""); setNotify(false); await load();
   }
   async function borrar(id: string) { await api.del(`/api/admin/schedule/${id}`); await load(); }
 
@@ -47,6 +47,7 @@ export default function AdminClassroom() {
           <div><label className="label">Enlace en vivo (opcional)</label><input className="input" value={live} onChange={(e) => setLive(e.target.value)} placeholder="https://meet… (lo puedes agregar después)" /></div>
         </div>
         <div><label className="label">Descripción</label><textarea className="input" rows={2} value={desc} onChange={(e) => setDesc(e.target.value)} /></div>
+        <label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, cursor: "pointer" }}><input type="checkbox" checked={notify} onChange={(e) => setNotify(e.target.checked)} /> Avisar por correo a los alumnos</label>
         <button className="btn btn-primary">Programar clase</button>
       </form>
 

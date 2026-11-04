@@ -100,3 +100,18 @@ async def send_reset(to: str, name: str, url: str) -> bool:
             f"{_btn(url, 'Restablecer contraseña')}"
             f"<p style='color:#7f8aa3;font-size:13px'>Si no fuiste tú, ignora este correo. El enlace vence en 1 hora.</p>")
     return await send_email(to, "Restablece tu contraseña · D&A Academy", body)
+
+
+async def send_reply_notice(to: str, name: str, lesson_title: str, url: str) -> bool:
+    body = (f"<p>Hola <b>{name}</b>,</p>"
+            f"<p>Alguien respondió a tu comentario en la clase <b>{lesson_title}</b>.</p>"
+            f"{_btn(url, 'Ver la respuesta')}")
+    return await send_email(to, "Respondieron tu comentario · D&A Academy", body)
+
+
+async def send_announcement(to: str, name: str, title: str, message: str, url: str) -> bool:
+    body = (f"<p>Hola <b>{name}</b>,</p>"
+            f"<h2 style='color:#06283d;margin:6px 0'>{title}</h2>"
+            f"<p style='white-space:pre-wrap'>{message}</p>"
+            f"{_btn(url, 'Entrar al campus')}")
+    return await send_email(to, f"{title} · D&A Academy", body)

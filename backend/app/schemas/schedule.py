@@ -12,6 +12,7 @@ class ScheduleCreate(BaseModel):
     module_id: uuid.UUID | None = None
     live_url: str | None = None
     teacher_id: uuid.UUID | None = None
+    notify_email: bool = False
 
 
 class ScheduleUpdate(BaseModel):

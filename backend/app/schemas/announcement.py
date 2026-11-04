@@ -8,6 +8,7 @@ class AnnouncementCreate(BaseModel):
     body: str
     image_url: str | None = None
     teacher_id: uuid.UUID | None = None
+    notify_email: bool = False        # enviar por correo a los alumnos
     visible_days: int | None = None   # vigencia en días (None = permanente)
 
 

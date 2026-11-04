@@ -36,7 +36,7 @@ export interface UserT { id: string; email: string; name: string; role: string; 
 export interface DiplomaCardT { id: string; title: string; slug: string; cover_url?: string | null; order: number; enrolled: boolean; }
 export interface PhaseT { id: string; name: string; slug: string; description?: string | null; icon?: string | null; color?: string | null; order: number; diplomas: DiplomaCardT[]; }
 export interface UniverseT { phases: PhaseT[]; sin_fase: DiplomaCardT[]; }
-export interface DiplomaOutT { id: string; title: string; slug: string; cover_url?: string | null; order: number; }
+export interface DiplomaOutT { id: string; title: string; slug: string; cover_url?: string | null; order: number; total_lessons?: number; completed_lessons?: number; progress?: number; }
 export interface LessonLiteT { id: string; title: string; slug?: string | null; duration_seconds: number; order: number; completed: boolean; }
 export interface ModuleOutT { id: string; title: string; description?: string | null; cover_url?: string | null; order: number; lessons: LessonLiteT[]; }
 export interface DiplomaTeacherT { id: string; name: string; photo_url?: string | null; bio?: string | null; whatsapp?: string | null; }
@@ -62,7 +62,8 @@ export interface PhaseLiteT { id: string; name: string; slug: string; order: num
 export interface EnrollmentT { id: string; user_id: string; diploma_id: string; expires_at?: string | null; }
 
 export interface ScheduleT { id: string; title: string; description?: string | null; starts_at: string; ends_at?: string | null; diploma_id?: string | null; module_id?: string | null; live_url?: string | null; teacher_id?: string | null; }
-export interface MyBadgeT { id: string; name: string; description?: string | null; icon?: string | null; image_url?: string | null; awarded_at?: string | null; diploma_title?: string | null; diploma_slug?: string | null; }
+export interface MyBadgeT { id: string; name: string; description?: string | null; icon?: string | null; image_url?: string | null; code?: string | null; awarded_at?: string | null; diploma_title?: string | null; diploma_slug?: string | null; }
+export interface ContinueT { diploma_slug: string; diploma_title: string; lesson_id: string; lesson_title: string; progress: number; }
 
 
 export async function uploadImage(file: File): Promise<string> {

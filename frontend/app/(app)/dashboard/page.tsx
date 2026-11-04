@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { api, DiplomaOutT, AnnouncementT, ScheduleT, MyBadgeT } from "@/lib/api";
+import { api, DiplomaOutT, AnnouncementT, ScheduleT, MyBadgeT, ContinueT } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
 
 function fdate(d: string) {
@@ -17,6 +17,7 @@ export default function DashboardPage() {
   const [news, setNews] = useState<AnnouncementT[]>([]);
   const [events, setEvents] = useState<ScheduleT[]>([]);
   const [badges, setBadges] = useState<MyBadgeT[]>([]);
+  const [cont, setCont] = useState<ContinueT | null>(null);
   const [video, setVideo] = useState<{ video_url?: string | null; cover_url?: string | null } | null>(null);
   const [playing, setPlaying] = useState(false);
 
@@ -25,6 +26,7 @@ export default function DashboardPage() {
     api.get<AnnouncementT[]>("/api/announcements").then(setNews).catch(() => {});
     api.get<ScheduleT[]>("/api/classroom").then(setEvents).catch(() => {});
     api.get<MyBadgeT[]>("/api/me/badges").then(setBadges).catch(() => {});
+    api.get<ContinueT | null>("/api/me/continue").then(setCont).catch(() => {});
     api.get<{ video_url?: string | null; cover_url?: string | null }>("/api/settings/dashboard-video").then(setVideo).catch(() => {});
   }, []);
 
@@ -79,6 +81,18 @@ export default function DashboardPage() {
         </div>
       </div>
 
+      {cont && (
+        <Link href={`/leccion/${cont.lesson_id}`} className="card card-hover fade-up d1" style={{ padding: 18, display: "flex", alignItems: "center", gap: 16, overflow: "hidden" }}>
+          <div style={{ width: 46, height: 46, borderRadius: 12, flexShrink: 0, display: "grid", placeItems: "center", background: "var(--grad)", color: "#04141c", fontSize: 20 }}>▶</div>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div className="eyebrow" style={{ color: "var(--cyan)" }}>Continuar donde quedaste</div>
+            <div style={{ fontWeight: 800, color: "#fff", marginTop: 3, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{cont.lesson_title}</div>
+            <div className="muted" style={{ fontSize: 12.5, marginTop: 2 }}>{cont.diploma_title} · {cont.progress}% completado</div>
+          </div>
+          <span className="btn btn-primary" style={{ flexShrink: 0 }}>Retomar</span>
+        </Link>
+      )}
+
       <div className="dash">
         {/* Columna principal */}
         <div style={{ display: "flex", flexDirection: "column", gap: 22 }}>
@@ -95,7 +109,13 @@ export default function DashboardPage() {
                 {misDiplomas.map((d) => (
                   <Link key={d.id} href={`/diplomado/${d.slug}`} className="card card-hover" style={{ overflow: "hidden" }}>
                     <div style={{ aspectRatio: "1/1", background: d.cover_url ? `center/cover url(${d.cover_url})` : "var(--grad)" }} />
-                    <div style={{ padding: 14, fontWeight: 700, fontSize: 14, color: "#fff" }}>{d.title}</div>
+                    <div style={{ padding: 14 }}>
+                      <div style={{ fontWeight: 700, fontSize: 14, color: "#fff" }}>{d.title}</div>
+                      <div style={{ height: 6, borderRadius: 999, background: "rgba(255,255,255,.08)", overflow: "hidden", marginTop: 10 }}>
+                        <div style={{ width: `${d.progress || 0}%`, height: "100%", background: "var(--grad)" }} />
+                      </div>
+                      <div className="muted" style={{ fontSize: 11, marginTop: 5 }}>{d.completed_lessons || 0}/{d.total_lessons || 0} · {d.progress || 0}%</div>
+                    </div>
                   </Link>
                 ))}
               </div>

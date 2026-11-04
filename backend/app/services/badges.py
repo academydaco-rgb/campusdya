@@ -1,5 +1,6 @@
 """Otorga insignia automáticamente al completar el 100% de un diplomado."""
 import uuid
+import secrets
 from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.models.content import Diploma, Module, Lesson
@@ -42,6 +43,7 @@ async def award_diploma_if_complete(db: AsyncSession, user_id: uuid.UUID, diplom
         UserBadge.user_id == user_id, UserBadge.badge_id == badge.id))).scalar_one_or_none()
     if exists:
         return None
-    db.add(UserBadge(user_id=user_id, badge_id=badge.id))
+    code = secrets.token_hex(5).upper()  # 10 hex chars
+    db.add(UserBadge(user_id=user_id, badge_id=badge.id, code=code))
     await db.commit()
     return badge

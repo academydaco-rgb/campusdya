@@ -10,6 +10,7 @@ export default function AdminComunicados() {
   const [image, setImage] = useState("");
   const [teacherId, setTeacherId] = useState("");
   const [days, setDays] = useState("");
+  const [notify, setNotify] = useState(false);
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState("");
 
@@ -31,9 +32,9 @@ export default function AdminComunicados() {
     if (!title.trim() || !body.trim()) return;
     await api.post("/api/admin/announcements", {
       title: title.trim(), body: body.trim(), image_url: image || null, teacher_id: teacherId || null,
-      visible_days: days ? Number(days) : null,
+      visible_days: days ? Number(days) : null, notify_email: notify,
     });
-    setTitle(""); setBody(""); setImage(""); setTeacherId(""); setDays(""); setMsg("Publicado ✓");
+    setTitle(""); setBody(""); setImage(""); setTeacherId(""); setDays(""); setNotify(false); setMsg(notify ? "Publicado y notificado ✓" : "Publicado ✓");
     setTimeout(() => setMsg(""), 1500); await load();
   }
   async function borrar(id: string) { await api.del(`/api/admin/announcements/${id}`); await load(); }
@@ -63,6 +64,9 @@ export default function AdminComunicados() {
             <span className="muted" style={{ fontSize: 12 }}>Cuadrada · 800 × 800 px</span>
           </div>
         </div>
+        <label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, cursor: "pointer" }}>
+          <input type="checkbox" checked={notify} onChange={(e) => setNotify(e.target.checked)} /> Notificar por correo a los alumnos
+        </label>
         <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
           <button className="btn btn-primary">Publicar</button>
           {msg && <span className="muted" style={{ fontSize: 13 }}>{msg}</span>}

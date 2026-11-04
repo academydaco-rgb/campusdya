@@ -9,6 +9,8 @@ from app.models.user import User
 from app.models.announcement import Announcement
 from app.models.catalog import Teacher
 from app.schemas.announcement import AnnouncementCreate, AnnouncementUpdate, AnnouncementOut
+from app.services.notify import broadcast_announcement
+from app.core.config import settings
 
 router = APIRouter(prefix="/api", tags=["comunicados"])
 
@@ -56,6 +58,8 @@ async def create(data: AnnouncementCreate, db: AsyncSession = Depends(get_db), a
     obj = Announcement(title=data.title, body=data.body, image_url=data.image_url, teacher_id=data.teacher_id,
                        expires_at=_expiry(data.visible_days), created_by=a.id)
     db.add(obj); await db.commit(); await db.refresh(obj)
+    if data.notify_email:
+        await broadcast_announcement(db, data.title, data.body, f"{settings.FRONTEND_URL}/dashboard")
     return obj
 
 
