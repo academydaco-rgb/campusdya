@@ -4,6 +4,9 @@ import Link from "next/link";
 import { api, DiplomaOutT, AnnouncementT, ScheduleT, MyBadgeT, ContinueT } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
 import CountUp from "@/components/CountUp";
+import Tilt from "@/components/Tilt";
+import Ring from "@/components/Ring";
+import TLink from "@/components/TLink";
 
 function fdate(d: string) {
   try { return new Date(d).toLocaleDateString("es-CO", { day: "2-digit", month: "short" }); } catch { return ""; }
@@ -68,18 +71,18 @@ export default function DashboardPage() {
 
       {/* Stats bento */}
       <div className="grid-3 fade-up d1">
-        <div className="card stat stat-cyan">
+        <Tilt className="card stat stat-cyan">
           <span className="n" style={{ color: "var(--cyan)" }}><CountUp value={mine.length} /></span>
           <span className="l">Diplomados activos</span>
-        </div>
-        <div className="card stat stat-gold">
+        </Tilt>
+        <Tilt className="card stat stat-gold">
           <span className="n" style={{ color: "var(--gold)" }}><CountUp value={badges.length} /></span>
           <span className="l">Insignias ganadas</span>
-        </div>
-        <div className="card stat stat-violet">
+        </Tilt>
+        <Tilt className="card stat stat-violet">
           <span className="n" style={{ color: "var(--violet)", fontSize: upcoming[0] ? 18 : 26 }}>{upcoming[0] ? fdatetime(upcoming[0].starts_at) : "—"}</span>
           <span className="l">Próxima clase</span>
-        </div>
+        </Tilt>
       </div>
 
       {cont && (
@@ -108,16 +111,19 @@ export default function DashboardPage() {
             ) : (
               <div className="grid" style={{ gridTemplateColumns: "repeat(auto-fill,minmax(200px,1fr))" }}>
                 {misDiplomas.map((d) => (
-                  <Link key={d.id} href={`/diplomado/${d.slug}`} className="card card-hover" style={{ overflow: "hidden" }}>
-                    <div style={{ aspectRatio: "1/1", background: d.cover_url ? `center/cover url(${d.cover_url})` : "var(--grad)" }} />
-                    <div style={{ padding: 14 }}>
-                      <div style={{ fontWeight: 700, fontSize: 14, color: "#fff" }}>{d.title}</div>
-                      <div style={{ height: 6, borderRadius: 999, background: "rgba(255,255,255,.08)", overflow: "hidden", marginTop: 10 }}>
-                        <div style={{ width: `${d.progress || 0}%`, height: "100%", background: "var(--grad)" }} />
+                  <Tilt key={d.id}>
+                    <TLink href={`/diplomado/${d.slug}`} className="card card-hover" style={{ overflow: "hidden", display: "block" }}>
+                      <div style={{ position: "relative", aspectRatio: "1/1", background: d.cover_url ? `center/cover url(${d.cover_url})` : "var(--grad)", viewTransitionName: `dip-${d.slug}` }}>
+                        <div style={{ position: "absolute", top: 10, right: 10, borderRadius: 999, padding: 3, background: "rgba(5,8,14,.6)", backdropFilter: "blur(2px)" }}>
+                          <Ring value={d.progress || 0} size={44} />
+                        </div>
                       </div>
-                      <div className="muted" style={{ fontSize: 11, marginTop: 5 }}>{d.completed_lessons || 0}/{d.total_lessons || 0} · {d.progress || 0}%</div>
-                    </div>
-                  </Link>
+                      <div style={{ padding: 14 }}>
+                        <div style={{ fontWeight: 700, fontSize: 14, color: "#fff" }}>{d.title}</div>
+                        <div className="muted" style={{ fontSize: 11, marginTop: 5 }}>{d.completed_lessons || 0}/{d.total_lessons || 0} lecciones</div>
+                      </div>
+                    </TLink>
+                  </Tilt>
                 ))}
               </div>
             )}

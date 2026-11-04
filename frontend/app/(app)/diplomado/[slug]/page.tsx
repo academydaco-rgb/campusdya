@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import { api, DiplomaDetailT } from "@/lib/api";
+import Ring from "@/components/Ring";
 
 export default function DiplomaPage() {
   const params = useParams<{ slug: string }>();
@@ -30,13 +31,20 @@ export default function DiplomaPage() {
     <div className="grid" style={{ gap: 22 }}>
       <div>
         <Link href="/explorar" className="muted" style={{ fontSize: 13 }}>← Diplomados</Link>
-        <h1 style={{ fontSize: 28, fontWeight: 800, marginTop: 8, color: "#fff" }}>{d.title}</h1>
-        {d.description && <p className="muted" style={{ marginTop: 6 }}>{d.description}</p>}
-        <div style={{ marginTop: 14 }}>
-          <div style={{ height: 10, borderRadius: 999, background: "rgba(5,8,15,.6)", border: "1px solid var(--line)", overflow: "hidden" }}>
-            <div style={{ width: `${d.progress}%`, height: "100%", background: "var(--grad)" }} />
+        <div style={{ display: "flex", gap: 18, alignItems: "center", marginTop: 10, flexWrap: "wrap" }}>
+          <div style={{ width: 116, height: 116, borderRadius: 16, flexShrink: 0, border: "1px solid var(--line-2)",
+            background: d.cover_url ? `center/cover url(${d.cover_url})` : "var(--grad)", viewTransitionName: `dip-${d.slug}` }} />
+          <div style={{ flex: 1, minWidth: 220 }}>
+            <h1 style={{ fontSize: 26, fontWeight: 800, color: "#fff" }}>{d.title}</h1>
+            {d.description && <p className="muted" style={{ marginTop: 6 }}>{d.description}</p>}
+            <div style={{ marginTop: 12, display: "flex", alignItems: "center", gap: 14 }}>
+              <Ring value={d.progress} size={56} stroke={6} />
+              <div>
+                <div style={{ fontWeight: 700, color: "#fff" }}>{d.progress}% completado</div>
+                <div className="muted" style={{ fontSize: 12.5 }}>{d.completed_lessons}/{d.total_lessons} lecciones</div>
+              </div>
+            </div>
           </div>
-          <div className="muted" style={{ fontSize: 12.5, marginTop: 6 }}>{d.completed_lessons}/{d.total_lessons} lecciones · {d.progress}% completado</div>
         </div>
       </div>
 
