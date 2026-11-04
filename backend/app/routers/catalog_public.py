@@ -32,7 +32,7 @@ async def universe(db: AsyncSession = Depends(get_db), user: User = Depends(get_
 
     # progreso por diplomado (solo para alumnos reales matriculados)
     prog_map: dict[str, int] = {}
-    if enrolled and not is_admin:
+    if enrolled:
         rows = (await db.execute(
             select(Module.diploma_id, Lesson.id)
             .join(Lesson, Lesson.module_id == Module.id)
@@ -64,7 +64,7 @@ async def universe(db: AsyncSession = Depends(get_db), user: User = Depends(get_
     def dip_json(d: Diploma) -> dict:
         j = {"id": str(d.id), "title": d.title, "slug": d.slug, "cover_url": d.cover_url,
              "order": d.order, "enrolled": d.id in enrolled}
-        if (d.id in enrolled) and not is_admin:
+        if d.id in enrolled:
             j["progress"] = prog_map.get(str(d.id), 0)
         return j
 
