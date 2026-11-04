@@ -1,6 +1,6 @@
 import uuid
 from fastapi import APIRouter, Depends
-from sqlalchemy import select
+from sqlalchemy import select, or_
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.database import get_db
 from app.core.deps import get_current_user
@@ -82,6 +82,61 @@ async def universe(db: AsyncSession = Depends(get_db), user: User = Depends(get_
         "diplomas": by_phase.get(str(p.id), []),
     } for p in phases]
     return {"phases": out, "sin_fase": sin_fase}
+
+
+@router.get("/search")
+async def search(q: str = "", db: AsyncSession = Depends(get_db), user: User = Depends(get_current_user)):
+    """Búsqueda global: diplomados, lecciones, clases en vivo, proveedores y profesores."""
+    term = (q or "").strip()
+    out: list[dict] = []
+    if len(term) < 2:
+        return out
+    like = f"%{term}%"
+    is_admin = user.role in ("admin", "instructor")
+
+    # Diplomados publicados
+    dips = (await db.execute(
+        select(Diploma).where(Diploma.status == "published", Diploma.title.ilike(like)).order_by(Diploma.order).limit(5)
+    )).scalars().all()
+    if not is_admin and dips:
+        enrolled = set((await db.execute(select(Enrollment.diploma_id).where(Enrollment.user_id == user.id))).scalars().all())
+    else:
+        enrolled = None
+    for d in dips:
+        ok = True if enrolled is None else (d.id in enrolled)
+        out.append({"type": "Diplomado", "title": d.title,
+                    "url": f"/diplomado/{d.slug}" if ok else "/explorar",
+                    "subtitle": None if ok else "Sin acceso"})
+
+    # Lecciones (dentro de diplomados publicados)
+    lessons = (await db.execute(
+        select(Lesson).where(Lesson.title.ilike(like)).order_by(Lesson.order).limit(6)
+    )).scalars().all()
+    for l in lessons:
+        out.append({"type": "Lección", "title": l.title, "url": f"/leccion/{l.id}", "subtitle": None})
+
+    # Clases en vivo
+    lives = (await db.execute(
+        select(LiveClass).where(LiveClass.status == "published", LiveClass.title.ilike(like)).limit(4)
+    )).scalars().all()
+    for c in lives:
+        out.append({"type": "Clase en vivo", "title": c.title, "url": "/clases-en-vivo", "subtitle": None})
+
+    # Proveedores
+    provs = (await db.execute(
+        select(Provider).where(Provider.status == "published", Provider.title.ilike(like)).limit(4)
+    )).scalars().all()
+    for pr in provs:
+        out.append({"type": "Proveedor", "title": pr.title, "url": "/proveedores", "subtitle": None})
+
+    # Profesores
+    teachers = (await db.execute(
+        select(Teacher).where(Teacher.status == "active", Teacher.name.ilike(like)).limit(4)
+    )).scalars().all()
+    for t in teachers:
+        out.append({"type": "Profesor", "title": t.name, "url": "/profesores", "subtitle": None})
+
+    return out[:10]
 
 
 @router.get("/teachers", response_model=list[TeacherOut])

@@ -4,18 +4,19 @@ import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/lib/auth";
 import Spotlight from "@/components/Spotlight";
+import TopBar from "@/components/TopBar";
 import { Home, GraduationCap, CalendarDays, Video, Package, Award, Users, MessagesSquare, UserCircle,
-  BookOpen, UserCog, KeyRound, Megaphone, ShieldCheck, LogOut, type LucideIcon } from "lucide-react";
+  BookOpen, UserCog, KeyRound, Megaphone, ShieldCheck, type LucideIcon } from "lucide-react";
 
 const APRENDER: NavItem[] = [
   { href: "/dashboard", label: "Inicio", Icon: Home },
-  { href: "/explorar", label: "Diplomados", Icon: GraduationCap },
-  { href: "/classroom", label: "Classroom", Icon: CalendarDays },
+  { href: "/explorar", label: "Mis Diplomados", Icon: GraduationCap },
   { href: "/clases-en-vivo", label: "Clases en vivo", Icon: Video },
   { href: "/proveedores", label: "Proveedores", Icon: Package },
+  { href: "/classroom", label: "Classroom", Icon: CalendarDays },
   { href: "/insignias", label: "Insignias", Icon: Award },
-  { href: "/profesores", label: "Profesores", Icon: Users },
   { href: "/feedback", label: "Comunidad", Icon: MessagesSquare },
+  { href: "/profesores", label: "Profesores", Icon: Users },
   { href: "/perfil", label: "Mi perfil", Icon: UserCircle },
 ];
 const ADMIN: NavItem[] = [
@@ -32,11 +33,11 @@ const ADMIN: NavItem[] = [
 interface NavItem { href: string; label: string; Icon: LucideIcon; }
 
 function Item({ href, label, Icon, active }: NavItem & { active: boolean }) {
-  return <Link href={href} className={`nav-item${active ? " active" : ""}`}><span className="ic"><Icon size={18} strokeWidth={2} /></span>{label}</Link>;
+  return <Link href={href} className={`nav-item${active ? " active" : ""}`}><span className="ic"><Icon size={19} strokeWidth={2} /></span>{label}</Link>;
 }
 
 export default function AppLayout({ children }: { children: ReactNode }) {
-  const { user, loading, logout } = useAuth();
+  const { user, loading } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
 
@@ -51,7 +52,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
       <Spotlight />
       <div className="grain" aria-hidden />
       <aside className="sidebar">
-        <Link href="/dashboard" className="brand" style={{ justifyContent: "flex-start", padding: "6px 8px" }}><img src="/logo.png" alt="D&A Academy" style={{ width: 180, maxWidth: "100%", height: "auto", objectFit: "contain" }} /></Link>
+        <Link href="/dashboard" className="brand"><img src="/logo.png" alt="D&A Academy" /></Link>
 
         <div className="nav-group">
           {APRENDER.map((n) => <Item key={n.href} {...n} active={match(n.href)} />)}
@@ -64,20 +65,17 @@ export default function AppLayout({ children }: { children: ReactNode }) {
           </div>
         )}
 
-        <div style={{ marginTop: "auto", borderTop: "1px solid var(--line)", paddingTop: 14 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "0 6px 10px" }}>
-            <div style={{ width: 34, height: 34, borderRadius: 999, flexShrink: 0, display: "grid", placeItems: "center", fontWeight: 800, fontSize: 14, color: "#04141c", background: user.avatar_url ? `center/cover url(${user.avatar_url})` : "var(--grad)" }}>
-              {!user.avatar_url && (user.name || "U").charAt(0).toUpperCase()}
-            </div>
-            <div style={{ minWidth: 0 }}>
-              <div style={{ fontSize: 13, fontWeight: 700, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{user.name}</div>
-              <div className="muted" style={{ fontSize: 11 }}>{isAdmin ? "Administrador" : "Alumno"}</div>
-            </div>
-          </div>
-          <button className="btn btn-ghost" style={{ width: "100%", justifyContent: "center", padding: "9px" }} onClick={() => { logout(); router.replace("/login"); }}><LogOut size={16} /> Cerrar sesión</button>
+        <div className="promo">
+          <div className="crown">♛</div>
+          <h4>Formación Práctica, Aplicada y con Resultados</h4>
+          <div className="u" />
+          <div className="planet" />
         </div>
       </aside>
-      <main className="main">{children}</main>
+      <main className="main">
+        <TopBar />
+        {children}
+      </main>
     </div>
   );
 }

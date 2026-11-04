@@ -3,17 +3,17 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { api, DiplomaOutT, AnnouncementT, ScheduleT, MyBadgeT, ContinueT } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
-import CountUp from "@/components/CountUp";
-import Tilt from "@/components/Tilt";
 import Ring from "@/components/Ring";
 import TLink from "@/components/TLink";
+import { GraduationCap, PlayCircle, TrendingUp, Award, Megaphone, Radio, MessagesSquare,
+  Play, ChevronRight, Clock, ArrowRight } from "lucide-react";
 
 function fdate(d: string) {
   try { return new Date(d).toLocaleDateString("es-CO", { day: "2-digit", month: "short" }); } catch { return ""; }
 }
-function fdatetime(d: string) {
-  try { return new Date(d).toLocaleString("es-CO", { weekday: "short", day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" }); } catch { return ""; }
-}
+function dayNum(d: string) { try { return new Date(d).toLocaleDateString("es-CO", { day: "2-digit" }); } catch { return ""; } }
+function monNum(d: string) { try { return new Date(d).toLocaleDateString("es-CO", { month: "short" }).toUpperCase().replace(".", ""); } catch { return ""; } }
+function htime(d: string) { try { return new Date(d).toLocaleTimeString("es-CO", { hour: "2-digit", minute: "2-digit" }); } catch { return ""; } }
 
 export default function DashboardPage() {
   const { user } = useAuth();
@@ -37,166 +37,209 @@ export default function DashboardPage() {
   const firstName = user?.name?.split(" ")[0] || "crack";
   const now = Date.now();
   const upcoming = events.filter((e) => new Date(e.starts_at).getTime() >= now - 2 * 3600 * 1000)
-    .sort((a, b) => +new Date(a.starts_at) - +new Date(b.starts_at)).slice(0, 4);
-  const misDiplomas = mine.slice(0, 4);
+    .sort((a, b) => +new Date(a.starts_at) - +new Date(b.starts_at));
+  const nextLive = upcoming[0];
+  const nextLiveExpired = nextLive ? now > +new Date(nextLive.starts_at) + 2 * 3600 * 1000 : false;
+
+  const totalLessons = mine.reduce((a, d) => a + (d.total_lessons || 0), 0);
+  const doneLessons = mine.reduce((a, d) => a + (d.completed_lessons || 0), 0);
+  const overall = totalLessons ? Math.round((100 * doneLessons) / totalLessons) : 0;
+
+  const contDip = cont ? mine.find((d) => d.title === cont.diploma_title) : null;
+  const minis = mine.filter((d) => !cont || d.title !== cont.diploma_title).slice(0, 2);
+  const firstNews = news[0];
+
+  const videoSrc = video?.video_url
+    ? (playing ? (video.video_url.includes("?") ? `${video.video_url}&autoplay=1` : `${video.video_url}?autoplay=1`) : video.video_url)
+    : null;
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 22 }}>
-      {/* Hero */}
-      <section className="hero fade-up">
-        {!video?.video_url && <img src="/logo.png" alt="" style={{ position: "absolute", right: 22, bottom: -20, width: 180, opacity: .12, pointerEvents: "none", zIndex: 1 }} />}
-        <div className="hero-grid">
-          <div>
-            <span className="eyebrow-gold">D&A Academy · Acceso premium</span>
-            <h1 style={{ marginTop: 12, fontSize: "clamp(26px,3.4vw,40px)", maxWidth: 560, color: "#fff" }}>Hola, {firstName}. Hoy avanzas un paso más 🚀</h1>
-            <p style={{ marginTop: 10, maxWidth: 520, color: "rgba(255,255,255,.72)" }}>Aprende, ejecuta y escala tu e-commerce. Todo tu progreso, en un solo lugar.</p>
-            <div style={{ display: "flex", gap: 10, marginTop: 20, flexWrap: "wrap" }}>
-              <Link href="/explorar" className="btn btn-primary">Continuar aprendiendo</Link>
-              <Link href="/classroom" className="btn btn-ghost" style={{ borderColor: "rgba(255,255,255,.2)", color: "#fff" }}>Ver mis clases</Link>
+    <div>
+      <div className="dashgrid">
+        {/* ── Columna principal ── */}
+        <div>
+          {/* Hero */}
+          <section className="hero fade-up">
+            <div className="neb" /><div className="stars" /><div className="pl" />
+            <div className="hc">
+              <span className="eyebrow">D&A Academy · Acceso premium</span>
+              <h1>Hola, {firstName} <span className="cy">👋</span></h1>
+              <p>Continúa donde quedaste y sigue escalando tu e-commerce.</p>
+              <Link className="cta" href={cont ? `/leccion/${cont.lesson_id}` : "/explorar"}>Continuar aprendiendo <ArrowRight size={16} /></Link>
             </div>
-          </div>
-          {video?.video_url && (
             <div className="hero-video">
-              {(playing || !video.cover_url) ? (
-                <iframe src={playing && video.video_url.includes("?") ? `${video.video_url}&autoplay=1` : playing ? `${video.video_url}?autoplay=1` : video.video_url} allow="autoplay; fullscreen; picture-in-picture" allowFullScreen />
+              <span className="vtag"><Play size={11} style={{ display: "inline", verticalAlign: "-1px" }} /> Video de bienvenida</span>
+              {video?.video_url ? (
+                playing || !video.cover_url ? (
+                  <iframe src={videoSrc!} allow="autoplay; fullscreen; picture-in-picture" allowFullScreen />
+                ) : (
+                  <button className="play" style={{ backgroundImage: `url(${video.cover_url})` }} onClick={() => setPlaying(true)} aria-label="Reproducir video">
+                    <span className="pbtn">▶</span>
+                  </button>
+                )
               ) : (
-                <button className="play" style={{ backgroundImage: `url(${video.cover_url})` }} onClick={() => setPlaying(true)} aria-label="Reproducir video">
+                <button className="play" onClick={() => {}} aria-label="Video de bienvenida" style={{ cursor: "default" }}>
                   <span className="pbtn">▶</span>
                 </button>
               )}
             </div>
-          )}
-        </div>
-      </section>
+          </section>
 
-      {/* Stats bento */}
-      <div className="grid-3 fade-up d1">
-        <Tilt className="card stat stat-cyan">
-          <span className="n" style={{ color: "var(--cyan)" }}><CountUp value={mine.length} /></span>
-          <span className="l">Diplomados activos</span>
-        </Tilt>
-        <Tilt className="card stat stat-gold">
-          <span className="n" style={{ color: "var(--gold)" }}><CountUp value={badges.length} /></span>
-          <span className="l">Insignias ganadas</span>
-        </Tilt>
-        <Tilt className="card stat stat-violet">
-          <span className="n" style={{ color: "var(--violet)", fontSize: upcoming[0] ? 18 : 26 }}>{upcoming[0] ? fdatetime(upcoming[0].starts_at) : "—"}</span>
-          <span className="l">Próxima clase</span>
-        </Tilt>
-      </div>
-
-      {cont && (
-        <Link href={`/leccion/${cont.lesson_id}`} className="card card-hover fade-up d1" style={{ padding: 18, display: "flex", alignItems: "center", gap: 16, overflow: "hidden" }}>
-          <div style={{ width: 46, height: 46, borderRadius: 12, flexShrink: 0, display: "grid", placeItems: "center", background: "var(--grad)", color: "#04141c", fontSize: 20 }}>▶</div>
-          <div style={{ flex: 1, minWidth: 0 }}>
-            <div className="eyebrow" style={{ color: "var(--cyan)" }}>Continuar donde quedaste</div>
-            <div style={{ fontWeight: 800, color: "#fff", marginTop: 3, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{cont.lesson_title}</div>
-            <div className="muted" style={{ fontSize: 12.5, marginTop: 2 }}>{cont.diploma_title} · {cont.progress}% completado</div>
+          {/* Stats */}
+          <div className="stats4 fade-up d1" style={{ marginTop: 18 }}>
+            <div className="card stile">
+              <div className="row"><span className="si"><GraduationCap /></span><div><div className="lab">Diplomados activos</div><div className="num">{mine.length}</div></div></div>
+              <div className="bar"><i style={{ width: `${Math.min(100, mine.length ? overall : 0)}%` }} /></div>
+            </div>
+            <div className="card stile">
+              <div className="row"><span className="si"><PlayCircle /></span><div><div className="lab">Clases completadas</div><div className="num">{doneLessons} / {totalLessons}</div></div></div>
+              <div className="bar"><i style={{ width: `${totalLessons ? Math.round(100 * doneLessons / totalLessons) : 0}%` }} /></div>
+            </div>
+            <div className="card stile">
+              <div className="row"><span className="si"><TrendingUp /></span><div><div className="lab">Progreso general</div><div className="num">{overall}%</div></div></div>
+              <div className="bar"><i style={{ width: `${overall}%` }} /></div>
+            </div>
+            <div className="card stile">
+              <div className="row"><span className="si"><Award /></span><div><div className="lab">Insignias ganadas</div><div className="num">{badges.length}</div></div></div>
+              <div className="bar"><i style={{ width: `${mine.length ? Math.min(100, Math.round(100 * badges.length / mine.length)) : (badges.length ? 100 : 0)}%` }} /></div>
+            </div>
           </div>
-          <span className="btn btn-primary" style={{ flexShrink: 0 }}>Retomar</span>
-        </Link>
-      )}
 
-      <div className="dash">
-        {/* Columna principal */}
-        <div style={{ display: "flex", flexDirection: "column", gap: 22 }}>
-          {/* Mis diplomados (máx 4, los inscritos) */}
-          <section className="fade-up d2">
-            <div className="wh"><h2>Mis diplomados</h2><Link href="/explorar">Ver todos</Link></div>
-            {misDiplomas.length === 0 ? (
+          {/* Continúa tu formación */}
+          {(cont || mine.length > 0) && (
+            <div className="sec fade-up d2">
+              <div className="sec-h"><span className="ic"><PlayCircle /></span><h2>Continúa tu formación</h2><Link className="all" href="/explorar">Ver todos <ArrowRight size={14} /></Link></div>
+              {cont && (
+                <Link href={`/leccion/${cont.lesson_id}`} className="card card-hover" style={{ display: "flex", alignItems: "center", gap: 18, padding: 16, overflow: "hidden" }}>
+                  <div style={{ width: 170, height: 104, borderRadius: 14, flex: "none", background: contDip?.cover_url ? `center/cover url(${contDip.cover_url})` : "linear-gradient(135deg,#2a1150,#0e1140)", border: "1px solid var(--line-2)" }} />
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <span className="chip" style={{ color: "#06202a", background: "linear-gradient(90deg,#22e0ff,#55f0c0)", border: 0, fontWeight: 700 }}>En curso</span>
+                    <div style={{ fontWeight: 700, fontSize: 19, color: "#fff", margin: "8px 0 6px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{cont.diploma_title}</div>
+                    <div className="muted" style={{ fontSize: 12.5, display: "flex", gap: 8, alignItems: "center", overflow: "hidden" }}><Play size={13} /> {cont.lesson_title}</div>
+                    <div style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 12 }}>
+                      <div style={{ flex: 1, height: 6, borderRadius: 6, background: "rgba(255,255,255,.08)", overflow: "hidden" }}><i style={{ display: "block", height: "100%", width: `${cont.progress}%`, background: "var(--grad-cm)" }} /></div>
+                      <b style={{ fontSize: 13 }}>{cont.progress}%</b>
+                    </div>
+                  </div>
+                  <span style={{ width: 52, height: 52, borderRadius: "50%", flex: "none", display: "grid", placeItems: "center", background: "rgba(124,58,237,.25)", border: "1px solid var(--line-2)", color: "#e5d5ff" }}><Play size={20} /></span>
+                </Link>
+              )}
+              {minis.length > 0 && (
+                <div className="grid" style={{ gridTemplateColumns: "repeat(2,minmax(0,1fr))", marginTop: 14 }}>
+                  {minis.map((d) => (
+                    <TLink key={d.id} href={`/diplomado/${d.slug}`} className="card card-hover" style={{ display: "flex", alignItems: "center", gap: 12, padding: 14 }}>
+                      <div style={{ width: 46, height: 46, borderRadius: 12, flex: "none", background: d.cover_url ? `center/cover url(${d.cover_url})` : "rgba(124,58,237,.2)", border: "1px solid var(--line-2)" }} />
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <b style={{ fontSize: 14, color: "#fff", display: "block", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{d.title}</b>
+                        <div className="muted" style={{ fontSize: 12, marginTop: 3 }}>{d.completed_lessons || 0}/{d.total_lessons || 0} lecciones · {d.progress || 0}%</div>
+                      </div>
+                      <span style={{ width: 34, height: 34, borderRadius: "50%", flex: "none", display: "grid", placeItems: "center", background: "rgba(255,255,255,.05)", border: "1px solid var(--line)", color: "#cbb8ff" }}><ChevronRight size={18} /></span>
+                    </TLink>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Mis Diplomados (carrusel) */}
+          <div className="sec fade-up d3">
+            <div className="sec-h"><span className="ic"><GraduationCap /></span><h2>Mis Diplomados</h2><Link className="all" href="/explorar">Ver todos <ArrowRight size={14} /></Link></div>
+            {mine.length === 0 ? (
               <div className="card" style={{ padding: 22 }}>
                 <div style={{ fontWeight: 700 }}>Aún no tienes diplomados asignados.</div>
                 <p className="muted" style={{ fontSize: 13.5, marginTop: 6 }}>Cuando tengas acceso, aparecerán aquí para que retomes donde quedaste.</p>
               </div>
             ) : (
-              <div className="grid" style={{ gridTemplateColumns: "repeat(auto-fill,minmax(200px,1fr))" }}>
-                {misDiplomas.map((d) => (
-                  <Tilt key={d.id}>
-                    <TLink href={`/diplomado/${d.slug}`} className="card card-hover" style={{ overflow: "hidden", display: "block" }}>
-                      <div style={{ position: "relative", aspectRatio: "1/1", background: d.cover_url ? `center/cover url(${d.cover_url})` : "var(--grad)", viewTransitionName: `dip-${d.slug}` }}>
-                        <div style={{ position: "absolute", top: 10, right: 10, borderRadius: 999, padding: 3, background: "rgba(5,8,14,.6)", backdropFilter: "blur(2px)" }}>
-                          <Ring value={d.progress || 0} size={44} />
-                        </div>
-                      </div>
-                      <div style={{ padding: 14 }}>
-                        <div style={{ fontWeight: 700, fontSize: 14, color: "#fff" }}>{d.title}</div>
-                        <div className="muted" style={{ fontSize: 11, marginTop: 5 }}>{d.completed_lessons || 0}/{d.total_lessons || 0} lecciones</div>
-                      </div>
-                    </TLink>
-                  </Tilt>
-                ))}
-              </div>
-            )}
-          </section>
-
-          {/* Noticias importantes */}
-          <section className="fade-up d3">
-            <div className="wh"><h2>Noticias importantes</h2></div>
-            {news.length === 0 ? (
-              <div className="card" style={{ padding: 20 }}><span className="muted" style={{ fontSize: 13.5 }}>No hay noticias por ahora. Aquí verás los comunicados de la academia.</span></div>
-            ) : (
-              <div className="grid" style={{ gap: 12 }}>
-                {news.map((n) => (
-                  <article key={n.id} className="card card-hover" style={{ overflow: "hidden", display: "flex", gap: 0 }}>
-                    {n.image_url && <div style={{ width: 120, flexShrink: 0, aspectRatio: "1 / 1", background: `center/cover url(${n.image_url})` }} />}
-                    <div style={{ padding: 18, minWidth: 0 }}>
-                      <div style={{ fontWeight: 800, fontSize: 19, color: "#fff", lineHeight: 1.2 }}>{n.title}</div>
-                      <p className="muted" style={{ fontSize: 13.5, marginTop: 6, whiteSpace: "pre-wrap" }}>{n.body}</p>
-                      <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 10 }}>
-                        {n.teacher_name && (
-                          <>
-                            <div style={{ width: 22, height: 22, borderRadius: 999, flexShrink: 0, background: n.teacher_photo_url ? `center/cover url(${n.teacher_photo_url})` : "var(--grad)" }} />
-                            <span className="muted" style={{ fontSize: 12, fontWeight: 600 }}>{n.teacher_name}</span>
-                            <span className="muted" style={{ fontSize: 11 }}>·</span>
-                          </>
-                        )}
-                        <span className="eyebrow" style={{ letterSpacing: ".1em" }}>{fdate(n.created_at)}</span>
-                      </div>
+              <div className="car">
+                {mine.map((d) => (
+                  <TLink key={d.id} href={`/diplomado/${d.slug}`} className="dcard card-hover">
+                    <div className="cov" style={{ background: d.cover_url ? `center/cover url(${d.cover_url})` : "linear-gradient(135deg,#2a1150,#6d28d9)", viewTransitionName: `dip-${d.slug}` }}>
+                      <div className="ringbadge"><Ring value={d.progress || 0} size={40} /></div>
                     </div>
-                  </article>
+                    <div className="db">
+                      <span className="t">{d.title}</span>
+                      <div className="bar"><i style={{ width: `${d.progress || 0}%` }} /></div>
+                      <span className="pct">{(d.completed_lessons || 0)}/{(d.total_lessons || 0)} lecciones</span>
+                    </div>
+                  </TLink>
                 ))}
               </div>
             )}
-          </section>
+          </div>
         </div>
 
-        {/* Columna lateral */}
-        <div style={{ display: "flex", flexDirection: "column", gap: 22 }}>
-          {/* Próximas clases */}
-          <section className="fade-up d1">
-            <div className="wh"><h2>Próximas clases</h2><Link href="/classroom">Calendario</Link></div>
-            <div className="card" style={{ padding: 8 }}>
-              {upcoming.length === 0 ? <div style={{ padding: 16 }} className="muted">No hay clases programadas.</div> :
-                upcoming.map((e) => {
-                  const expired = now > +new Date(e.starts_at) + 2 * 3600 * 1000;
-                  return (
-                    <div key={e.id} style={{ display: "flex", gap: 12, padding: 12, borderRadius: 10, alignItems: "center" }}>
-                      <div style={{ width: 8, height: 8, borderRadius: 999, background: "var(--cyan)", boxShadow: "0 0 10px var(--cyan)", flexShrink: 0 }} />
-                      <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{ fontSize: 13.5, fontWeight: 600, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{e.title}</div>
-                        <div className="muted" style={{ fontSize: 11.5 }}>{fdatetime(e.starts_at)}</div>
-                      </div>
-                      {e.live_url && !expired && <a className="chip" href={e.live_url} target="_blank" rel="noreferrer" style={{ color: "var(--cyan)", fontSize: 11 }}>Entrar</a>}
-                    </div>
-                  );
-                })}
-            </div>
-          </section>
+        {/* ── Columna lateral ── */}
+        <div className="rcol fade-up d1">
+          {/* Mis Insignias */}
+          <div className="card" style={{ padding: 18 }}>
+            <div className="sec-h"><span className="ic"><Award /></span><h2>Mis Insignias</h2><Link className="all" href="/insignias">Ver todas <ArrowRight size={14} /></Link></div>
+            {badges.length === 0 ? (
+              <span className="muted" style={{ fontSize: 13 }}>Completa un diplomado para ganar tu primera insignia.</span>
+            ) : (
+              <div className="hexrow">
+                {badges.slice(0, 3).map((b) => (
+                  <div key={b.id}>
+                    {b.image_url
+                      ? <img src={b.image_url} alt={b.name} title={b.name} style={{ width: 72, height: 80, objectFit: "contain", margin: "0 auto 8px", display: "block", filter: "drop-shadow(0 6px 16px rgba(217,70,239,.4))" }} />
+                      : <div className="hexb" style={{ marginBottom: 8 }}><Award /></div>}
+                    <div className="bl">{b.name}</div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
 
-          {/* Insignias */}
-          <section className="fade-up d2">
-            <div className="wh"><h2>Mis insignias</h2><Link href="/insignias">Ver todas</Link></div>
-            <div className="card" style={{ padding: 18 }}>
-              {badges.length === 0 ? <span className="muted" style={{ fontSize: 13 }}>Completa un diplomado para ganar tu primera insignia.</span> :
-                <div style={{ display: "flex", gap: 14, flexWrap: "wrap" }}>
-                  {badges.slice(0, 6).map((b) => (
-                    b.image_url
-                      ? <img key={b.id} src={b.image_url} alt={b.name} title={b.name} style={{ width: 64, height: 64, objectFit: "contain", filter: "drop-shadow(0 0 12px var(--gold))" }} />
-                      : <div key={b.id} title={b.name} style={{ fontSize: 52, lineHeight: 1, filter: "drop-shadow(0 0 14px var(--gold))" }}>{b.icon || "🏅"}</div>
-                  ))}
-                </div>}
-            </div>
-          </section>
+          {/* Noticias importantes */}
+          <div className="card" style={{ padding: 18 }}>
+            <div className="sec-h"><span className="ic"><Megaphone /></span><h2>Noticias importantes</h2><Link className="all" href="/dashboard">Ver todas <ArrowRight size={14} /></Link></div>
+            {!firstNews ? (
+              <span className="muted" style={{ fontSize: 13 }}>Aquí verás los comunicados de la academia.</span>
+            ) : (
+              <div style={{ display: "flex", gap: 14, alignItems: "center" }}>
+                <div style={{ width: 92, height: 74, borderRadius: 12, flex: "none", display: "grid", placeItems: "center", overflow: "hidden", background: firstNews.image_url ? `center/cover url(${firstNews.image_url})` : "linear-gradient(150deg,#2a1250,#141140)", color: "#e8b3ff", border: "1px solid var(--line-2)" }}>
+                  {!firstNews.image_url && <Megaphone size={26} />}
+                </div>
+                <div style={{ minWidth: 0, flex: 1 }}>
+                  <h4 style={{ fontSize: 16, fontWeight: 800, color: "#fff", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{firstNews.title}</h4>
+                  <p className="muted" style={{ fontSize: 12.5, margin: "5px 0 0", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{firstNews.body}</p>
+                  <span className="eyebrow" style={{ fontSize: 10.5, letterSpacing: ".1em", marginTop: 6, display: "inline-block" }}>{fdate(firstNews.created_at)}</span>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Próxima clase en vivo */}
+          <div className="card" style={{ padding: 18 }}>
+            <div className="sec-h"><span className="ic"><Radio /></span><h2>Próxima clase en vivo</h2></div>
+            {!nextLive ? (
+              <span className="muted" style={{ fontSize: 13 }}>No hay clases programadas por ahora.</span>
+            ) : (
+              <>
+                <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+                  <div style={{ width: 64, height: 64, borderRadius: 14, flex: "none", display: "grid", placeItems: "center", border: "1px solid var(--line-2)", background: "rgba(124,58,237,.14)" }}>
+                    <b style={{ fontSize: 22, fontFamily: "var(--font-display)" }}>{dayNum(nextLive.starts_at)}</b>
+                    <span className="muted" style={{ fontSize: 11 }}>{monNum(nextLive.starts_at)}</span>
+                  </div>
+                  <div style={{ minWidth: 0 }}>
+                    <b style={{ fontSize: 15, color: "#fff", display: "block", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{nextLive.title}</b>
+                    <div className="muted" style={{ fontSize: 12.5, marginTop: 5, display: "flex", gap: 6, alignItems: "center" }}><Clock size={13} /> {htime(nextLive.starts_at)}</div>
+                  </div>
+                </div>
+                {nextLive.live_url && !nextLiveExpired && (
+                  <div style={{ textAlign: "right", marginTop: 14 }}>
+                    <a className="btn btn-primary" href={nextLive.live_url} target="_blank" rel="noreferrer">Ingresar a la clase <ArrowRight size={15} /></a>
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+
+          {/* Comunidad */}
+          <div className="card" style={{ padding: 18 }}>
+            <div className="sec-h"><span className="ic"><MessagesSquare /></span><h2>Comunidad</h2></div>
+            <p className="muted" style={{ fontSize: 13, margin: "2px 0 14px", lineHeight: 1.5 }}>Comparte tus resultados y aprende de otros estudiantes de la academia.</p>
+            <Link className="btn btn-primary" href="/feedback" style={{ width: "100%", justifyContent: "center" }}>Ir a la comunidad <ArrowRight size={15} /></Link>
+          </div>
         </div>
       </div>
     </div>
