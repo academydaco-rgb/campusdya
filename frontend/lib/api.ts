@@ -33,7 +33,7 @@ export const api = {
 
 // ───────── Tipos ─────────
 export interface UserT { id: string; email: string; name: string; role: string; status: string; avatar_url?: string | null; bio?: string | null; }
-export interface DiplomaCardT { id: string; title: string; slug: string; cover_url?: string | null; order: number; enrolled: boolean; }
+export interface DiplomaCardT { id: string; title: string; slug: string; cover_url?: string | null; order: number; enrolled: boolean; progress?: number | null; }
 export interface PhaseT { id: string; name: string; slug: string; description?: string | null; icon?: string | null; color?: string | null; order: number; diplomas: DiplomaCardT[]; }
 export interface UniverseT { phases: PhaseT[]; sin_fase: DiplomaCardT[]; }
 export interface DiplomaOutT { id: string; title: string; slug: string; cover_url?: string | null; order: number; total_lessons?: number; completed_lessons?: number; progress?: number; }

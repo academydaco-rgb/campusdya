@@ -1,5 +1,5 @@
 "use client";
-export default function Ring({ value, size = 46, stroke = 5 }: { value: number; size?: number; stroke?: number }) {
+export default function Ring({ value, size = 46, stroke = 3.5 }: { value: number; size?: number; stroke?: number }) {
   const r = (size - stroke) / 2;
   const c = 2 * Math.PI * r;
   const off = c * (1 - Math.max(0, Math.min(100, value)) / 100);

@@ -38,7 +38,7 @@ export default function DiplomaPage() {
             <h1 style={{ fontSize: 26, fontWeight: 800, color: "#fff" }}>{d.title}</h1>
             {d.description && <p className="muted" style={{ marginTop: 6 }}>{d.description}</p>}
             <div style={{ marginTop: 12, display: "flex", alignItems: "center", gap: 14 }}>
-              <Ring value={d.progress} size={56} stroke={6} />
+              <Ring value={d.progress} size={56} stroke={4} />
               <div>
                 <div style={{ fontWeight: 700, color: "#fff" }}>{d.progress}% completado</div>
                 <div className="muted" style={{ fontSize: 12.5 }}>{d.completed_lessons}/{d.total_lessons} lecciones</div>
