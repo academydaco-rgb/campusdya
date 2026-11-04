@@ -15,7 +15,7 @@ export default function Ring({ value, size = 46, stroke = 5 }: { value: number; 
         strokeLinecap="round" strokeDasharray={c} strokeDashoffset={off}
         transform={`rotate(-90 ${size / 2} ${size / 2})`}
         style={{ transition: "stroke-dashoffset 1s cubic-bezier(.2,.7,.3,1)" }} />
-      <text x="50%" y="50%" dominantBaseline="central" textAnchor="middle" fontSize={size * 0.26} fontWeight="800" fill="#eafcff">{Math.round(value)}%</text>
+      <text x="50%" y="50%" dominantBaseline="central" textAnchor="middle" fontSize={size * 0.21} fontWeight="700" fill="#eafcff" fontFamily="Montserrat, system-ui, sans-serif" letterSpacing="-0.6">{Math.round(value)}%</text>
     </svg>
   );
 }
