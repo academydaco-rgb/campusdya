@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import Tilt from "@/components/Tilt";
 import { api, TeacherT } from "@/lib/api";
 
 export default function Profesores() {
@@ -11,7 +12,8 @@ export default function Profesores() {
       <p className="muted" style={{ marginTop: 6, marginBottom: 22 }}>El equipo que te acompaña en tu camino.</p>
       <div className="grid-3">
         {items.map((t) => (
-          <div key={t.id} className="card" style={{ overflow: "hidden", display: "flex", flexDirection: "column" }}>
+          <Tilt key={t.id} style={{ height: "100%" }}>
+          <div className="card" style={{ width: "100%", height: "100%", overflow: "hidden", display: "flex", flexDirection: "column" }}>
             <div style={{ position: "relative", width: "100%", paddingTop: "100%",
               background: t.photo_url ? `center/cover url(${t.photo_url})` : "linear-gradient(135deg,var(--cyan),var(--indigo))" }}>
               {!t.photo_url && <span style={{ position: "absolute", inset: 0, display: "grid", placeItems: "center", fontSize: 40, color: "#04121a", fontWeight: 800 }}>{t.name.charAt(0)}</span>}
@@ -28,6 +30,7 @@ export default function Profesores() {
               )}
             </div>
           </div>
+          </Tilt>
         ))}
         {items.length === 0 && <span className="muted">Pronto verás a tus profesores aquí.</span>}
       </div>

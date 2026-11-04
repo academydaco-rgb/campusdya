@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import Tilt from "@/components/Tilt";
 import { api, LiveClassT } from "@/lib/api";
 
 export default function ClasesEnVivo() {
@@ -38,7 +39,8 @@ export default function ClasesEnVivo() {
 
       <div className="grid-3">
         {items.map((c) => (
-          <button key={c.id} className="card card-hover" style={{ padding: 0, overflow: "hidden", textAlign: "left", display: "flex", flexDirection: "column", color: "var(--text)" }} onClick={() => setActive(c)}>
+          <Tilt key={c.id} style={{ height: "100%" }}>
+          <button className="card card-hover" style={{ width: "100%", height: "100%", padding: 0, overflow: "hidden", textAlign: "left", display: "flex", flexDirection: "column", color: "var(--text)" }} onClick={() => setActive(c)}>
             <div style={{ position: "relative", width: "100%", paddingTop: "56.25%",
               background: c.cover_url ? `center/cover url(${c.cover_url})` : "linear-gradient(135deg,#132038,#0b1020)" }}>
               <span style={{ position: "absolute", inset: 0, display: "grid", placeItems: "center", fontSize: 30, color: "rgba(255,255,255,.85)" }}>▶</span>
@@ -48,6 +50,7 @@ export default function ClasesEnVivo() {
               {c.happened_at && <div className="muted" style={{ fontSize: 12, marginTop: 6 }}>{new Date(c.happened_at).toLocaleDateString("es-CO", { day: "2-digit", month: "long", year: "numeric" })}</div>}
             </div>
           </button>
+          </Tilt>
         ))}
         {items.length === 0 && <span className="muted">Aún no hay grabaciones.</span>}
       </div>

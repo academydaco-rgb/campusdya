@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { api, UniverseT, DiplomaCardT } from "@/lib/api";
 import Reveal from "@/components/Reveal";
 import Ring from "@/components/Ring";
+import Tilt from "@/components/Tilt";
 
 export default function Explorar() {
   const router = useRouter();
@@ -41,8 +42,9 @@ export default function Explorar() {
               <div className="grid" style={{ gridTemplateColumns: "repeat(auto-fill,minmax(230px,1fr))", marginTop: 18 }}>
                 {p.diplomas.length === 0 && <span className="muted" style={{ fontSize: 13 }}>Diplomados en preparación.</span>}
                 {p.diplomas.map((d) => (
-                  <div key={d.id} onClick={() => open(d)} className={`card card-hover ${d.enrolled ? "" : "lock"}`}
-                    style={{ overflow: "hidden", cursor: d.enrolled ? "pointer" : "not-allowed", borderColor: d.enrolled ? "var(--line)" : "var(--line)" }}>
+                  <Tilt key={d.id} style={{ height: "100%" }}>
+                  <div onClick={() => open(d)} className={`card card-hover ${d.enrolled ? "" : "lock"}`}
+                    style={{ width: "100%", height: "100%", overflow: "hidden", cursor: d.enrolled ? "pointer" : "not-allowed", borderColor: d.enrolled ? "var(--line)" : "var(--line)" }}>
                     <div style={{ position: "relative", width: "100%", aspectRatio: "1 / 1", background: d.cover_url ? `center/cover url(${d.cover_url})` : `linear-gradient(135deg, ${color}44, var(--surface-3))` }}>
                       {d.enrolled && typeof d.progress === "number" && (
                         <div style={{ position: "absolute", top: 10, right: 10, borderRadius: 999, padding: 3, background: "rgba(5,8,14,.6)", backdropFilter: "blur(2px)" }}>
@@ -55,6 +57,7 @@ export default function Explorar() {
                       {d.enrolled ? <span className="chip" style={{ color, borderColor: color, fontSize: 11 }}>Entrar</span> : <span title="Sin acceso">🔒</span>}
                     </div>
                   </div>
+                  </Tilt>
                 ))}
               </div>
             </div>

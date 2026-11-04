@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import Tilt from "@/components/Tilt";
 import { api, ProviderT } from "@/lib/api";
 
 export default function Proveedores() {
@@ -31,7 +32,8 @@ export default function Proveedores() {
 
       <div className="grid-3">
         {items.map((c) => (
-          <button key={c.id} className="card card-hover" style={{ padding: 0, overflow: "hidden", textAlign: "left", display: "flex", flexDirection: "column", color: "var(--text)" }} onClick={() => setActive(c)}>
+          <Tilt key={c.id} style={{ height: "100%" }}>
+          <button className="card card-hover" style={{ width: "100%", height: "100%", padding: 0, overflow: "hidden", textAlign: "left", display: "flex", flexDirection: "column", color: "var(--text)" }} onClick={() => setActive(c)}>
             <div style={{ position: "relative", width: "100%", paddingTop: "56.25%",
               background: c.cover_url ? `center/cover url(${c.cover_url})` : "linear-gradient(135deg,#0a2436,#0b1020)" }}>
               <span style={{ position: "absolute", inset: 0, display: "grid", placeItems: "center", fontSize: 30, color: "rgba(255,255,255,.85)" }}>▶</span>
@@ -41,6 +43,7 @@ export default function Proveedores() {
               {c.description && <div className="muted" style={{ fontSize: 12.5, marginTop: 6, overflow: "hidden", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}>{c.description}</div>}
             </div>
           </button>
+          </Tilt>
         ))}
         {items.length === 0 && <span className="muted">Aún no hay proveedores.</span>}
       </div>
