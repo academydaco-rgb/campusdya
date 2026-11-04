@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth";
 import { api } from "@/lib/api";
+import { Eye, EyeOff } from "lucide-react";
 
 export default function LoginPage() {
   const { login } = useAuth();
@@ -11,6 +12,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showPw, setShowPw] = useState(false);
   const [forgot, setForgot] = useState(false);
   const [fmail, setFmail] = useState("");
   const [fmsg, setFmsg] = useState("");
@@ -56,8 +58,16 @@ export default function LoginPage() {
           <input className="input" type="email" value={email} onChange={(e) => setEmail(e.target.value)}
             placeholder="tucorreo@gmail.com" required style={{ marginBottom: 16 }} />
           <label className="label">Contraseña</label>
-          <input className="input" type="password" value={password} onChange={(e) => setPassword(e.target.value)}
-            placeholder="••••••••" required style={{ marginBottom: 20 }} />
+          <div style={{ position: "relative", marginBottom: 20 }}>
+            <input className="input" type={showPw ? "text" : "password"} value={password} onChange={(e) => setPassword(e.target.value)}
+              placeholder="••••••••" required style={{ marginBottom: 0, paddingRight: 44, width: "100%" }} />
+            <button type="button" onClick={() => setShowPw((v) => !v)}
+              aria-label={showPw ? "Ocultar contraseña" : "Mostrar contraseña"}
+              title={showPw ? "Ocultar contraseña" : "Mostrar contraseña"}
+              style={{ position: "absolute", right: 10, top: "50%", transform: "translateY(-50%)", display: "grid", placeItems: "center", width: 30, height: 30, border: 0, background: "transparent", color: "var(--muted, #8aa)", cursor: "pointer", padding: 0 }}>
+              {showPw ? <EyeOff size={18} /> : <Eye size={18} />}
+            </button>
+          </div>
           {error && <div style={{ color: "var(--danger)", fontSize: 13, marginBottom: 14 }}>{error}</div>}
           <button className="btn btn-primary" style={{ width: "100%", justifyContent: "center" }} disabled={loading}>
             {loading ? "Entrando…" : "Iniciar sesión"}
