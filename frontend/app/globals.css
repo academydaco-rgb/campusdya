@@ -151,28 +151,40 @@ p{line-height:1.62}
 .wh a:hover{color:var(--cyan)}
 .hero{position:relative;overflow:hidden;padding:22px 34px;border:1px solid var(--line-2);border-radius:var(--r);
   background:
-    radial-gradient(120% 120% at 14% -20%, rgba(0,255,255,.10), transparent 55%),
-    radial-gradient(120% 130% at 90% 120%, rgba(139,92,246,.12), transparent 58%),
-    linear-gradient(135deg,#0a1324 0%,#0b1130 52%,#110d22 100%)}
+    radial-gradient(90% 120% at 12% -25%, rgba(0,224,255,.26), transparent 52%),
+    radial-gradient(95% 130% at 92% 125%, rgba(149,92,255,.30), transparent 55%),
+    radial-gradient(70% 90% at 78% 10%, rgba(255,92,170,.14), transparent 60%),
+    linear-gradient(135deg,#061024 0%,#0a0f33 48%,#15082c 100%)}
 .hero::before{content:"";position:absolute;inset:0;pointer-events:none;background:
-  radial-gradient(58% 42% at 8% -12%, rgba(0,255,255,.12), transparent 70%),
-  radial-gradient(62% 46% at 74% 118%, rgba(139,92,246,.14), transparent 72%),
-  radial-gradient(44% 24% at 52% 48%, rgba(120,150,255,.05), transparent 76%)}
-.hero::after{content:"";position:absolute;inset:0;pointer-events:none;opacity:.9;background:
-  linear-gradient(115deg, transparent 42%, rgba(190,200,255,.05) 50%, transparent 58%),
-  radial-gradient(1.4px 1.4px at 12% 24%, rgba(255,255,255,.8), transparent 60%),
-  radial-gradient(1.1px 1.1px at 23% 62%, rgba(255,255,255,.5), transparent 60%),
-  radial-gradient(1.3px 1.3px at 34% 38%, rgba(214,206,255,.6), transparent 60%),
-  radial-gradient(1px 1px at 44% 80%, rgba(255,255,255,.45), transparent 60%),
-  radial-gradient(1.5px 1.5px at 56% 18%, rgba(255,255,255,.7), transparent 60%),
-  radial-gradient(1.1px 1.1px at 63% 54%, rgba(255,255,255,.5), transparent 60%),
-  radial-gradient(1.2px 1.2px at 71% 82%, rgba(206,214,255,.55), transparent 60%),
-  radial-gradient(1.4px 1.4px at 79% 30%, rgba(255,255,255,.7), transparent 60%),
-  radial-gradient(1px 1px at 86% 66%, rgba(255,255,255,.45), transparent 60%),
-  radial-gradient(1.3px 1.3px at 92% 44%, rgba(255,255,255,.6), transparent 60%),
-  radial-gradient(1px 1px at 50% 92%, rgba(255,255,255,.4), transparent 60%),
-  radial-gradient(1.1px 1.1px at 16% 88%, rgba(255,255,255,.4), transparent 60%),
-  radial-gradient(1px 1px at 38% 12%, rgba(255,255,255,.4), transparent 60%)}
+  radial-gradient(44% 70% at 8% -8%, rgba(0,224,255,.30), transparent 66%),
+  radial-gradient(52% 80% at 80% 120%, rgba(149,92,255,.34), transparent 68%),
+  radial-gradient(38% 60% at 60% 44%, rgba(120,150,255,.12), transparent 72%),
+  linear-gradient(118deg, transparent 38%, rgba(190,205,255,.12) 50%, transparent 62%)}
+.hero::after{content:"";position:absolute;inset:0;pointer-events:none;animation:heroTwinkle 5.5s ease-in-out infinite alternate;background:
+  radial-gradient(2.4px 2.4px at 12% 24%, #fff, transparent 58%),
+  radial-gradient(7px 7px at 12% 24%, rgba(130,235,255,.5), transparent 70%),
+  radial-gradient(2.2px 2.2px at 79% 30%, #fff, transparent 58%),
+  radial-gradient(7px 7px at 79% 30%, rgba(180,160,255,.5), transparent 70%),
+  radial-gradient(2.4px 2.4px at 56% 72%, #fff, transparent 58%),
+  radial-gradient(6px 6px at 56% 72%, rgba(255,255,255,.35), transparent 70%),
+  radial-gradient(1.8px 1.8px at 23% 62%, rgba(255,255,255,.95), transparent 60%),
+  radial-gradient(1.6px 1.6px at 34% 38%, rgba(220,215,255,.9), transparent 60%),
+  radial-gradient(1.6px 1.6px at 44% 80%, rgba(255,255,255,.8), transparent 60%),
+  radial-gradient(2px 2px at 63% 18%, rgba(255,255,255,.95), transparent 60%),
+  radial-gradient(1.6px 1.6px at 70% 54%, rgba(255,255,255,.8), transparent 60%),
+  radial-gradient(1.7px 1.7px at 86% 66%, rgba(210,220,255,.85), transparent 60%),
+  radial-gradient(1.9px 1.9px at 92% 44%, rgba(255,255,255,.9), transparent 60%),
+  radial-gradient(1.5px 1.5px at 50% 92%, rgba(255,255,255,.75), transparent 60%),
+  radial-gradient(1.6px 1.6px at 16% 88%, rgba(255,255,255,.75), transparent 60%),
+  radial-gradient(1.5px 1.5px at 38% 12%, rgba(255,255,255,.75), transparent 60%),
+  radial-gradient(1.4px 1.4px at 28% 50%, rgba(255,255,255,.7), transparent 60%),
+  radial-gradient(1.4px 1.4px at 48% 56%, rgba(255,255,255,.65), transparent 60%),
+  radial-gradient(1.5px 1.5px at 66% 84%, rgba(255,255,255,.7), transparent 60%),
+  radial-gradient(1.4px 1.4px at 74% 14%, rgba(255,255,255,.7), transparent 60%),
+  radial-gradient(1.3px 1.3px at 90% 20%, rgba(255,255,255,.65), transparent 60%),
+  radial-gradient(1.3px 1.3px at 20% 36%, rgba(255,255,255,.6), transparent 60%),
+  radial-gradient(1.3px 1.3px at 6% 60%, rgba(255,255,255,.6), transparent 60%)}
+@keyframes heroTwinkle{from{opacity:.72}to{opacity:1}}
 .hero>*{position:relative;z-index:2}
 
 /* ── Tarjetas de estadística (bento) ── */
