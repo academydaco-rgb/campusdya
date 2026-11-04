@@ -3,32 +3,36 @@ import { ReactNode, useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/lib/auth";
+import Spotlight from "@/components/Spotlight";
+import { Home, GraduationCap, CalendarDays, Video, Package, Award, Users, MessagesSquare, UserCircle,
+  BookOpen, UserCog, KeyRound, Megaphone, ShieldCheck, LogOut, type LucideIcon } from "lucide-react";
 
-const APRENDER = [
-  { href: "/dashboard", label: "Inicio", ic: "◆" },
-  { href: "/explorar", label: "Diplomados", ic: "◈" },
-  { href: "/classroom", label: "Classroom", ic: "▣" },
-  { href: "/clases-en-vivo", label: "Clases en vivo", ic: "▶" },
-  { href: "/proveedores", label: "Proveedores", ic: "▦" },
-  { href: "/insignias", label: "Insignias", ic: "✦" },
-  { href: "/profesores", label: "Profesores", ic: "◉" },
-  { href: "/feedback", label: "Comunidad", ic: "✶" },
-  { href: "/perfil", label: "Mi perfil", ic: "◍" },
+const APRENDER: NavItem[] = [
+  { href: "/dashboard", label: "Inicio", Icon: Home },
+  { href: "/explorar", label: "Diplomados", Icon: GraduationCap },
+  { href: "/classroom", label: "Classroom", Icon: CalendarDays },
+  { href: "/clases-en-vivo", label: "Clases en vivo", Icon: Video },
+  { href: "/proveedores", label: "Proveedores", Icon: Package },
+  { href: "/insignias", label: "Insignias", Icon: Award },
+  { href: "/profesores", label: "Profesores", Icon: Users },
+  { href: "/feedback", label: "Comunidad", Icon: MessagesSquare },
+  { href: "/perfil", label: "Mi perfil", Icon: UserCircle },
 ];
-const ADMIN = [
-  { href: "/admin/diplomados", label: "Diplomados", ic: "▤" },
-  { href: "/admin/usuarios", label: "Usuarios", ic: "◎" },
-  { href: "/admin/inscripciones", label: "Inscripciones", ic: "⚿" },
-  { href: "/admin/profesores", label: "Profesores", ic: "◉" },
-  { href: "/admin/clases-en-vivo", label: "Clases en vivo", ic: "▶" },
-  { href: "/admin/proveedores", label: "Proveedores", ic: "▦" },
-  { href: "/admin/classroom", label: "Classroom", ic: "▣" },
-  { href: "/admin/comunicados", label: "Comunicados", ic: "✸" },
-  { href: "/admin/moderacion", label: "Moderación", ic: "⚑" },
+const ADMIN: NavItem[] = [
+  { href: "/admin/diplomados", label: "Diplomados", Icon: BookOpen },
+  { href: "/admin/usuarios", label: "Usuarios", Icon: UserCog },
+  { href: "/admin/inscripciones", label: "Inscripciones", Icon: KeyRound },
+  { href: "/admin/profesores", label: "Profesores", Icon: Users },
+  { href: "/admin/clases-en-vivo", label: "Clases en vivo", Icon: Video },
+  { href: "/admin/proveedores", label: "Proveedores", Icon: Package },
+  { href: "/admin/classroom", label: "Classroom", Icon: CalendarDays },
+  { href: "/admin/comunicados", label: "Comunicados", Icon: Megaphone },
+  { href: "/admin/moderacion", label: "Moderación", Icon: ShieldCheck },
 ];
+interface NavItem { href: string; label: string; Icon: LucideIcon; }
 
-function Item({ href, label, ic, active }: { href: string; label: string; ic: string; active: boolean }) {
-  return <Link href={href} className={`nav-item${active ? " active" : ""}`}><span className="ic">{ic}</span>{label}</Link>;
+function Item({ href, label, Icon, active }: NavItem & { active: boolean }) {
+  return <Link href={href} className={`nav-item${active ? " active" : ""}`}><span className="ic"><Icon size={18} strokeWidth={2} /></span>{label}</Link>;
 }
 
 export default function AppLayout({ children }: { children: ReactNode }) {
@@ -44,6 +48,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
 
   return (
     <div className="shell">
+      <Spotlight />
       <aside className="sidebar">
         <Link href="/dashboard" className="brand" style={{ justifyContent: "flex-start", padding: "6px 8px" }}><img src="/logo.png" alt="D&A Academy" style={{ width: 180, maxWidth: "100%", height: "auto", objectFit: "contain" }} /></Link>
 
@@ -68,7 +73,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
               <div className="muted" style={{ fontSize: 11 }}>{isAdmin ? "Administrador" : "Alumno"}</div>
             </div>
           </div>
-          <button className="btn btn-ghost" style={{ width: "100%", justifyContent: "center", padding: "9px" }} onClick={() => { logout(); router.replace("/login"); }}>Cerrar sesión</button>
+          <button className="btn btn-ghost" style={{ width: "100%", justifyContent: "center", padding: "9px" }} onClick={() => { logout(); router.replace("/login"); }}><LogOut size={16} /> Cerrar sesión</button>
         </div>
       </aside>
       <main className="main">{children}</main>
