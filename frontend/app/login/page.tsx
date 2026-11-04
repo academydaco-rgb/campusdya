@@ -38,6 +38,7 @@ export default function LoginPage() {
 
   return (
     <div className="login-sky">
+      <div className="grain" aria-hidden />
       {/* galaxia */}
       <div className="login-aurora" aria-hidden />
       <div className="login-stars" aria-hidden />

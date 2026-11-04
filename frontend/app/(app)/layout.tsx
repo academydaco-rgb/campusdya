@@ -49,6 +49,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
   return (
     <div className="shell">
       <Spotlight />
+      <div className="grain" aria-hidden />
       <aside className="sidebar">
         <Link href="/dashboard" className="brand" style={{ justifyContent: "flex-start", padding: "6px 8px" }}><img src="/logo.png" alt="D&A Academy" style={{ width: 180, maxWidth: "100%", height: "auto", objectFit: "contain" }} /></Link>
 
