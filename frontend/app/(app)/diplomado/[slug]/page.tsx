@@ -16,7 +16,13 @@ export default function DiplomaPage() {
   }, [slug]);
 
   if (error) return <div className="card" style={{ padding: 24, color: "var(--danger)" }}>{error}</div>;
-  if (!d) return <span className="muted">Cargando…</span>;
+  if (!d) return (
+    <div className="grid" style={{ gap: 18 }}>
+      <div className="skeleton" style={{ height: 30, width: 260 }} />
+      <div className="skeleton" style={{ height: 14, width: 420, maxWidth: "80%" }} />
+      {[0, 1, 2].map((i) => <div key={i} className="skeleton" style={{ height: 140 }} />)}
+    </div>
+  );
 
   const t = d.teacher;
 

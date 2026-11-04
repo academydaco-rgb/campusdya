@@ -45,9 +45,23 @@ export default function LessonPage() {
   }
 
   async function completar() {
-    await api.post(`/api/lessons/${id}/complete`);
+    const r = await api.post<{ badge?: { name: string; icon?: string } | null }>(`/api/lessons/${id}/complete`);
     setL((p) => (p ? { ...p, completed: true } : p));
     setDiploma((d) => d ? { ...d, modules: d.modules.map((m) => ({ ...m, lessons: m.lessons.map((ls) => ls.id === id ? { ...ls, completed: true } : ls) })) } : d);
+    try {
+      const confetti = (await import("canvas-confetti")).default;
+      if (r?.badge) {
+        // Diplomado completado: celebración grande
+        const end = Date.now() + 1200;
+        (function frame() {
+          confetti({ particleCount: 5, angle: 60, spread: 60, origin: { x: 0 }, colors: ["#00ffff", "#4f7cff", "#f6b73c"] });
+          confetti({ particleCount: 5, angle: 120, spread: 60, origin: { x: 1 }, colors: ["#00ffff", "#4f7cff", "#f6b73c"] });
+          if (Date.now() < end) requestAnimationFrame(frame);
+        })();
+      } else {
+        confetti({ particleCount: 70, spread: 72, origin: { y: 0.7 }, colors: ["#00ffff", "#4f7cff", "#a855f7"] });
+      }
+    } catch { /* ignore */ }
   }
   async function enviar(e: React.FormEvent) {
     e.preventDefault();
@@ -63,7 +77,18 @@ export default function LessonPage() {
   const next = idx >= 0 && idx < flat.length - 1 ? flat[idx + 1] : null;
 
   if (error) return <div className="card" style={{ padding: 24, color: "var(--danger)" }}>{error}</div>;
-  if (!l) return <span className="muted">Cargando…</span>;
+  if (!l) return (
+    <div className="dash">
+      <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+        <div className="skeleton" style={{ height: 22, width: 220 }} />
+        <div className="skeleton" style={{ width: "100%", aspectRatio: "16/9" }} />
+        <div className="skeleton" style={{ height: 90 }} />
+      </div>
+      <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+        {[0, 1, 2, 3, 4].map((i) => <div key={i} className="skeleton" style={{ height: 40 }} />)}
+      </div>
+    </div>
+  );
 
   return (
     <div className="dash">

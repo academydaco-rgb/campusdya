@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { api, DiplomaOutT, AnnouncementT, ScheduleT, MyBadgeT, ContinueT } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
+import CountUp from "@/components/CountUp";
 
 function fdate(d: string) {
   try { return new Date(d).toLocaleDateString("es-CO", { day: "2-digit", month: "short" }); } catch { return ""; }
@@ -68,11 +69,11 @@ export default function DashboardPage() {
       {/* Stats bento */}
       <div className="grid-3 fade-up d1">
         <div className="card stat stat-cyan">
-          <span className="n" style={{ color: "var(--cyan)" }}>{mine.length}</span>
+          <span className="n" style={{ color: "var(--cyan)" }}><CountUp value={mine.length} /></span>
           <span className="l">Diplomados activos</span>
         </div>
         <div className="card stat stat-gold">
-          <span className="n" style={{ color: "var(--gold)" }}>{badges.length}</span>
+          <span className="n" style={{ color: "var(--gold)" }}><CountUp value={badges.length} /></span>
           <span className="l">Insignias ganadas</span>
         </div>
         <div className="card stat stat-violet">

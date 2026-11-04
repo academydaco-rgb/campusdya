@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { api, UniverseT, DiplomaCardT } from "@/lib/api";
+import Reveal from "@/components/Reveal";
 
 export default function Explorar() {
   const router = useRouter();
@@ -23,7 +24,8 @@ export default function Explorar() {
         {(data?.phases || []).map((p, i) => {
           const color = p.color || "var(--brand)";
           return (
-            <div key={p.id} className={`card fade-up d${Math.min(i + 1, 4)}`} style={{ padding: 22, position: "relative", overflow: "hidden" }}>
+            <Reveal key={p.id} delay={i * 60}>
+            <div className="card" style={{ padding: 22, position: "relative", overflow: "hidden" }}>
               <div style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: 4, background: color }} />
               <div style={{ position: "absolute", right: -40, top: -40, width: 180, height: 180, background: `radial-gradient(circle, ${color}22, transparent 70%)` }} />
               <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
@@ -49,6 +51,7 @@ export default function Explorar() {
                 ))}
               </div>
             </div>
+            </Reveal>
           );
         })}
         {data && data.phases.length === 0 && <div className="card" style={{ padding: 24 }}><span className="muted">Aún no hay fases configuradas.</span></div>}
