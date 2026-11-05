@@ -60,9 +60,8 @@ export default function DashboardPage() {
           <section className="hero fade-up">
             <div className="neb" /><div className="stars" /><div className="pl" />
             <div className="hc">
-              <span className="eyebrow">D&A Academy · Acceso premium</span>
-              <h1>Hola, {firstName} <span className="cy">👋</span></h1>
-              <p>Continúa donde quedaste y sigue escalando tu e-commerce.</p>
+              <h1>Bienvenido, {firstName} <span className="cy">👋</span></h1>
+              <p>Aquí es donde se construyen los sueños.</p>
               <Link className="cta" href={cont ? `/leccion/${cont.lesson_id}` : "/explorar"}>Continuar aprendiendo <ArrowRight size={16} /></Link>
             </div>
             <div className="hero-video">

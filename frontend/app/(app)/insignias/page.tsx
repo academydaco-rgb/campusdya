@@ -1,11 +1,8 @@
 "use client";
 import { useEffect, useState } from "react";
-import QRCode from "qrcode";
 import { api, MyBadgeT } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
 import { Download, BadgeCheck } from "lucide-react";
-
-const SITE = "https://campusdya.com";
 
 function rr(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, r: number) {
   ctx.beginPath();
@@ -24,6 +21,15 @@ function hexPath(ctx: CanvasRenderingContext2D, cx: number, cy: number, R: numbe
     i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
   }
   ctx.closePath();
+}
+function loadImg(src: string, cross = false): Promise<HTMLImageElement> {
+  return new Promise((res, rej) => {
+    const im = new Image();
+    if (cross) im.crossOrigin = "anonymous";
+    im.onload = () => res(im);
+    im.onerror = rej;
+    im.src = src;
+  });
 }
 
 async function descargarCertificado(b: MyBadgeT, userName: string) {
@@ -45,7 +51,6 @@ async function descargarCertificado(b: MyBadgeT, userName: string) {
   neb(1520, 120, 760, "rgba(217,70,239,.20)");
   neb(1500, 1080, 760, "rgba(139,92,246,.20)");
   neb(120, 1060, 640, "rgba(124,58,237,.14)");
-  // estrellas
   ctx.fillStyle = "#ffffff";
   for (let i = 0; i < 90; i++) {
     const x = Math.random() * W, y = Math.random() * H, s = Math.random() * 1.6 + 0.3;
@@ -64,66 +69,71 @@ async function descargarCertificado(b: MyBadgeT, userName: string) {
 
   // ── Logo ──
   try {
-    const logo = new Image(); logo.src = "/logo.png";
-    await new Promise((res, rej) => { logo.onload = res; logo.onerror = rej; });
+    const logo = await loadImg("/logo.png");
     const lw = 270, lh = lw * (logo.height / logo.width || 0.78);
     ctx.drawImage(logo, W / 2 - lw / 2, 86, lw, lh);
   } catch { /* sin logo */ }
 
-  // Subtítulo
   ctx.fillStyle = "#c9b7ff"; ctx.font = "700 24px Montserrat, Arial";
-  ctx.fillText("C E R T I F I C A D O   D E   F I N A L I Z A C I Ó N", W / 2, 362);
+  ctx.fillText("C E R T I F I C A D O   D E   F I N A L I Z A C I Ó N", W / 2, 360);
 
-  // ── Emblema hexagonal ──
-  const cx = W / 2, cy = 452, R = 56;
-  const eg = ctx.createLinearGradient(cx - R, cy - R, cx + R, cy + R);
-  eg.addColorStop(0, "#d946ef"); eg.addColorStop(1, "#7c3aed");
-  ctx.save();
-  ctx.shadowColor = "rgba(217,70,239,.6)"; ctx.shadowBlur = 36;
-  hexPath(ctx, cx, cy, R); ctx.fillStyle = eg; ctx.fill();
-  ctx.restore();
-  hexPath(ctx, cx, cy, R); ctx.strokeStyle = "rgba(255,255,255,.35)"; ctx.lineWidth = 2; ctx.stroke();
-  ctx.fillStyle = "#ffffff"; ctx.font = "48px Arial"; ctx.fillText("🎓", cx, cy + 16);
+  // ── Emblema: insignia del diplomado (o hexágono de respaldo) ──
+  const cx = W / 2, cy = 456;
+  let drew = false;
+  if (b.image_url) {
+    try {
+      const bi = await loadImg(b.image_url, true);
+      const bw = 160, bh = bw * (bi.height / bi.width || 1);
+      ctx.save(); ctx.shadowColor = "rgba(217,70,239,.6)"; ctx.shadowBlur = 42;
+      ctx.drawImage(bi, cx - bw / 2, cy - bh / 2, bw, bh); ctx.restore();
+      drew = true;
+    } catch { /* fallback */ }
+  }
+  if (!drew) {
+    const R = 58;
+    const eg = ctx.createLinearGradient(cx - R, cy - R, cx + R, cy + R);
+    eg.addColorStop(0, "#d946ef"); eg.addColorStop(1, "#7c3aed");
+    ctx.save(); ctx.shadowColor = "rgba(217,70,239,.6)"; ctx.shadowBlur = 36;
+    hexPath(ctx, cx, cy, R); ctx.fillStyle = eg; ctx.fill(); ctx.restore();
+    hexPath(ctx, cx, cy, R); ctx.strokeStyle = "rgba(255,255,255,.35)"; ctx.lineWidth = 2; ctx.stroke();
+    ctx.fillStyle = "#ffffff"; ctx.font = "48px Arial"; ctx.fillText("🎓", cx, cy + 16);
+  }
 
   // ── Cuerpo ──
+  ctx.textAlign = "center";
   ctx.fillStyle = "#9aa0b8"; ctx.font = "400 24px Montserrat, Arial";
-  ctx.fillText("Se otorga el presente certificado a", cx, 582);
+  ctx.fillText("Se otorga el presente certificado a", cx, 596);
   ctx.fillStyle = "#ffffff"; ctx.font = "800 68px Montserrat, Georgia";
-  ctx.fillText(userName, cx, 656);
+  ctx.fillText(userName, cx, 672);
   const ug = ctx.createLinearGradient(cx - 300, 0, cx + 300, 0);
   ug.addColorStop(0, "rgba(34,224,255,0)"); ug.addColorStop(0.5, "#22e0ff"); ug.addColorStop(1, "rgba(217,70,239,0)");
-  ctx.strokeStyle = ug; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.moveTo(cx - 320, 684); ctx.lineTo(cx + 320, 684); ctx.stroke();
+  ctx.strokeStyle = ug; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.moveTo(cx - 320, 700); ctx.lineTo(cx + 320, 700); ctx.stroke();
 
   ctx.fillStyle = "#9aa0b8"; ctx.font = "400 24px Montserrat, Arial";
-  ctx.fillText("por completar satisfactoriamente el diplomado", cx, 744);
+  ctx.fillText("por completar satisfactoriamente el diplomado", cx, 758);
   ctx.fillStyle = "#eafcff"; ctx.font = "800 42px Montserrat, Arial";
   const title = b.diploma_title || b.name;
-  ctx.fillText(title.length > 44 ? title.slice(0, 43) + "…" : title, cx, 804);
+  ctx.fillText(title.length > 44 ? title.slice(0, 43) + "…" : title, cx, 818);
 
   ctx.fillStyle = "#6b7196"; ctx.font = "400 22px Montserrat, Arial";
   const fecha = new Date(b.awarded_at || Date.now()).toLocaleDateString("es-CO", { day: "2-digit", month: "long", year: "numeric" });
-  ctx.fillText(`Otorgado el ${fecha}`, cx, 858);
+  ctx.fillText(`Otorgado el ${fecha}`, cx, 872);
 
-  // ── Verificación + QR ──
-  const code = b.code || "—";
-  const verifyUrl = `${SITE}/verificar/${code}`;
-  try {
-    const qr = await QRCode.toDataURL(verifyUrl, { margin: 1, width: 170, color: { dark: "#0a0a16", light: "#ffffff" } });
-    const img = new Image();
-    await new Promise((res) => { img.onload = res; img.src = qr; });
-    ctx.fillStyle = "#ffffff"; rr(ctx, 150, 908, 150, 150, 14); ctx.fill();
-    ctx.drawImage(img, 157, 915, 136, 136);
-  } catch { /* sin qr */ }
-  ctx.textAlign = "left";
-  ctx.fillStyle = "#c9b7ff"; ctx.font = "700 20px Montserrat, Arial"; ctx.fillText("Código de verificación", 320, 952);
-  ctx.fillStyle = "#22e0ff"; ctx.font = "800 30px monospace"; ctx.fillText(code, 320, 992);
-  ctx.fillStyle = "#6b7196"; ctx.font = "400 18px Montserrat, Arial"; ctx.fillText(`campusdya.com/verificar/${code}`, 320, 1024);
-
-  ctx.textAlign = "right";
-  ctx.strokeStyle = "rgba(255,255,255,.25)"; ctx.lineWidth = 1.5;
-  ctx.beginPath(); ctx.moveTo(1120, 980); ctx.lineTo(1450, 980); ctx.stroke();
-  ctx.fillStyle = "#c9c7de"; ctx.font = "italic 22px Georgia"; ctx.fillText("Dirección Académica", 1450, 1012);
-  ctx.fillStyle = "#6b7196"; ctx.font = "400 18px Montserrat, Arial"; ctx.fillText("D&A Academy · E-commerce", 1450, 1040);
+  // ── Firmas de fundadores ──
+  const firma = async (src: string, x: number, name: string) => {
+    ctx.textAlign = "center";
+    try {
+      const im = await loadImg(src);
+      const sw = 196, sh = sw * (im.height / im.width || 0.42);
+      ctx.drawImage(im, x - sw / 2, 948 - sh, sw, Math.min(sh, 86));
+    } catch { /* sin firma aún */ }
+    ctx.strokeStyle = "rgba(255,255,255,.3)"; ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.moveTo(x - 160, 962); ctx.lineTo(x + 160, 962); ctx.stroke();
+    ctx.fillStyle = "#eafcff"; ctx.font = "700 26px Montserrat, Arial"; ctx.fillText(name, x, 998);
+    ctx.fillStyle = "#9aa0b8"; ctx.font = "400 18px Montserrat, Arial"; ctx.fillText("Fundador · D&A Academy", x, 1026);
+  };
+  await firma("/firma-diego.png", 520, "Diego Patarroyo");
+  await firma("/firma-andres.png", 1080, "Andrés Patarroyo");
 
   const a = document.createElement("a");
   a.href = c.toDataURL("image/png");
@@ -141,7 +151,7 @@ export default function Insignias() {
         <span className="ic"><BadgeCheck /></span>
         <h2 style={{ fontSize: 24 }}>Mis insignias y certificados</h2>
       </div>
-      <p className="muted" style={{ marginTop: 6, marginBottom: 22 }}>Completa diplomados y gánate tu certificado verificable con código y QR.</p>
+      <p className="muted" style={{ marginTop: 6, marginBottom: 22 }}>Completa diplomados y gánate tu certificado con la insignia del diplomado y la firma de los fundadores.</p>
       <div className="grid" style={{ gridTemplateColumns: "repeat(auto-fit,minmax(280px,1fr))" }}>
         {items.map((b) => (
           <div key={b.id} className="card" style={{ padding: 24, textAlign: "center" }}>
@@ -149,7 +159,6 @@ export default function Insignias() {
               ? <img src={b.image_url} alt={b.name} style={{ width: 96, height: 96, objectFit: "contain", margin: "0 auto", display: "block", filter: "drop-shadow(0 8px 20px rgba(217,70,239,.5))" }} />
               : <div style={{ fontSize: 60, filter: "drop-shadow(0 0 18px var(--magenta))" }}>{b.icon || "🏅"}</div>}
             <div style={{ fontWeight: 800, marginTop: 12, color: "#fff" }}>{b.diploma_title || b.name}</div>
-            {b.code && <div className="muted" style={{ fontSize: 11.5, marginTop: 4, fontFamily: "monospace" }}>Código: {b.code}</div>}
             <div style={{ marginTop: 16 }}>
               <button className="btn btn-primary" style={{ width: "100%", justifyContent: "center", padding: "10px 12px", fontSize: 13.5 }} onClick={() => descargarCertificado(b, user?.name || "Alumno")}><Download size={15} /> Descargar certificado</button>
             </div>
