@@ -356,6 +356,22 @@ p{line-height:1.6}
 .datecal .top i{width:3px;height:6px;border-radius:2px;background:rgba(255,255,255,.75)}
 .datecal .d{font-family:var(--font-display);font-weight:800;font-size:21px;line-height:1;margin-top:7px;color:#fff}
 .datecal .m{font-size:10px;color:var(--muted);letter-spacing:.08em;margin-top:2px}
+
+/* ── Campana / notificaciones ── */
+.bell.has-unread{border-color:rgba(217,70,239,.5);animation:bellPulse 2s ease-in-out infinite}
+@keyframes bellPulse{0%,100%{box-shadow:0 0 0 0 rgba(217,70,239,0)}50%{box-shadow:0 0 0 6px rgba(217,70,239,.14)}}
+.nbadge{position:absolute;top:-6px;right:-6px;min-width:18px;height:18px;padding:0 4px;border-radius:999px;background:var(--magenta);color:#fff;font-size:11px;font-weight:800;display:grid;place-items:center;box-shadow:0 0 10px rgba(217,70,239,.7);border:1.5px solid #0a0a16}
+.notifpanel{position:absolute;top:calc(100% + 10px);right:0;width:360px;max-width:88vw;background:linear-gradient(180deg,#15122a,#0e0c1a);border:1px solid var(--line-2);border-radius:16px;overflow:hidden;z-index:50;box-shadow:0 30px 70px -20px #000}
+.notifhead{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--line)}
+.notifhead b{font-size:14px}
+.notifhead button{background:none;border:0;color:#cbb8ff;display:grid;place-items:center}
+.notiflist{max-height:60vh;overflow-y:auto}
+.notifitem{display:flex;gap:12px;padding:14px 16px;border-bottom:1px solid var(--line)}
+.notifitem:last-child{border-bottom:0}
+.notifitem.unread{background:rgba(217,70,239,.06)}
+.notifitem .nimg{width:56px;height:56px;border-radius:10px;flex:none;border:1px solid var(--line-2)}
+.notifitem .ndot{width:7px;height:7px;border-radius:999px;background:var(--magenta);flex:none;box-shadow:0 0 8px var(--magenta)}
+
 /* Movimiento reducido: conservamos el 3D/transiciones clave, suavizados */
 @media (prefers-reduced-motion:reduce){
   body::before,.login-orbits .orbit,.hero-video .play .pbtn{animation:none}

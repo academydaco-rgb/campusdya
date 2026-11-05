@@ -10,6 +10,7 @@ from app.models.schedule import ScheduleEvent
 from app.models.setting import SiteSetting
 from app.models.provider import Provider
 from app.models.reset import PasswordResetToken
+from app.models.notification import Notification, NotificationRead
 from app.models.announcement import Announcement
 
 __all__ = [
@@ -25,4 +26,5 @@ __all__ = [
     "SiteSetting",
     "Provider",
     "PasswordResetToken",
+    "Notification", "NotificationRead",
 ]

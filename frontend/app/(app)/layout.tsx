@@ -6,7 +6,7 @@ import { useAuth } from "@/lib/auth";
 import Spotlight from "@/components/Spotlight";
 import TopBar from "@/components/TopBar";
 import { Home, GraduationCap, CalendarDays, Video, Package, Award, Users, MessagesSquare, UserCircle,
-  BookOpen, UserCog, KeyRound, Megaphone, ShieldCheck, Rocket, ExternalLink, type LucideIcon } from "lucide-react";
+  BookOpen, UserCog, KeyRound, Megaphone, ShieldCheck, Rocket, ExternalLink, Bell, type LucideIcon } from "lucide-react";
 
 const APRENDER: NavItem[] = [
   { href: "/dashboard", label: "Inicio", Icon: Home },
@@ -27,6 +27,7 @@ const ADMIN: NavItem[] = [
   { href: "/admin/proveedores", label: "Proveedores", Icon: Package },
   { href: "/admin/classroom", label: "Classroom", Icon: CalendarDays },
   { href: "/admin/comunicados", label: "Comunicados", Icon: Megaphone },
+  { href: "/admin/notificaciones", label: "Notificaciones", Icon: Bell },
   { href: "/admin/moderacion", label: "Moderación", Icon: ShieldCheck },
 ];
 interface NavItem { href: string; label: string; Icon: LucideIcon; }
