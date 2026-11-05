@@ -5,13 +5,13 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.database import get_db
 from app.core.deps import get_current_user
 from app.models.user import User
-from app.models.catalog import Phase, Teacher, LiveClass
+from app.models.catalog import Phase, Teacher, LiveClass, CasoExito
 from app.models.provider import Provider
 from app.models.content import Diploma, Module, Lesson
 from app.models.learning import Enrollment, LessonProgress
 from app.models.feedback import Feedback
 from app.models.schedule import ScheduleEvent
-from app.schemas.catalog import TeacherOut, LiveClassOut
+from app.schemas.catalog import TeacherOut, LiveClassOut, CasoExitoOut
 from app.schemas.provider import ProviderOut
 from app.schemas.schedule import ScheduleOut
 from app.schemas.feedback import FeedbackCreate, FeedbackOut
@@ -147,6 +147,11 @@ async def public_teachers(db: AsyncSession = Depends(get_db), user: User = Depen
 @router.get("/live-classes", response_model=list[LiveClassOut])
 async def public_live(db: AsyncSession = Depends(get_db), user: User = Depends(get_current_user)):
     return (await db.execute(select(LiveClass).where(LiveClass.status == "published").order_by(LiveClass.happened_at.desc().nullslast()))).scalars().all()
+
+
+@router.get("/success-cases", response_model=list[CasoExitoOut])
+async def public_success_cases(db: AsyncSession = Depends(get_db), user: User = Depends(get_current_user)):
+    return (await db.execute(select(CasoExito).where(CasoExito.status == "published").order_by(CasoExito.order, CasoExito.created_at.desc()))).scalars().all()
 
 
 @router.get("/providers", response_model=list[ProviderOut])

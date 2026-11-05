@@ -97,3 +97,35 @@ class LiveClassOut(BaseModel):
     diploma_id: uuid.UUID | None = None
     phase_id: uuid.UUID | None = None
     status: str
+
+
+class CasoExitoCreate(BaseModel):
+    title: str
+    description: str | None = None
+    videopress_url: str | None = None
+    external_url: str | None = None
+    cover_url: str | None = None
+    order: int = 0
+    status: str = "published"
+
+
+class CasoExitoUpdate(BaseModel):
+    title: str | None = None
+    description: str | None = None
+    videopress_url: str | None = None
+    external_url: str | None = None
+    cover_url: str | None = None
+    order: int | None = None
+    status: str | None = None
+
+
+class CasoExitoOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    id: uuid.UUID
+    title: str
+    description: str | None = None
+    videopress_url: str | None = None
+    external_url: str | None = None
+    cover_url: str | None = None
+    order: int
+    status: str

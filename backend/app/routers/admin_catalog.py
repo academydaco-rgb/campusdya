@@ -5,7 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.database import get_db
 from app.core.deps import require_admin
 from app.models.user import User
-from app.models.catalog import Phase, Teacher, LiveClass
+from app.models.catalog import Phase, Teacher, LiveClass, CasoExito
 from app.models.provider import Provider
 from app.models.community import Comment
 from app.models.feedback import Feedback
@@ -14,6 +14,7 @@ from app.schemas.catalog import (
     PhaseCreate, PhaseUpdate, PhaseOut,
     TeacherCreate, TeacherUpdate, TeacherOut,
     LiveClassCreate, LiveClassUpdate, LiveClassOut,
+    CasoExitoCreate, CasoExitoUpdate, CasoExitoOut,
 )
 from app.schemas.provider import ProviderCreate, ProviderUpdate, ProviderOut
 from app.schemas.schedule import ScheduleCreate, ScheduleUpdate, ScheduleOut
@@ -209,4 +210,28 @@ async def set_feedback_status(feedback_id: uuid.UUID, status: str = Query(...), 
 @router.delete("/feedback/{feedback_id}")
 async def delete_feedback(feedback_id: uuid.UUID, db: AsyncSession = Depends(get_db), a: User = Depends(require_admin)):
     obj = await _get(db, Feedback, feedback_id); await db.delete(obj); await db.commit()
+    return {"ok": True}
+
+
+# ───────── Casos de éxito ─────────
+@router.post("/success-cases", response_model=CasoExitoOut)
+async def create_caso(data: CasoExitoCreate, db: AsyncSession = Depends(get_db), a: User = Depends(require_admin)):
+    obj = CasoExito(**data.model_dump()); db.add(obj); await db.commit(); await db.refresh(obj)
+    return obj
+
+
+@router.get("/success-cases", response_model=list[CasoExitoOut])
+async def list_caso_admin(db: AsyncSession = Depends(get_db), a: User = Depends(require_admin)):
+    return (await db.execute(select(CasoExito).order_by(CasoExito.order, CasoExito.created_at.desc()))).scalars().all()
+
+
+@router.put("/success-cases/{caso_id}", response_model=CasoExitoOut)
+async def update_caso(caso_id: uuid.UUID, data: CasoExitoUpdate, db: AsyncSession = Depends(get_db), a: User = Depends(require_admin)):
+    obj = await _get(db, CasoExito, caso_id); _apply(obj, data); await db.commit(); await db.refresh(obj)
+    return obj
+
+
+@router.delete("/success-cases/{caso_id}")
+async def delete_caso(caso_id: uuid.UUID, db: AsyncSession = Depends(get_db), a: User = Depends(require_admin)):
+    obj = await _get(db, CasoExito, caso_id); await db.delete(obj); await db.commit()
     return {"ok": True}

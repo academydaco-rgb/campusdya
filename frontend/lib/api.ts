@@ -51,6 +51,7 @@ export interface LessonDetailT {
 }
 export interface TeacherT { id: string; name: string; bio?: string | null; photo_url?: string | null; whatsapp?: string | null; order?: number; status?: string; }
 export interface LiveClassT { id: string; title: string; description?: string | null; videopress_url?: string | null; cover_url?: string | null; happened_at?: string | null; diploma_id?: string | null; phase_id?: string | null; status?: string; }
+export interface CasoExitoT { id: string; title: string; description?: string | null; videopress_url?: string | null; external_url?: string | null; cover_url?: string | null; order?: number; status?: string; }
 export interface ProviderT { id: string; title: string; description?: string | null; videopress_url?: string | null; cover_url?: string | null; order?: number; status?: string; }
 export interface FeedbackT { id: string; user_id: string; body: string; results?: string | null; rating?: number | null; image_url?: string | null; status: string; created_at: string; author_name?: string | null; author_avatar?: string | null; author_bio?: string | null; }
 
