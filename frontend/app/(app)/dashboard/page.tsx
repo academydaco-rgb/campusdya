@@ -3,15 +3,12 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { api, DiplomaOutT, AnnouncementT, ScheduleT, MyBadgeT, ContinueT } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
-import Ring from "@/components/Ring";
 import Tilt from "@/components/Tilt";
+import NewsBlock from "@/components/NewsBlock";
 import TLink from "@/components/TLink";
-import { GraduationCap, PlayCircle, TrendingUp, Award, Megaphone, Radio, MessagesSquare,
+import { GraduationCap, PlayCircle, TrendingUp, Award, Radio, MessagesSquare,
   Play, ChevronRight, Clock, ArrowRight } from "lucide-react";
 
-function fdate(d: string) {
-  try { return new Date(d).toLocaleDateString("es-CO", { day: "2-digit", month: "short" }); } catch { return ""; }
-}
 function dayNum(d: string) { try { return new Date(d).toLocaleDateString("es-CO", { day: "2-digit" }); } catch { return ""; } }
 function monNum(d: string) { try { return new Date(d).toLocaleDateString("es-CO", { month: "short" }).toUpperCase().replace(".", ""); } catch { return ""; } }
 function htime(d: string) { try { return new Date(d).toLocaleTimeString("es-CO", { hour: "2-digit", minute: "2-digit" }); } catch { return ""; } }
@@ -155,7 +152,6 @@ export default function DashboardPage() {
                 {mine.map((d) => (
                   <TLink key={d.id} href={`/diplomado/${d.slug}`} className="dcard card-hover">
                     <div className="cov" style={{ background: d.cover_url ? `center/cover url(${d.cover_url})` : "linear-gradient(135deg,#2a1150,#6d28d9)", viewTransitionName: `dip-${d.slug}` }}>
-                      <div className="ringbadge"><Ring value={d.progress || 0} size={40} /></div>
                     </div>
                     <div className="db">
                       <span className="t">{d.title}</span>
@@ -181,9 +177,8 @@ export default function DashboardPage() {
                 {badges.slice(0, 3).map((b) => (
                   <div key={b.id}>
                     {b.image_url
-                      ? <img src={b.image_url} alt={b.name} title={b.name} style={{ width: 72, height: 80, objectFit: "contain", margin: "0 auto 8px", display: "block", filter: "drop-shadow(0 6px 16px rgba(217,70,239,.4))" }} />
-                      : <div className="hexb" style={{ marginBottom: 8 }}><Award /></div>}
-                    <div className="bl">{b.name}</div>
+                      ? <img src={b.image_url} alt={b.name} title={b.name} style={{ width: "100%", maxWidth: 92, aspectRatio: "1/1", objectFit: "contain", margin: "0 auto", display: "block", filter: "drop-shadow(0 6px 16px rgba(217,70,239,.4))" }} />
+                      : <div className="hexb" title={b.name}><Award /></div>}
                   </div>
                 ))}
               </div>
@@ -191,23 +186,7 @@ export default function DashboardPage() {
           </div>
 
           {/* Noticias importantes */}
-          <div className="card" style={{ padding: 18 }}>
-            <div className="sec-h"><span className="ic"><Megaphone /></span><h2>Noticias importantes</h2><Link className="all" href="/dashboard">Ver todas <ArrowRight size={14} /></Link></div>
-            {!firstNews ? (
-              <span className="muted" style={{ fontSize: 13 }}>Aquí verás los comunicados de la academia.</span>
-            ) : (
-              <div style={{ display: "flex", gap: 14, alignItems: "center" }}>
-                <div style={{ width: 92, height: 74, borderRadius: 12, flex: "none", display: "grid", placeItems: "center", overflow: "hidden", background: firstNews.image_url ? `center/cover url(${firstNews.image_url})` : "linear-gradient(150deg,#2a1250,#141140)", color: "#e8b3ff", border: "1px solid var(--line-2)" }}>
-                  {!firstNews.image_url && <Megaphone size={26} />}
-                </div>
-                <div style={{ minWidth: 0, flex: 1 }}>
-                  <h4 style={{ fontSize: 16, fontWeight: 800, color: "#fff", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{firstNews.title}</h4>
-                  <p className="muted" style={{ fontSize: 12.5, margin: "5px 0 0", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{firstNews.body}</p>
-                  <span className="eyebrow" style={{ fontSize: 10.5, letterSpacing: ".1em", marginTop: 6, display: "inline-block" }}>{fdate(firstNews.created_at)}</span>
-                </div>
-              </div>
-            )}
-          </div>
+          <NewsBlock news={news} />
 
           {/* Próxima clase en vivo */}
           <div className="card" style={{ padding: 18 }}>
@@ -217,9 +196,10 @@ export default function DashboardPage() {
             ) : (
               <>
                 <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
-                  <div style={{ width: 64, height: 64, borderRadius: 14, flex: "none", display: "grid", placeItems: "center", border: "1px solid var(--line-2)", background: "rgba(124,58,237,.14)" }}>
-                    <b style={{ fontSize: 22, fontFamily: "var(--font-display)" }}>{dayNum(nextLive.starts_at)}</b>
-                    <span className="muted" style={{ fontSize: 11 }}>{monNum(nextLive.starts_at)}</span>
+                  <div className="datecal">
+                    <div className="top"><i /><i /></div>
+                    <div className="d">{dayNum(nextLive.starts_at)}</div>
+                    <div className="m">{monNum(nextLive.starts_at)}</div>
                   </div>
                   <div style={{ minWidth: 0 }}>
                     <b style={{ fontSize: 15, color: "#fff", display: "block", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{nextLive.title}</b>

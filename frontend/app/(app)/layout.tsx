@@ -6,7 +6,7 @@ import { useAuth } from "@/lib/auth";
 import Spotlight from "@/components/Spotlight";
 import TopBar from "@/components/TopBar";
 import { Home, GraduationCap, CalendarDays, Video, Package, Award, Users, MessagesSquare, UserCircle,
-  BookOpen, UserCog, KeyRound, Megaphone, ShieldCheck, type LucideIcon } from "lucide-react";
+  BookOpen, UserCog, KeyRound, Megaphone, ShieldCheck, Rocket, ExternalLink, type LucideIcon } from "lucide-react";
 
 const APRENDER: NavItem[] = [
   { href: "/dashboard", label: "Inicio", Icon: Home },
@@ -17,7 +17,6 @@ const APRENDER: NavItem[] = [
   { href: "/insignias", label: "Insignias", Icon: Award },
   { href: "/feedback", label: "Comunidad", Icon: MessagesSquare },
   { href: "/profesores", label: "Profesores", Icon: Users },
-  { href: "/perfil", label: "Mi perfil", Icon: UserCircle },
 ];
 const ADMIN: NavItem[] = [
   { href: "/admin/diplomados", label: "Diplomados", Icon: BookOpen },
@@ -56,6 +55,10 @@ export default function AppLayout({ children }: { children: ReactNode }) {
 
         <div className="nav-group">
           {APRENDER.map((n) => <Item key={n.href} {...n} active={match(n.href)} />)}
+          <a href="https://dyalaunchsystem.com" target="_blank" rel="noreferrer" className="nav-item nav-launch">
+            <span className="ic"><Rocket size={19} strokeWidth={2} /></span>D&A Launch System<ExternalLink size={14} style={{ marginLeft: "auto", opacity: .7 }} />
+          </a>
+          <Item href="/perfil" label="Mi perfil" Icon={UserCircle} active={match("/perfil")} />
         </div>
 
         {isAdmin && (
@@ -66,8 +69,8 @@ export default function AppLayout({ children }: { children: ReactNode }) {
         )}
 
         <div className="promo">
-          <div className="crown">♛</div>
-          <h4>Formación Práctica, Aplicada y con Resultados</h4>
+          <div className="crown"><Rocket size={30} strokeWidth={2} /></div>
+          <h4>Más de 1.700 estudiantes en 9 países. 70% son casos de éxito… y tú serás el próximo.</h4>
           <div className="u" />
           <div className="planet" />
         </div>
