@@ -3,69 +3,132 @@ import { useEffect, useState } from "react";
 import QRCode from "qrcode";
 import { api, MyBadgeT } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
+import { Download, BadgeCheck } from "lucide-react";
 
 const SITE = "https://campusdya.com";
 
+function rr(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, r: number) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.arcTo(x + w, y, x + w, y + h, r);
+  ctx.arcTo(x + w, y + h, x, y + h, r);
+  ctx.arcTo(x, y + h, x, y, r);
+  ctx.arcTo(x, y, x + w, y, r);
+  ctx.closePath();
+}
+function hexPath(ctx: CanvasRenderingContext2D, cx: number, cy: number, R: number) {
+  ctx.beginPath();
+  for (let i = 0; i < 6; i++) {
+    const a = (Math.PI / 180) * (60 * i - 90);
+    const x = cx + R * Math.cos(a), y = cy + R * Math.sin(a) * 1.05;
+    i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+  }
+  ctx.closePath();
+}
+
 async function descargarCertificado(b: MyBadgeT, userName: string) {
+  const W = 1600, H = 1130;
   const c = document.createElement("canvas");
-  c.width = 1600; c.height = 1130;
+  c.width = W; c.height = H;
   const ctx = c.getContext("2d");
   if (!ctx) return;
-  // Fondo
-  const g = ctx.createLinearGradient(0, 0, 1600, 1130);
-  g.addColorStop(0, "#071326"); g.addColorStop(0.55, "#0a1630"); g.addColorStop(1, "#0a0f22");
-  ctx.fillStyle = g; ctx.fillRect(0, 0, 1600, 1130);
-  // Marco
-  ctx.strokeStyle = "#00ffff"; ctx.lineWidth = 4; ctx.strokeRect(46, 46, 1508, 1038);
-  ctx.strokeStyle = "rgba(0,255,255,.25)"; ctx.lineWidth = 1.5; ctx.strokeRect(66, 66, 1468, 998);
+  try { await (document as unknown as { fonts: { ready: Promise<unknown> } }).fonts.ready; } catch { /* noop */ }
+
+  // ── Fondo espacio profundo ──
+  ctx.fillStyle = "#07060f"; ctx.fillRect(0, 0, W, H);
+  const neb = (x: number, y: number, r: number, col: string) => {
+    const rg = ctx.createRadialGradient(x, y, 0, x, y, r);
+    rg.addColorStop(0, col); rg.addColorStop(1, "rgba(0,0,0,0)");
+    ctx.fillStyle = rg; ctx.fillRect(0, 0, W, H);
+  };
+  neb(120, 90, 720, "rgba(34,224,255,.16)");
+  neb(1520, 120, 760, "rgba(217,70,239,.20)");
+  neb(1500, 1080, 760, "rgba(139,92,246,.20)");
+  neb(120, 1060, 640, "rgba(124,58,237,.14)");
+  // estrellas
+  ctx.fillStyle = "#ffffff";
+  for (let i = 0; i < 90; i++) {
+    const x = Math.random() * W, y = Math.random() * H, s = Math.random() * 1.6 + 0.3;
+    ctx.globalAlpha = Math.random() * 0.5 + 0.15;
+    ctx.beginPath(); ctx.arc(x, y, s, 0, Math.PI * 2); ctx.fill();
+  }
+  ctx.globalAlpha = 1;
+
+  // ── Marco con degradado ──
+  const fg = ctx.createLinearGradient(40, 40, W - 40, H - 40);
+  fg.addColorStop(0, "#22e0ff"); fg.addColorStop(0.5, "#d946ef"); fg.addColorStop(1, "#8b5cf6");
+  ctx.strokeStyle = fg; ctx.lineWidth = 3; rr(ctx, 44, 44, W - 88, H - 88, 28); ctx.stroke();
+  ctx.strokeStyle = "rgba(217,70,239,.3)"; ctx.lineWidth = 1.4; rr(ctx, 64, 64, W - 128, H - 128, 20); ctx.stroke();
+
   ctx.textAlign = "center";
-  // Encabezado
-  ctx.fillStyle = "#00ffff"; ctx.font = "bold 40px Arial"; ctx.fillText("D&A ACADEMY", 800, 170);
-  ctx.fillStyle = "#9fb4c7"; ctx.font = "600 22px Arial"; ctx.fillText("CERTIFICADO DE FINALIZACIÓN", 800, 215);
-  // Emblema
-  ctx.beginPath(); ctx.arc(800, 320, 54, 0, Math.PI * 2);
-  ctx.fillStyle = "rgba(0,255,255,.12)"; ctx.fill();
-  ctx.strokeStyle = "#00ffff"; ctx.lineWidth = 3; ctx.stroke();
-  ctx.font = "54px Arial"; ctx.fillText("🎓", 800, 340);
-  // Cuerpo
-  ctx.fillStyle = "#8aa0ad"; ctx.font = "24px Arial"; ctx.fillText("Se otorga el presente certificado a", 800, 460);
-  ctx.fillStyle = "#ffffff"; ctx.font = "bold 64px Georgia"; ctx.fillText(userName, 800, 540);
-  ctx.strokeStyle = "rgba(0,255,255,.5)"; ctx.lineWidth = 2;
-  ctx.beginPath(); ctx.moveTo(500, 568); ctx.lineTo(1100, 568); ctx.stroke();
-  ctx.fillStyle = "#8aa0ad"; ctx.font = "24px Arial"; ctx.fillText("por completar satisfactoriamente el diplomado", 800, 630);
-  ctx.fillStyle = "#eafcff"; ctx.font = "bold 40px Arial";
+
+  // ── Logo ──
+  try {
+    const logo = new Image(); logo.src = "/logo.png";
+    await new Promise((res, rej) => { logo.onload = res; logo.onerror = rej; });
+    const lw = 270, lh = lw * (logo.height / logo.width || 0.78);
+    ctx.drawImage(logo, W / 2 - lw / 2, 86, lw, lh);
+  } catch { /* sin logo */ }
+
+  // Subtítulo
+  ctx.fillStyle = "#c9b7ff"; ctx.font = "700 24px Montserrat, Arial";
+  ctx.fillText("C E R T I F I C A D O   D E   F I N A L I Z A C I Ó N", W / 2, 362);
+
+  // ── Emblema hexagonal ──
+  const cx = W / 2, cy = 452, R = 56;
+  const eg = ctx.createLinearGradient(cx - R, cy - R, cx + R, cy + R);
+  eg.addColorStop(0, "#d946ef"); eg.addColorStop(1, "#7c3aed");
+  ctx.save();
+  ctx.shadowColor = "rgba(217,70,239,.6)"; ctx.shadowBlur = 36;
+  hexPath(ctx, cx, cy, R); ctx.fillStyle = eg; ctx.fill();
+  ctx.restore();
+  hexPath(ctx, cx, cy, R); ctx.strokeStyle = "rgba(255,255,255,.35)"; ctx.lineWidth = 2; ctx.stroke();
+  ctx.fillStyle = "#ffffff"; ctx.font = "48px Arial"; ctx.fillText("🎓", cx, cy + 16);
+
+  // ── Cuerpo ──
+  ctx.fillStyle = "#9aa0b8"; ctx.font = "400 24px Montserrat, Arial";
+  ctx.fillText("Se otorga el presente certificado a", cx, 582);
+  ctx.fillStyle = "#ffffff"; ctx.font = "800 68px Montserrat, Georgia";
+  ctx.fillText(userName, cx, 656);
+  const ug = ctx.createLinearGradient(cx - 300, 0, cx + 300, 0);
+  ug.addColorStop(0, "rgba(34,224,255,0)"); ug.addColorStop(0.5, "#22e0ff"); ug.addColorStop(1, "rgba(217,70,239,0)");
+  ctx.strokeStyle = ug; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.moveTo(cx - 320, 684); ctx.lineTo(cx + 320, 684); ctx.stroke();
+
+  ctx.fillStyle = "#9aa0b8"; ctx.font = "400 24px Montserrat, Arial";
+  ctx.fillText("por completar satisfactoriamente el diplomado", cx, 744);
+  ctx.fillStyle = "#eafcff"; ctx.font = "800 42px Montserrat, Arial";
   const title = b.diploma_title || b.name;
-  ctx.fillText(title.length > 46 ? title.slice(0, 45) + "…" : title, 800, 695);
-  // Fecha
-  ctx.fillStyle = "#5b6480"; ctx.font = "22px Arial";
+  ctx.fillText(title.length > 44 ? title.slice(0, 43) + "…" : title, cx, 804);
+
+  ctx.fillStyle = "#6b7196"; ctx.font = "400 22px Montserrat, Arial";
   const fecha = new Date(b.awarded_at || Date.now()).toLocaleDateString("es-CO", { day: "2-digit", month: "long", year: "numeric" });
-  ctx.fillText(`Otorgado el ${fecha}`, 800, 760);
-  // Verificación + QR
+  ctx.fillText(`Otorgado el ${fecha}`, cx, 858);
+
+  // ── Verificación + QR ──
   const code = b.code || "—";
   const verifyUrl = `${SITE}/verificar/${code}`;
   try {
-    const qr = await QRCode.toDataURL(verifyUrl, { margin: 1, width: 180, color: { dark: "#06283d", light: "#ffffff" } });
+    const qr = await QRCode.toDataURL(verifyUrl, { margin: 1, width: 170, color: { dark: "#0a0a16", light: "#ffffff" } });
     const img = new Image();
     await new Promise((res) => { img.onload = res; img.src = qr; });
-    ctx.fillStyle = "#ffffff"; ctx.fillRect(130, 905, 150, 150);
-    ctx.drawImage(img, 135, 910, 140, 140);
+    ctx.fillStyle = "#ffffff"; rr(ctx, 150, 908, 150, 150, 14); ctx.fill();
+    ctx.drawImage(img, 157, 915, 136, 136);
   } catch { /* sin qr */ }
   ctx.textAlign = "left";
-  ctx.fillStyle = "#9fb4c7"; ctx.font = "600 20px Arial"; ctx.fillText("Código de verificación", 300, 955);
-  ctx.fillStyle = "#00ffff"; ctx.font = "bold 30px monospace"; ctx.fillText(code, 300, 992);
-  ctx.fillStyle = "#5b6480"; ctx.font = "18px Arial"; ctx.fillText(`Verifica en campusdya.com/verificar/${code}`, 300, 1025);
+  ctx.fillStyle = "#c9b7ff"; ctx.font = "700 20px Montserrat, Arial"; ctx.fillText("Código de verificación", 320, 952);
+  ctx.fillStyle = "#22e0ff"; ctx.font = "800 30px monospace"; ctx.fillText(code, 320, 992);
+  ctx.fillStyle = "#6b7196"; ctx.font = "400 18px Montserrat, Arial"; ctx.fillText(`campusdya.com/verificar/${code}`, 320, 1024);
+
   ctx.textAlign = "right";
-  ctx.fillStyle = "#5b6480"; ctx.font = "italic 20px Georgia"; ctx.fillText("Dirección académica · D&A Academy", 1460, 1000);
+  ctx.strokeStyle = "rgba(255,255,255,.25)"; ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.moveTo(1120, 980); ctx.lineTo(1450, 980); ctx.stroke();
+  ctx.fillStyle = "#c9c7de"; ctx.font = "italic 22px Georgia"; ctx.fillText("Dirección Académica", 1450, 1012);
+  ctx.fillStyle = "#6b7196"; ctx.font = "400 18px Montserrat, Arial"; ctx.fillText("D&A Academy · E-commerce", 1450, 1040);
 
   const a = document.createElement("a");
   a.href = c.toDataURL("image/png");
   a.download = `certificado-${title.replace(/\s+/g, "-").toLowerCase()}.png`;
   a.click();
-}
-
-function compartirFacebook(code?: string | null) {
-  const url = code ? `${SITE}/verificar/${code}` : SITE;
-  window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`, "_blank", "width=600,height=500");
 }
 
 export default function Insignias() {
@@ -74,19 +137,21 @@ export default function Insignias() {
   useEffect(() => { api.get<MyBadgeT[]>("/api/me/badges").then(setItems).catch(() => setItems([])); }, []);
   return (
     <div>
-      <h1 style={{ fontSize: 28, fontWeight: 800 }}>Mis insignias y certificados 🏅</h1>
-      <p className="muted" style={{ marginTop: 6, marginBottom: 22 }}>Completa diplomados y gánate tu certificado verificable. Descárgalo y compártelo.</p>
+      <div className="sec-h" style={{ marginBottom: 4 }}>
+        <span className="ic"><BadgeCheck /></span>
+        <h2 style={{ fontSize: 24 }}>Mis insignias y certificados</h2>
+      </div>
+      <p className="muted" style={{ marginTop: 6, marginBottom: 22 }}>Completa diplomados y gánate tu certificado verificable con código y QR.</p>
       <div className="grid" style={{ gridTemplateColumns: "repeat(auto-fit,minmax(280px,1fr))" }}>
         {items.map((b) => (
-          <div key={b.id} className="card" style={{ padding: 22, textAlign: "center" }}>
+          <div key={b.id} className="card" style={{ padding: 24, textAlign: "center" }}>
             {b.image_url
-              ? <img src={b.image_url} alt={b.name} style={{ width: 84, height: 84, objectFit: "contain", margin: "0 auto", display: "block", filter: "drop-shadow(0 0 16px rgba(0,255,255,.45))" }} />
-              : <div style={{ fontSize: 60, filter: "drop-shadow(0 0 18px var(--cyan))" }}>{b.icon || "🏅"}</div>}
-            <div style={{ fontWeight: 800, marginTop: 10, color: "#fff" }}>{b.diploma_title || b.name}</div>
+              ? <img src={b.image_url} alt={b.name} style={{ width: 96, height: 96, objectFit: "contain", margin: "0 auto", display: "block", filter: "drop-shadow(0 8px 20px rgba(217,70,239,.5))" }} />
+              : <div style={{ fontSize: 60, filter: "drop-shadow(0 0 18px var(--magenta))" }}>{b.icon || "🏅"}</div>}
+            <div style={{ fontWeight: 800, marginTop: 12, color: "#fff" }}>{b.diploma_title || b.name}</div>
             {b.code && <div className="muted" style={{ fontSize: 11.5, marginTop: 4, fontFamily: "monospace" }}>Código: {b.code}</div>}
-            <div style={{ display: "flex", gap: 8, justifyContent: "center", marginTop: 16, flexWrap: "wrap" }}>
-              <button className="btn btn-primary" style={{ padding: "8px 12px", fontSize: 13 }} onClick={() => descargarCertificado(b, user?.name || "Alumno")}>Descargar certificado</button>
-              <button className="btn btn-ghost" style={{ padding: "8px 12px", fontSize: 13 }} onClick={() => compartirFacebook(b.code)}>Compartir</button>
+            <div style={{ marginTop: 16 }}>
+              <button className="btn btn-primary" style={{ width: "100%", justifyContent: "center", padding: "10px 12px", fontSize: 13.5 }} onClick={() => descargarCertificado(b, user?.name || "Alumno")}><Download size={15} /> Descargar certificado</button>
             </div>
           </div>
         ))}
