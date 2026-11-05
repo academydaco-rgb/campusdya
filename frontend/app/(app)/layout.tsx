@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useAuth } from "@/lib/auth";
 import Spotlight from "@/components/Spotlight";
 import TopBar from "@/components/TopBar";
-import { Home, GraduationCap, CalendarDays, Video, Package, Award, Users, MessagesSquare, UserCircle,
+import { Home, GraduationCap, CalendarDays, Video, Package, Award, Users, MessagesSquare,
   BookOpen, UserCog, KeyRound, Megaphone, ShieldCheck, Rocket, Trophy, ExternalLink, Bell, type LucideIcon } from "lucide-react";
 
 const APRENDER: NavItem[] = [
@@ -50,7 +50,7 @@ function Wolf({ size = 24 }: { size?: number }) {
 interface NavItem { href: string; label: string; Icon: LucideIcon; }
 
 function Item({ href, label, Icon, active }: NavItem & { active: boolean }) {
-  return <Link href={href} className={`nav-item${active ? " active" : ""}`}><span className="ic"><Icon size={18} strokeWidth={2} /></span>{label}</Link>;
+  return <Link href={href} className={`nav-item${active ? " active" : ""}`}><span className="ic"><Icon size={19} strokeWidth={2} /></span>{label}</Link>;
 }
 
 export default function AppLayout({ children }: { children: ReactNode }) {
@@ -76,7 +76,6 @@ export default function AppLayout({ children }: { children: ReactNode }) {
           <a href="https://dyalaunchsystem.com" target="_blank" rel="noreferrer" className="nav-item nav-launch">
             <span className="ic"><Rocket size={19} strokeWidth={2} /></span>D&A Launch System<ExternalLink size={14} style={{ marginLeft: "auto", opacity: .7 }} />
           </a>
-          <Item href="/perfil" label="Mi perfil" Icon={UserCircle} active={match("/perfil")} />
         </div>
 
         {isAdmin && (

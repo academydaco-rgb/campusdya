@@ -35,7 +35,7 @@ export default function Verificar() {
             <p className="muted" style={{ marginTop: 10, fontSize: 14 }}>completó el diplomado</p>
             <div style={{ fontSize: 18, fontWeight: 700, color: "var(--cyan)", marginTop: 4 }}>{data.diploma_title}</div>
             {data.awarded_at && <div className="muted" style={{ fontSize: 12.5, marginTop: 12 }}>Otorgado el {new Date(data.awarded_at).toLocaleDateString("es-CO", { day: "2-digit", month: "long", year: "numeric" })}</div>}
-            <div className="muted" style={{ fontSize: 11.5, marginTop: 8, fontFamily: "monospace" }}>Código: {data.code}</div>
+            <div className="muted" style={{ fontSize: 11.5, marginTop: 8 }}>Código: {data.code}</div>
           </div>
         ) : (
           <div style={{ marginTop: 20 }}>
