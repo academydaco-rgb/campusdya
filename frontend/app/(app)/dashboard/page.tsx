@@ -61,7 +61,7 @@ export default function DashboardPage() {
             <div className="neb" /><div className="stars" /><div className="pl" />
             <div className="hc">
               <h1>Bienvenido, {firstName} <span className="cy">👋</span></h1>
-              <p>Aquí es donde se construyen los sueños.</p>
+              <p>Aquí es donde se construyen los sueños: cada lección que completas te acerca un poco más a la vida y el negocio que estás creando.</p>
               <Link className="cta" href={cont ? `/leccion/${cont.lesson_id}` : "/explorar"}>Continuar aprendiendo <ArrowRight size={16} /></Link>
             </div>
             <div className="hero-video">
