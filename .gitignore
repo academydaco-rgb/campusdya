@@ -18,3 +18,9 @@ pgdata/
 .DS_Store
 
 *.tgz
+
+# temporales de build/verificación
+*.tgz
+real_globals.css
+real_logo.png
+globals.backup.css
