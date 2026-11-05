@@ -132,8 +132,8 @@ async function descargarCertificado(b: MyBadgeT, userName: string) {
     ctx.fillStyle = "#eafcff"; ctx.font = "700 26px Montserrat, Arial"; ctx.fillText(name, x, 998);
     ctx.fillStyle = "#9aa0b8"; ctx.font = "400 18px Montserrat, Arial"; ctx.fillText("Fundador · D&A Academy", x, 1026);
   };
-  await firma("/firma-diego.png", 520, "Diego Patarroyo");
-  await firma("/firma-andres.png", 1080, "Andrés Patarroyo");
+  await firma("/firmadiego.png", 520, "Diego Patarroyo");
+  await firma("/firmaandres.png", 1080, "Andrés Patarroyo");
 
   const a = document.createElement("a");
   a.href = c.toDataURL("image/png");
