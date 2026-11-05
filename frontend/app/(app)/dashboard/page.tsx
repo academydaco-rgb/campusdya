@@ -4,6 +4,7 @@ import Link from "next/link";
 import { api, DiplomaOutT, AnnouncementT, ScheduleT, MyBadgeT, ContinueT } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
 import Ring from "@/components/Ring";
+import Tilt from "@/components/Tilt";
 import TLink from "@/components/TLink";
 import { GraduationCap, PlayCircle, TrendingUp, Award, Megaphone, Radio, MessagesSquare,
   Play, ChevronRight, Clock, ArrowRight } from "lucide-react";
@@ -87,22 +88,22 @@ export default function DashboardPage() {
 
           {/* Stats */}
           <div className="stats4 fade-up d1" style={{ marginTop: 18 }}>
-            <div className="card stile">
+            <Tilt className="card stile">
               <div className="row"><span className="si"><GraduationCap /></span><div><div className="lab">Diplomados activos</div><div className="num">{mine.length}</div></div></div>
               <div className="bar"><i style={{ width: `${Math.min(100, mine.length ? overall : 0)}%` }} /></div>
-            </div>
-            <div className="card stile">
+            </Tilt>
+            <Tilt className="card stile">
               <div className="row"><span className="si"><PlayCircle /></span><div><div className="lab">Clases completadas</div><div className="num">{doneLessons} / {totalLessons}</div></div></div>
               <div className="bar"><i style={{ width: `${totalLessons ? Math.round(100 * doneLessons / totalLessons) : 0}%` }} /></div>
-            </div>
-            <div className="card stile">
+            </Tilt>
+            <Tilt className="card stile">
               <div className="row"><span className="si"><TrendingUp /></span><div><div className="lab">Progreso general</div><div className="num">{overall}%</div></div></div>
               <div className="bar"><i style={{ width: `${overall}%` }} /></div>
-            </div>
-            <div className="card stile">
+            </Tilt>
+            <Tilt className="card stile">
               <div className="row"><span className="si"><Award /></span><div><div className="lab">Insignias ganadas</div><div className="num">{badges.length}</div></div></div>
               <div className="bar"><i style={{ width: `${mine.length ? Math.min(100, Math.round(100 * badges.length / mine.length)) : (badges.length ? 100 : 0)}%` }} /></div>
-            </div>
+            </Tilt>
           </div>
 
           {/* Continúa tu formación */}
