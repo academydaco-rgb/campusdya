@@ -32,6 +32,25 @@ function ImageUpload({ value, onChange, hint, ratio }: { value?: string | null; 
   );
 }
 
+/** Mueve un elemento una posición y guarda el orden 0..n de toda la lista (deja el orden limpio). */
+async function moverEnLista(items: { id: string }[], index: number, dir: -1 | 1, path: string) {
+  const to = index + dir;
+  if (to < 0 || to >= items.length) return;
+  const arr = [...items];
+  const [it] = arr.splice(index, 1);
+  arr.splice(to, 0, it);
+  await Promise.all(arr.map((x, i) => api.put(`${path}/${x.id}`, { order: i })));
+}
+
+function MoveBtns({ onUp, onDown, first, last, label }: { onUp: () => void; onDown: () => void; first: boolean; last: boolean; label: string }) {
+  return (
+    <span style={{ display: "inline-flex", gap: 4, flexShrink: 0 }}>
+      <button type="button" className="btn btn-ghost" style={{ padding: "4px 9px", fontSize: 13, opacity: first ? .35 : 1 }} disabled={first} onClick={onUp} title={`Subir ${label}`} aria-label={`Subir ${label}`}>▲</button>
+      <button type="button" className="btn btn-ghost" style={{ padding: "4px 9px", fontSize: 13, opacity: last ? .35 : 1 }} disabled={last} onClick={onDown} title={`Bajar ${label}`} aria-label={`Bajar ${label}`}>▼</button>
+    </span>
+  );
+}
+
 export default function EditDiploma() {
   const params = useParams<{ id: string }>();
   const id = params?.id as string;
@@ -165,7 +184,9 @@ export default function EditDiploma() {
           {modules.map((m, mi) => (
             <ModuleBlock key={m.id} index={mi} module={m} lessons={lessons[m.id] || []}
               hasRoutes={!!dip.has_routes} routeA={dip.route_a_name || "Ruta A"} routeB={dip.route_b_name || "Ruta B"}
-              onLessons={() => loadLessons(m.id)} onModule={load} onDelete={() => borrarModulo(m.id)} />
+              onLessons={() => loadLessons(m.id)} onModule={load} onDelete={() => borrarModulo(m.id)}
+              first={mi === 0} last={mi === modules.length - 1}
+              onMove={async (dir) => { await moverEnLista(modules, mi, dir, "/api/admin/modules"); await load(); }} />
           ))}
           {modules.length === 0 && <span className="muted">Agrega el primer módulo arriba.</span>}
         </div>
@@ -174,10 +195,11 @@ export default function EditDiploma() {
   );
 }
 
-function ModuleBlock({ index, module, lessons, onLessons, onModule, onDelete, hasRoutes, routeA, routeB }: {
+function ModuleBlock({ index, module, lessons, onLessons, onModule, onDelete, hasRoutes, routeA, routeB, first, last, onMove }: {
   index: number; module: AdminModuleT; lessons: AdminLessonT[]; onLessons: () => void; onModule: () => void; onDelete: () => void;
-  hasRoutes: boolean; routeA: string; routeB: string;
+  hasRoutes: boolean; routeA: string; routeB: string; first: boolean; last: boolean; onMove: (dir: -1 | 1) => void;
 }) {
+  async function moverLeccion(i: number, dir: -1 | 1) { await moverEnLista(lessons, i, dir, "/api/admin/lessons"); onLessons(); }
   const [editName, setEditName] = useState(false);
   const [name, setName] = useState(module.title);
   async function guardarNombre() {
@@ -200,6 +222,7 @@ function ModuleBlock({ index, module, lessons, onLessons, onModule, onDelete, ha
   return (
     <div className="card" style={{ padding: 18 }}>
       <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
+        <MoveBtns label="módulo" first={first} last={last} onUp={() => onMove(-1)} onDown={() => onMove(1)} />
         {editName ? (
           <div style={{ display: "flex", gap: 8, alignItems: "center", flex: 1, minWidth: 0 }}>
             <span className="muted" style={{ fontWeight: 700, flexShrink: 0 }}>Módulo {index + 1} ·</span>
@@ -232,7 +255,8 @@ function ModuleBlock({ index, module, lessons, onLessons, onModule, onDelete, ha
       </div>
       <div style={{ display: "grid", gap: 8 }}>
         {lessons.map((l, li) => (
-          <LessonRow key={l.id} index={li} lesson={l} onSaved={onLessons} onDelete={() => borrar(l.id)} />
+          <LessonRow key={l.id} index={li} lesson={l} onSaved={onLessons} onDelete={() => borrar(l.id)}
+            first={li === 0} last={li === lessons.length - 1} onMove={(dir) => moverLeccion(li, dir)} />
         ))}
       </div>
       <div style={{ marginTop: 12, display: "grid", gap: 8, gridTemplateColumns: "1fr 1fr auto" }}>
@@ -244,8 +268,8 @@ function ModuleBlock({ index, module, lessons, onLessons, onModule, onDelete, ha
   );
 }
 
-function LessonRow({ index, lesson, onSaved, onDelete }: {
-  index: number; lesson: AdminLessonT; onSaved: () => void; onDelete: () => void;
+function LessonRow({ index, lesson, onSaved, onDelete, first, last, onMove }: {
+  index: number; lesson: AdminLessonT; onSaved: () => void; onDelete: () => void; first: boolean; last: boolean; onMove: (dir: -1 | 1) => void;
 }) {
   const [edit, setEdit] = useState(false);
   const [title, setTitle] = useState(lesson.title);
@@ -311,6 +335,7 @@ function LessonRow({ index, lesson, onSaved, onDelete }: {
 
   return (
     <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 12px", borderRadius: 10, border: "1px solid var(--line)", background: "rgba(5,8,15,.5)" }}>
+      <MoveBtns label="lección" first={first} last={last} onUp={() => onMove(-1)} onDown={() => onMove(1)} />
       <span className="muted" style={{ fontSize: 12 }}>{index + 1}</span>
       <span style={{ flex: 1, fontSize: 14 }}>{lesson.title}</span>
       {lesson.videopress_url ? <span className="chip" style={{ color: "var(--cyan)", fontSize: 11 }}>🎬 video</span> : <span className="chip" style={{ color: "var(--f3)", fontSize: 11 }}>sin video</span>}
