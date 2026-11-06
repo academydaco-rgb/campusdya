@@ -1,22 +1,40 @@
 "use client";
 import { useEffect, useState } from "react";
 import Tilt from "@/components/Tilt";
-import { api, TeacherT } from "@/lib/api";
+import { api, TeacherT, AttentionCfgT } from "@/lib/api";
 
 export default function Profesores() {
   const [items, setItems] = useState<TeacherT[]>([]);
-  useEffect(() => { api.get<TeacherT[]>("/api/teachers").then(setItems).catch(() => setItems([])); }, []);
+  const [att, setAtt] = useState<AttentionCfgT | null>(null);
+  useEffect(() => {
+    api.get<TeacherT[]>("/api/teachers").then(setItems).catch(() => setItems([]));
+    api.get<AttentionCfgT>("/api/settings/attention").then(setAtt).catch(() => {});
+  }, []);
   return (
     <div>
       <h1 style={{ fontSize: 28, fontWeight: 800 }}>Profesores 🎓</h1>
-      <p className="muted" style={{ marginTop: 6, marginBottom: 22 }}>El equipo que te acompaña en tu camino.</p>
+      <p className="muted" style={{ marginTop: 6, marginBottom: 18 }}>El equipo que te acompaña en tu camino.</p>
+      {att && (
+        <div className="att-banner" style={{ marginBottom: 22 }}>
+          <span className={`att-dot ${att.available ? "on" : "off"}`} />
+          <span className="att-state">{att.available ? "Equipo activo ahora" : "El equipo está en descanso"}</span>
+          {att.hours && <span className="att-hours">· {att.hours}</span>}
+        </div>
+      )}
       <div className="grid-3">
         {items.map((t) => (
           <Tilt key={t.id} style={{ height: "100%" }}>
           <div className="card" style={{ width: "100%", height: "100%", overflow: "hidden", display: "flex", flexDirection: "column" }}>
-            <div style={{ position: "relative", width: "100%", paddingTop: "100%",
-              background: t.photo_url ? `center/cover url(${t.photo_url})` : "linear-gradient(135deg,var(--cyan),var(--indigo))" }}>
-              {!t.photo_url && <span style={{ position: "absolute", inset: 0, display: "grid", placeItems: "center", fontSize: 40, color: "#04121a", fontWeight: 800 }}>{t.name.charAt(0)}</span>}
+            <div className="flip3d">
+              <div className="flip3d-inner">
+                <div className="flip3d-front" style={{ background: t.photo_url ? `center/cover url(${t.photo_url})` : "linear-gradient(135deg,var(--cyan),var(--indigo))" }}>
+                  {!t.photo_url && <span style={{ position: "absolute", inset: 0, display: "grid", placeItems: "center", fontSize: 40, color: "#04121a", fontWeight: 800 }}>{t.name.charAt(0)}</span>}
+                </div>
+                <div className="flip3d-back">
+                  <span className="flip3d-back-name">{t.name}</span>
+                  <span className="flip3d-back-sub">D&A Academy</span>
+                </div>
+              </div>
             </div>
             <div style={{ padding: 18, display: "flex", flexDirection: "column", gap: 8, flex: 1 }}>
               <div style={{ fontWeight: 800, textTransform: "uppercase", letterSpacing: ".02em", fontSize: 15 }}>{t.name}</div>

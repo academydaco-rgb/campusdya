@@ -45,7 +45,7 @@ export default function Classroom() {
   return (
     <div>
       <h1 style={{ fontSize: 28, fontWeight: 800 }}>Classroom 📅</h1>
-      <p className="muted" style={{ marginTop: 6, marginBottom: 20 }}>Tu calendario de clases en vivo. Toca una clase para entrar; el enlace se cierra 2 horas después de iniciada.</p>
+      <p className="muted" style={{ marginTop: 6, marginBottom: 20 }}>Tu calendario de clases en vivo. El enlace de cada clase se envía por el grupo de WhatsApp.</p>
 
       {/* Barra de mes */}
       <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
@@ -103,8 +103,6 @@ export default function Classroom() {
         <div className="grid" style={{ gap: 12 }}>
           {selEvents.map((e) => {
             const t = e.teacher_id ? teachers[e.teacher_id] : undefined;
-            const expired = Date.now() > +new Date(e.starts_at) + TWO_H;
-            const clickable = !!e.live_url && !expired;
             const hora = new Date(e.starts_at).toLocaleTimeString("es-CO", { hour: "2-digit", minute: "2-digit" });
             return (
               <div key={e.id} className="card" style={{ overflow: "hidden", display: "flex", flexDirection: "column" }}>
@@ -121,11 +119,10 @@ export default function Classroom() {
                 <div style={{ padding: 16, display: "flex", alignItems: "center", gap: 12 }}>
                   {e.description && <p className="muted" style={{ fontSize: 13, flex: 1, margin: 0 }}>{e.description}</p>}
                   <span style={{ flex: e.description ? "unset" : 1 }} />
-                  {clickable ? (
-                    <a className="btn btn-primary" href={e.live_url!} target="_blank" rel="noreferrer" style={{ padding: "9px 16px", fontSize: 13 }}>Entrar a la clase</a>
-                  ) : (
-                    <span className="chip" style={{ color: expired ? "var(--muted-soft)" : "var(--f3)" }}>{expired ? "Clase finalizada" : "Enlace pendiente"}</span>
-                  )}
+                  <span className="chip" style={{ color: "#25D366", background: "rgba(37,211,102,.12)", border: "1px solid rgba(37,211,102,.3)" }}>
+                    <svg width="14" height="14" viewBox="0 0 448 512" fill="currentColor" style={{ marginRight: 5, verticalAlign: "-2px" }} aria-hidden><path d="M380.9 97.1C339 55.1 283.2 32 223.9 32c-122.4 0-222 99.6-222 222 0 39.1 10.2 77.3 29.6 111L0 480l117.7-30.9c32.4 17.7 68.9 27 106.1 27h.1c122.3 0 224.1-99.6 224.1-222 0-59.3-25.2-115-67.1-157zM223.9 438.6c-33.2 0-65.7-8.9-94-25.7l-6.7-4-69.8 18.3L72 359.2l-4.4-7c-18.5-29.4-28.2-63.3-28.2-98.2 0-101.7 82.8-184.5 184.6-184.5 49.3 0 95.6 19.2 130.4 54.1 34.8 34.9 56.2 81.2 56.1 130.5 0 101.8-84.9 184.5-186.6 184.5z"/></svg>
+                    El enlace se envía por el grupo de WhatsApp
+                  </span>
                 </div>
               </div>
             );

@@ -13,5 +13,6 @@ class Provider(Base, TimestampMixin):
     description: Mapped[str | None] = mapped_column(Text, nullable=True)
     videopress_url: Mapped[str | None] = mapped_column(String(600), nullable=True)
     cover_url: Mapped[str | None] = mapped_column(String(500), nullable=True)
+    whatsapp: Mapped[str | None] = mapped_column(String(40), nullable=True)
     order: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
     status: Mapped[str] = mapped_column(String(20), default="published", nullable=False)

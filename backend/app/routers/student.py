@@ -250,6 +250,8 @@ class ProfileUpdate(BaseModel):
     avatar_url: str | None = None
     bio: str | None = None
     name: str | None = None
+    whatsapp: str | None = None
+    profile_type: str | None = None  # dropshipper|proveedor|bodega
 
 
 @router.put("/me/password")
@@ -271,8 +273,12 @@ async def update_profile(data: ProfileUpdate, db: AsyncSession = Depends(get_db)
         user.bio = data.bio or None
     if data.name is not None and data.name.strip():
         user.name = data.name.strip()
+    if data.whatsapp is not None:
+        user.whatsapp = data.whatsapp.strip() or None
+    if data.profile_type is not None:
+        user.profile_type = (data.profile_type or None)
     await db.commit(); await db.refresh(user)
-    return {"id": str(user.id), "name": user.name, "avatar_url": user.avatar_url, "bio": user.bio, "email": user.email, "role": user.role, "status": user.status}
+    return {"id": str(user.id), "name": user.name, "avatar_url": user.avatar_url, "bio": user.bio, "email": user.email, "role": user.role, "status": user.status, "whatsapp": user.whatsapp, "profile_type": user.profile_type}
 
 
 @router.get("/users/{user_id}/public")
@@ -290,4 +296,22 @@ async def public_user_profile(user_id: uuid.UUID, db: AsyncSession = Depends(get
         dip = dmap.get(b.rule_value or "")
         badges.append({"id": str(b.id), "name": b.name, "icon": b.icon,
                        "image_url": (dip.badge_image_url if dip else None)})
-    return {"id": str(u.id), "name": u.name, "avatar_url": u.avatar_url, "bio": u.bio, "badges": badges}
+    return {"id": str(u.id), "name": u.name, "avatar_url": u.avatar_url, "bio": u.bio, "whatsapp": u.whatsapp, "profile_type": u.profile_type, "badges": badges}
+
+
+@router.post("/me/ping")
+async def presence_ping(db: AsyncSession = Depends(get_db), user: User = Depends(get_current_user)):
+    user.last_seen_at = datetime.now(timezone.utc)
+    await db.commit()
+    return {"ok": True}
+
+
+@router.get("/online-users")
+async def online_users(db: AsyncSession = Depends(get_db), viewer: User = Depends(get_current_user)):
+    from datetime import timedelta
+    cutoff = datetime.now(timezone.utc) - timedelta(minutes=3)
+    rows = (await db.execute(
+        select(User).where(User.last_seen_at.isnot(None), User.last_seen_at >= cutoff)
+        .order_by(User.last_seen_at.desc()).limit(40)
+    )).scalars().all()
+    return [{"id": str(u.id), "name": u.name, "avatar_url": u.avatar_url} for u in rows]

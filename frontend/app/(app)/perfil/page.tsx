@@ -8,6 +8,8 @@ export default function Perfil() {
   const [name, setName] = useState("");
   const [bio, setBio] = useState("");
   const [avatar, setAvatar] = useState<string | null>(null);
+  const [whatsapp, setWhatsapp] = useState("");
+  const [ptype, setPtype] = useState("");
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState("");
 
@@ -16,7 +18,7 @@ export default function Perfil() {
   const [pmsg, setPmsg] = useState("");
 
   useEffect(() => {
-    if (user) { setName(user.name || ""); setBio(user.bio || ""); setAvatar(user.avatar_url || null); }
+    if (user) { setName(user.name || ""); setBio(user.bio || ""); setAvatar(user.avatar_url || null); setWhatsapp(user.whatsapp || ""); setPtype(user.profile_type || ""); }
   }, [user]);
 
   async function subirAvatar(e: React.ChangeEvent<HTMLInputElement>) {
@@ -28,7 +30,7 @@ export default function Perfil() {
 
   async function guardarPerfil(e: React.FormEvent) {
     e.preventDefault();
-    await api.put("/api/me/profile", { name: name.trim() || null, bio: bio.trim() || null, avatar_url: avatar });
+    await api.put("/api/me/profile", { name: name.trim() || null, bio: bio.trim() || null, avatar_url: avatar, whatsapp: whatsapp.trim() || null, profile_type: ptype || null });
     await refresh();
     setMsg("Perfil guardado ✓"); setTimeout(() => setMsg(""), 2000);
   }
@@ -65,6 +67,17 @@ export default function Perfil() {
         </div>
         <div><label className="label">Nombre</label><input className="input" value={name} onChange={(e) => setName(e.target.value)} /></div>
         <div><label className="label">Sobre mí (lo verán tus compañeros en Comunidad)</label><textarea className="input" rows={3} value={bio} onChange={(e) => setBio(e.target.value)} placeholder="Cuéntales quién eres, qué vendes o tu meta…" /></div>
+        <div style={{ display: "grid", gap: 12, gridTemplateColumns: "1fr 1fr" }}>
+          <div><label className="label">WhatsApp (con indicativo)</label><input className="input" value={whatsapp} onChange={(e) => setWhatsapp(e.target.value)} placeholder="57300…" /></div>
+          <div><label className="label">Soy…</label>
+            <select className="input" value={ptype} onChange={(e) => setPtype(e.target.value)}>
+              <option value="">Sin especificar</option>
+              <option value="dropshipper">Dropshipper</option>
+              <option value="proveedor">Proveedor</option>
+              <option value="bodega">Bodega</option>
+            </select>
+          </div>
+        </div>
         <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
           <button className="btn btn-primary">Guardar perfil</button>
           {msg && <span className="muted" style={{ fontSize: 13 }}>{msg}</span>}

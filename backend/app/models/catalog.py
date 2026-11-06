@@ -55,3 +55,15 @@ class CasoExito(Base, TimestampMixin):
     cover_url: Mapped[str | None] = mapped_column(String(500), nullable=True)
     order: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
     status: Mapped[str] = mapped_column(String(20), default="published", nullable=False)
+
+
+class Tool(Base, TimestampMixin):
+    """Herramientas: tarjetas con imagen 800x800, titulo y enlace-boton que configura el admin."""
+    __tablename__ = "tools"
+    id: Mapped[uuid.UUID] = uuid_pk()
+    title: Mapped[str] = mapped_column(String(200), nullable=False)
+    image_url: Mapped[str | None] = mapped_column(String(600), nullable=True)
+    link_url: Mapped[str | None] = mapped_column(String(600), nullable=True)
+    link_label: Mapped[str | None] = mapped_column(String(120), nullable=True)
+    order: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    status: Mapped[str] = mapped_column(String(20), default="published", nullable=False)

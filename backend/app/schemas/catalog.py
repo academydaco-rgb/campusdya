@@ -129,3 +129,32 @@ class CasoExitoOut(BaseModel):
     cover_url: str | None = None
     order: int
     status: str
+
+
+class ToolCreate(BaseModel):
+    title: str
+    image_url: str | None = None
+    link_url: str | None = None
+    link_label: str | None = None
+    order: int = 0
+    status: str = "published"
+
+
+class ToolUpdate(BaseModel):
+    title: str | None = None
+    image_url: str | None = None
+    link_url: str | None = None
+    link_label: str | None = None
+    order: int | None = None
+    status: str | None = None
+
+
+class ToolOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    id: uuid.UUID
+    title: str
+    image_url: str | None = None
+    link_url: str | None = None
+    link_label: str | None = None
+    order: int
+    status: str

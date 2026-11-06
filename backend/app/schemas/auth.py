@@ -16,6 +16,8 @@ class UserOut(BaseModel):
     role: str
     status: str
     phone: str | None = None
+    whatsapp: str | None = None
+    profile_type: str | None = None
     bio: str | None = None
 
 
@@ -40,6 +42,8 @@ class UserUpdate(BaseModel):
     role: str | None = None
     status: str | None = None
     phone: str | None = None
+    whatsapp: str | None = None
+    profile_type: str | None = None
     bio: str | None = None
     password: str | None = None
 

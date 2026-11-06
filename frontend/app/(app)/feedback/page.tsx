@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { api, uploadImageUser, FeedbackT } from "@/lib/api";
+import { api, uploadImageUser, FeedbackT, CommunityTopT } from "@/lib/api";
 
 export default function Comunidad() {
   const [items, setItems] = useState<FeedbackT[]>([]);
@@ -11,14 +11,16 @@ export default function Comunidad() {
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState("");
   const [profile, setProfile] = useState<FeedbackT | null>(null);
-  const [profileData, setProfileData] = useState<{ name: string; avatar_url?: string | null; bio?: string | null; badges: { id: string; name: string; icon?: string | null; image_url?: string | null }[] } | null>(null);
+  const [profileData, setProfileData] = useState<{ name: string; avatar_url?: string | null; bio?: string | null; whatsapp?: string | null; profile_type?: string | null; badges: { id: string; name: string; icon?: string | null; image_url?: string | null }[] } | null>(null);
+  const [top, setTop] = useState<CommunityTopT[]>([]);
 
   function abrirPerfil(f: FeedbackT) {
     setProfile(f); setProfileData(null);
-    api.get<{ name: string; avatar_url?: string | null; bio?: string | null; badges: { id: string; name: string; icon?: string | null; image_url?: string | null }[] }>(`/api/users/${f.user_id}/public`).then(setProfileData).catch(() => {});
+    api.get<{ name: string; avatar_url?: string | null; bio?: string | null; whatsapp?: string | null; profile_type?: string | null; badges: { id: string; name: string; icon?: string | null; image_url?: string | null }[] }>(`/api/users/${f.user_id}/public`).then(setProfileData).catch(() => {});
   }
 
   async function load() { setItems(await api.get<FeedbackT[]>("/api/feedback")); }
+  useEffect(() => { api.get<CommunityTopT[]>("/api/community/top").then(setTop).catch(() => {}); }, []);
   useEffect(() => { load().catch(() => setItems([])); }, []);
 
   async function subir(e: React.ChangeEvent<HTMLInputElement>) {
@@ -42,6 +44,25 @@ export default function Comunidad() {
         <h1 style={{ fontSize: 28, fontWeight: 800 }}>Comunidad 💬</h1>
         <p className="muted" style={{ marginTop: 6 }}>Cuéntanos cómo te ha parecido la plataforma y tus resultados. Puedes adjuntar una imagen.</p>
       </div>
+      {top.length > 0 && (
+        <div className="card" style={{ padding: 18 }}>
+          <div className="eyebrow" style={{ marginBottom: 12 }}>🏅 Los más activos de la comunidad</div>
+          <div style={{ display: "flex", gap: 14, flexWrap: "wrap" }}>
+            {top.map((u, i) => (
+              <div key={u.id} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 6, width: 72 }}>
+                <div style={{ position: "relative" }}>
+                  <span style={{ width: 52, height: 52, borderRadius: 999, display: "grid", placeItems: "center", fontSize: 18, fontWeight: 800, color: "#04141c",
+                    border: i < 3 ? "2px solid var(--gold)" : "1px solid var(--line-2)",
+                    background: u.avatar_url ? `center/cover url(${u.avatar_url})` : "var(--grad)" }}>{!u.avatar_url && (u.name || "A").charAt(0).toUpperCase()}</span>
+                  {i < 3 && <span style={{ position: "absolute", top: -6, right: -6, fontSize: 15 }}>{["🥇","🥈","🥉"][i]}</span>}
+                </div>
+                <span style={{ fontSize: 11, fontWeight: 600, textAlign: "center", lineHeight: 1.15, maxWidth: 72, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", color: "#d6d2ea" }}>{(u.name || "Alumno").split(" ")[0]}</span>
+                <span className="muted" style={{ fontSize: 10 }}>{u.count} aportes</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
       <form onSubmit={enviar} className="card" style={{ padding: 20, display: "grid", gap: 12 }}>
         <div><label className="label">Tu opinión</label><textarea className="input" rows={3} value={body} onChange={(e) => setBody(e.target.value)} placeholder="¿Qué te ha parecido la academia?" /></div>
         <div><label className="label">Tus resultados (opcional)</label><textarea className="input" rows={2} value={results} onChange={(e) => setResults(e.target.value)} placeholder="Ej: lancé mi primera tienda y vendí…" /></div>
@@ -93,6 +114,20 @@ export default function Comunidad() {
             <div style={{ width: 92, height: 92, borderRadius: 999, margin: "0 auto", border: "1px solid var(--line-2)", display: "grid", placeItems: "center", fontWeight: 800, fontSize: 34, color: "#04141c", background: av ? `center/cover url(${av})` : "var(--grad)" }}>{!av && nm.charAt(0).toUpperCase()}</div>
             <div style={{ fontWeight: 800, fontSize: 18, marginTop: 14, color: "#fff" }}>{nm}</div>
             <p className="muted" style={{ fontSize: 13.5, marginTop: 8, whiteSpace: "pre-wrap" }}>{bio || "Este alumno aún no ha escrito su descripción."}</p>
+            {profileData?.profile_type && (
+              <span className="chip" style={{ marginTop: 10, display: "inline-block", textTransform: "capitalize", color: "var(--cyan)" }}>
+                {profileData.profile_type === "dropshipper" ? "🛒 Dropshipper" : profileData.profile_type === "proveedor" ? "📦 Proveedor" : "🏬 Bodega"}
+              </span>
+            )}
+            {profileData?.whatsapp && (
+              <div style={{ marginTop: 12 }}>
+                <a className="btn btn-wa" style={{ padding: "9px 16px", fontSize: 13 }}
+                  href={`https://wa.me/${profileData.whatsapp.replace(/[^0-9]/g, "")}`} target="_blank" rel="noreferrer">
+                  <svg width="16" height="16" viewBox="0 0 448 512" fill="currentColor" aria-hidden><path d="M380.9 97.1C339 55.1 283.2 32 223.9 32c-122.4 0-222 99.6-222 222 0 39.1 10.2 77.3 29.6 111L0 480l117.7-30.9c32.4 17.7 68.9 27 106.1 27h.1c122.3 0 224.1-99.6 224.1-222 0-59.3-25.2-115-67.1-157zM223.9 438.6c-33.2 0-65.7-8.9-94-25.7l-6.7-4-69.8 18.3L72 359.2l-4.4-7c-18.5-29.4-28.2-63.3-28.2-98.2 0-101.7 82.8-184.5 184.6-184.5 49.3 0 95.6 19.2 130.4 54.1 34.8 34.9 56.2 81.2 56.1 130.5 0 101.8-84.9 184.5-186.6 184.5z"/></svg>
+                  Escribir por WhatsApp
+                </a>
+              </div>
+            )}
             {badges.length > 0 && (
               <div style={{ marginTop: 16 }}>
                 <div className="eyebrow" style={{ marginBottom: 10 }}>Insignias</div>

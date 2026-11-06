@@ -7,6 +7,7 @@ from app.core.database import get_db
 from app.core.deps import get_current_user, require_admin
 from app.models.user import User
 from app.models.announcement import Announcement
+from app.models.notification import Notification
 from app.models.catalog import Teacher
 from app.schemas.announcement import AnnouncementCreate, AnnouncementUpdate, AnnouncementOut
 from app.services.notify import broadcast_announcement
@@ -58,6 +59,14 @@ async def create(data: AnnouncementCreate, db: AsyncSession = Depends(get_db), a
     obj = Announcement(title=data.title, body=data.body, image_url=data.image_url, teacher_id=data.teacher_id,
                        expires_at=_expiry(data.visible_days), created_by=a.id)
     db.add(obj); await db.commit(); await db.refresh(obj)
+    # Notificar a todos (campanita) cuando se publica un comunicado
+    body_short = (data.body or "").strip()
+    if len(body_short) > 280:
+        body_short = body_short[:279] + "…"
+    db.add(Notification(title=f"📣 {data.title}", body=body_short or "Nuevo comunicado en la academia.",
+                        image_url=data.image_url or None, link_url="/dashboard", link_label="Ver comunicado",
+                        created_by=a.id))
+    await db.commit()
     if data.notify_email:
         await broadcast_announcement(db, data.title, data.body, f"{settings.FRONTEND_URL}/dashboard")
     return obj

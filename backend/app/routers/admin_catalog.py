@@ -5,7 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.database import get_db
 from app.core.deps import require_admin
 from app.models.user import User
-from app.models.catalog import Phase, Teacher, LiveClass, CasoExito
+from app.models.catalog import Phase, Teacher, LiveClass, CasoExito, Tool
 from app.models.provider import Provider
 from app.models.community import Comment
 from app.models.feedback import Feedback
@@ -15,6 +15,7 @@ from app.schemas.catalog import (
     TeacherCreate, TeacherUpdate, TeacherOut,
     LiveClassCreate, LiveClassUpdate, LiveClassOut,
     CasoExitoCreate, CasoExitoUpdate, CasoExitoOut,
+    ToolCreate, ToolUpdate, ToolOut,
 )
 from app.schemas.provider import ProviderCreate, ProviderUpdate, ProviderOut
 from app.schemas.schedule import ScheduleCreate, ScheduleUpdate, ScheduleOut
@@ -234,4 +235,28 @@ async def update_caso(caso_id: uuid.UUID, data: CasoExitoUpdate, db: AsyncSessio
 @router.delete("/success-cases/{caso_id}")
 async def delete_caso(caso_id: uuid.UUID, db: AsyncSession = Depends(get_db), a: User = Depends(require_admin)):
     obj = await _get(db, CasoExito, caso_id); await db.delete(obj); await db.commit()
+    return {"ok": True}
+
+
+# ───────── Herramientas ─────────
+@router.post("/tools", response_model=ToolOut)
+async def create_tool(data: ToolCreate, db: AsyncSession = Depends(get_db), a: User = Depends(require_admin)):
+    obj = Tool(**data.model_dump()); db.add(obj); await db.commit(); await db.refresh(obj)
+    return obj
+
+
+@router.get("/tools", response_model=list[ToolOut])
+async def list_tools_admin(db: AsyncSession = Depends(get_db), a: User = Depends(require_admin)):
+    return (await db.execute(select(Tool).order_by(Tool.order, Tool.created_at.desc()))).scalars().all()
+
+
+@router.put("/tools/{tool_id}", response_model=ToolOut)
+async def update_tool(tool_id: uuid.UUID, data: ToolUpdate, db: AsyncSession = Depends(get_db), a: User = Depends(require_admin)):
+    obj = await _get(db, Tool, tool_id); _apply(obj, data); await db.commit(); await db.refresh(obj)
+    return obj
+
+
+@router.delete("/tools/{tool_id}")
+async def delete_tool(tool_id: uuid.UUID, db: AsyncSession = Depends(get_db), a: User = Depends(require_admin)):
+    obj = await _get(db, Tool, tool_id); await db.delete(obj); await db.commit()
     return {"ok": True}

@@ -25,6 +25,39 @@ async def _save(file: UploadFile) -> dict:
     return {"url": f"{settings.BACKEND_URL}/static/uploads/{name}"}
 
 
+_ALLOWED_FILE = {
+    "application/pdf": "pdf",
+    "application/zip": "zip", "application/x-zip-compressed": "zip",
+    "application/msword": "doc",
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document": "docx",
+    "application/vnd.ms-excel": "xls",
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": "xlsx",
+    "application/vnd.ms-powerpoint": "ppt",
+    "application/vnd.openxmlformats-officedocument.presentationml.presentation": "pptx",
+    "text/plain": "txt", "text/csv": "csv",
+    "image/png": "png", "image/jpeg": "jpg", "image/webp": "webp",
+}
+
+
+async def _save_file(file: UploadFile) -> dict:
+    ext = _ALLOWED_FILE.get((file.content_type or "").lower())
+    if not ext:
+        raise HTTPException(status_code=400, detail="Formato no permitido. Usa PDF, Office, imagen, CSV, TXT o ZIP.")
+    data = await file.read()
+    if len(data) > 30 * 1024 * 1024:
+        raise HTTPException(status_code=400, detail="El archivo supera 30 MB.")
+    os.makedirs(_DIR, exist_ok=True)
+    name = f"{uuid.uuid4().hex}.{ext}"
+    with open(os.path.join(_DIR, name), "wb") as f:
+        f.write(data)
+    return {"url": f"{settings.BACKEND_URL}/static/uploads/{name}", "name": file.filename}
+
+
+@router.post("/api/admin/upload-file")
+async def upload_file_admin(file: UploadFile = File(...), admin: User = Depends(require_admin)):
+    return await _save_file(file)
+
+
 @router.post("/api/admin/upload")
 async def upload_image_admin(file: UploadFile = File(...), admin: User = Depends(require_admin)):
     return await _save(file)

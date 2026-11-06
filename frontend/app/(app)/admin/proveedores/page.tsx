@@ -8,13 +8,13 @@ const COVER_HINT = "Portada · 1920 × 1080 px (16:9)";
 export default function AdminProviders() {
   const [items, setItems] = useState<ProviderT[]>([]);
   const [title, setTitle] = useState(""); const [desc, setDesc] = useState("");
-  const [video, setVideo] = useState(""); const [cover, setCover] = useState<string | null>(null);
+  const [video, setVideo] = useState(""); const [cover, setCover] = useState<string | null>(null); const [wa, setWa] = useState("");
   async function load() { setItems(await api.get<ProviderT[]>("/api/admin/providers")); }
   useEffect(() => { load().catch(() => {}); }, []);
   async function crear(e: React.FormEvent) {
     e.preventDefault(); if (!title.trim()) return;
-    await api.post("/api/admin/providers", { title: title.trim(), description: desc.trim() || null, videopress_url: video.trim() || null, cover_url: cover });
-    setTitle(""); setDesc(""); setVideo(""); setCover(null); await load();
+    await api.post("/api/admin/providers", { title: title.trim(), description: desc.trim() || null, videopress_url: video.trim() || null, cover_url: cover, whatsapp: wa.trim() || null });
+    setTitle(""); setDesc(""); setVideo(""); setCover(null); setWa(""); await load();
   }
   async function borrar(id: string) { await api.del(`/api/admin/providers/${id}`); await load(); }
 
@@ -27,6 +27,7 @@ export default function AdminProviders() {
       <form onSubmit={crear} className="card" style={{ padding: 18, display: "grid", gap: 12 }}>
         <div><label className="label">Título</label><input className="input" value={title} onChange={(e) => setTitle(e.target.value)} /></div>
         <div><label className="label">URL del video (VideoPress / embed)</label><input className="input" value={video} onChange={(e) => setVideo(e.target.value)} placeholder="https://…" /></div>
+        <div><label className="label">WhatsApp del proveedor (con indicativo)</label><input className="input" value={wa} onChange={(e) => setWa(e.target.value)} placeholder="57300…" /></div>
         <div><label className="label">Portada</label><ImageUpload value={cover} onChange={setCover} ratio="wide" hint={COVER_HINT} /></div>
         <div><label className="label">Descripción</label><textarea className="input" rows={2} value={desc} onChange={(e) => setDesc(e.target.value)} /></div>
         <button className="btn btn-primary">Agregar proveedor</button>
@@ -46,13 +47,14 @@ function ProviderRow({ item, onSaved, onDelete }: { item: ProviderT; onSaved: ()
   const [video, setVideo] = useState(item.videopress_url || "");
   const [cover, setCover] = useState<string | null>(item.cover_url || null);
   const [desc, setDesc] = useState(item.description || "");
+  const [wa, setWa] = useState(item.whatsapp || "");
   const [saving, setSaving] = useState(false);
 
   async function guardar() {
     if (!title.trim()) return;
     setSaving(true);
     try {
-      await api.put(`/api/admin/providers/${item.id}`, { title: title.trim(), videopress_url: video.trim() || null, cover_url: cover, description: desc.trim() || null });
+      await api.put(`/api/admin/providers/${item.id}`, { title: title.trim(), videopress_url: video.trim() || null, cover_url: cover, description: desc.trim() || null, whatsapp: wa.trim() || null });
       setEdit(false); onSaved();
     } finally { setSaving(false); }
   }
@@ -62,6 +64,7 @@ function ProviderRow({ item, onSaved, onDelete }: { item: ProviderT; onSaved: ()
       <div className="card" style={{ padding: 16, display: "grid", gap: 10, borderColor: "var(--line-2)" }}>
         <input className="input" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Título" />
         <input className="input" value={video} onChange={(e) => setVideo(e.target.value)} placeholder="URL del video" />
+        <input className="input" value={wa} onChange={(e) => setWa(e.target.value)} placeholder="WhatsApp 57300…" />
         <ImageUpload value={cover} onChange={setCover} ratio="wide" hint={COVER_HINT} />
         <textarea className="input" rows={2} value={desc} onChange={(e) => setDesc(e.target.value)} placeholder="Descripción" />
         <div style={{ display: "flex", gap: 8 }}>

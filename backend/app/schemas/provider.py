@@ -7,6 +7,7 @@ class ProviderCreate(BaseModel):
     description: str | None = None
     videopress_url: str | None = None
     cover_url: str | None = None
+    whatsapp: str | None = None
     order: int = 0
     status: str = "published"
 
@@ -16,6 +17,7 @@ class ProviderUpdate(BaseModel):
     description: str | None = None
     videopress_url: str | None = None
     cover_url: str | None = None
+    whatsapp: str | None = None
     order: int | None = None
     status: str | None = None
 
@@ -27,5 +29,6 @@ class ProviderOut(BaseModel):
     description: str | None = None
     videopress_url: str | None = None
     cover_url: str | None = None
+    whatsapp: str | None = None
     order: int
     status: str

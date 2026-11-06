@@ -32,7 +32,7 @@ export const api = {
 };
 
 // ───────── Tipos ─────────
-export interface UserT { id: string; email: string; name: string; role: string; status: string; avatar_url?: string | null; bio?: string | null; }
+export interface UserT { id: string; email: string; name: string; role: string; status: string; avatar_url?: string | null; bio?: string | null; whatsapp?: string | null; profile_type?: string | null; }
 export interface DiplomaCardT { id: string; title: string; slug: string; cover_url?: string | null; order: number; enrolled: boolean; progress?: number | null; }
 export interface PhaseT { id: string; name: string; slug: string; description?: string | null; icon?: string | null; color?: string | null; order: number; diplomas: DiplomaCardT[]; }
 export interface UniverseT { phases: PhaseT[]; sin_fase: DiplomaCardT[]; }
@@ -47,12 +47,16 @@ export interface DiplomaDetailT {
 }
 export interface LessonDetailT {
   id: string; title: string; videopress_url?: string | null; content?: string | null;
-  duration_seconds: number; completed: boolean; diploma_id: string; module_id: string; diploma_slug?: string | null;
+  duration_seconds: number; completed: boolean; diploma_id: string; module_id: string; diploma_slug?: string | null; materials?: { nombre: string; url: string }[] | null;
 }
 export interface TeacherT { id: string; name: string; bio?: string | null; photo_url?: string | null; whatsapp?: string | null; order?: number; status?: string; }
 export interface LiveClassT { id: string; title: string; description?: string | null; videopress_url?: string | null; cover_url?: string | null; happened_at?: string | null; diploma_id?: string | null; phase_id?: string | null; status?: string; }
+export interface ToolT { id: string; title: string; image_url?: string | null; link_url?: string | null; link_label?: string | null; order?: number; status?: string; }
+export interface OnlineUserT { id: string; name: string; avatar_url?: string | null; }
+export interface CommunityTopT { id: string; name: string; avatar_url?: string | null; count: number; }
+export interface AttentionCfgT { hours?: string | null; available: boolean; }
 export interface CasoExitoT { id: string; title: string; description?: string | null; videopress_url?: string | null; external_url?: string | null; cover_url?: string | null; order?: number; status?: string; }
-export interface ProviderT { id: string; title: string; description?: string | null; videopress_url?: string | null; cover_url?: string | null; order?: number; status?: string; }
+export interface ProviderT { id: string; title: string; description?: string | null; videopress_url?: string | null; cover_url?: string | null; whatsapp?: string | null; order?: number; status?: string; }
 export interface FeedbackT { id: string; user_id: string; body: string; results?: string | null; rating?: number | null; image_url?: string | null; status: string; created_at: string; author_name?: string | null; author_avatar?: string | null; author_bio?: string | null; }
 
 // ───────── Tipos admin ─────────
@@ -84,6 +88,25 @@ export async function uploadImage(file: File): Promise<string> {
   }
   const j = await res.json();
   return j.url as string;
+}
+
+export async function uploadFile(file: File): Promise<{ url: string; name: string }> {
+  const fd = new FormData();
+  fd.append("file", file);
+  let token: string | null = null;
+  try { token = typeof window !== "undefined" ? localStorage.getItem("academia_token") : null; } catch { token = null; }
+  const res = await fetch(`${API_URL}/api/admin/upload-file`, {
+    method: "POST",
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
+    body: fd,
+  });
+  if (!res.ok) {
+    let detail = "No se pudo subir el archivo";
+    try { const j = await res.json(); detail = j.detail || detail; } catch { /* ignore */ }
+    throw new Error(detail);
+  }
+  const j = await res.json();
+  return { url: j.url as string, name: (j.name as string) || file.name };
 }
 
 export async function uploadImageUser(file: File): Promise<string> {

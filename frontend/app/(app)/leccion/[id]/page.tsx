@@ -106,6 +106,18 @@ export default function LessonPage() {
         </div>
 
         {l.content && <div className="card" style={{ padding: 20, whiteSpace: "pre-wrap", lineHeight: 1.65 }}>{l.content}</div>}
+        {Array.isArray(l.materials) && l.materials.length > 0 && (
+          <div className="card" style={{ padding: 18 }}>
+            <div className="eyebrow" style={{ marginBottom: 12 }}>📎 Archivos de la clase</div>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
+              {l.materials.map((m, i) => (
+                <a key={i} className="btn btn-primary" style={{ padding: "9px 16px", fontSize: 13 }} href={m.url} target="_blank" rel="noreferrer" download>
+                  ⬇ {m.nombre || "Descargar"}
+                </a>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Navegación */}
         <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>

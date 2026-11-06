@@ -78,13 +78,15 @@ async function descargarCertificado(b: MyBadgeT, userName: string) {
   ctx.fillText("C E R T I F I C A D O   D E   F I N A L I Z A C I Ó N", W / 2, 360);
 
   // ── Emblema: insignia del diplomado (o hexágono de respaldo) ──
-  const cx = W / 2, cy = 456;
+  const cx = W / 2, cy = 474;
   let drew = false;
   if (b.image_url) {
     try {
-      const bi = await loadImg(b.image_url, true);
-      const bw = 160, bh = bw * (bi.height / bi.width || 1);
-      ctx.save(); ctx.shadowColor = "rgba(217,70,239,.6)"; ctx.shadowBlur = 42;
+      const proxied = `/api/img?u=${encodeURIComponent(b.image_url)}`;
+      let bi: HTMLImageElement;
+      try { bi = await loadImg(proxied); } catch { bi = await loadImg(b.image_url, true); }
+      const bw = 186, bh = bw * (bi.height / bi.width || 1);
+      ctx.save(); ctx.shadowColor = "rgba(217,70,239,.6)"; ctx.shadowBlur = 46;
       ctx.drawImage(bi, cx - bw / 2, cy - bh / 2, bw, bh); ctx.restore();
       drew = true;
     } catch { /* fallback */ }
@@ -120,17 +122,21 @@ async function descargarCertificado(b: MyBadgeT, userName: string) {
   ctx.fillText(`Otorgado el ${fecha}`, cx, 872);
 
   // ── Firmas de fundadores ──
+  const LINE_Y = 968;
   const firma = async (src: string, x: number, name: string) => {
     ctx.textAlign = "center";
     try {
       const im = await loadImg(src);
-      const sw = 196, sh = sw * (im.height / im.width || 0.42);
-      ctx.drawImage(im, x - sw / 2, 948 - sh, sw, Math.min(sh, 86));
+      const ratio = (im.height / im.width) || 0.4;
+      let dw = 320, dh = dw * ratio;        // firma grande y legible
+      const MAXH = 130;
+      if (dh > MAXH) { dh = MAXH; dw = dh / ratio; }
+      ctx.drawImage(im, x - dw / 2, LINE_Y - dh - 4, dw, dh);
     } catch { /* sin firma aún */ }
-    ctx.strokeStyle = "rgba(255,255,255,.3)"; ctx.lineWidth = 1.5;
-    ctx.beginPath(); ctx.moveTo(x - 160, 962); ctx.lineTo(x + 160, 962); ctx.stroke();
-    ctx.fillStyle = "#eafcff"; ctx.font = "700 26px Montserrat, Arial"; ctx.fillText(name, x, 998);
-    ctx.fillStyle = "#9aa0b8"; ctx.font = "400 18px Montserrat, Arial"; ctx.fillText("Fundador · D&A Academy", x, 1026);
+    ctx.strokeStyle = "rgba(255,255,255,.35)"; ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.moveTo(x - 180, LINE_Y); ctx.lineTo(x + 180, LINE_Y); ctx.stroke();
+    ctx.fillStyle = "#eafcff"; ctx.font = "700 27px Montserrat, Arial"; ctx.fillText(name, x, LINE_Y + 38);
+    ctx.fillStyle = "#9aa0b8"; ctx.font = "400 18px Montserrat, Arial"; ctx.fillText("Fundador · D&A Academy", x, LINE_Y + 66);
   };
   await firma("/firmadiego.png", 520, "Diego Patarroyo");
   await firma("/firmaandres.png", 1080, "Andrés Patarroyo");

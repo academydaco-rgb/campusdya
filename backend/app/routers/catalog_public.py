@@ -1,17 +1,17 @@
 import uuid
 from fastapi import APIRouter, Depends
-from sqlalchemy import select, or_
+from sqlalchemy import select, or_, func
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.database import get_db
 from app.core.deps import get_current_user
 from app.models.user import User
-from app.models.catalog import Phase, Teacher, LiveClass, CasoExito
+from app.models.catalog import Phase, Teacher, LiveClass, CasoExito, Tool
 from app.models.provider import Provider
 from app.models.content import Diploma, Module, Lesson
 from app.models.learning import Enrollment, LessonProgress
 from app.models.feedback import Feedback
 from app.models.schedule import ScheduleEvent
-from app.schemas.catalog import TeacherOut, LiveClassOut, CasoExitoOut
+from app.schemas.catalog import TeacherOut, LiveClassOut, CasoExitoOut, ToolOut
 from app.schemas.provider import ProviderOut
 from app.schemas.schedule import ScheduleOut
 from app.schemas.feedback import FeedbackCreate, FeedbackOut
@@ -154,6 +154,11 @@ async def public_success_cases(db: AsyncSession = Depends(get_db), user: User = 
     return (await db.execute(select(CasoExito).where(CasoExito.status == "published").order_by(CasoExito.order, CasoExito.created_at.desc()))).scalars().all()
 
 
+@router.get("/tools", response_model=list[ToolOut])
+async def public_tools(db: AsyncSession = Depends(get_db), user: User = Depends(get_current_user)):
+    return (await db.execute(select(Tool).where(Tool.status == "published").order_by(Tool.order, Tool.created_at.desc()))).scalars().all()
+
+
 @router.get("/providers", response_model=list[ProviderOut])
 async def public_providers(db: AsyncSession = Depends(get_db), user: User = Depends(get_current_user)):
     return (await db.execute(select(Provider).where(Provider.status == "published").order_by(Provider.created_at.desc()))).scalars().all()
@@ -184,3 +189,15 @@ async def create_feedback(data: FeedbackCreate, db: AsyncSession = Depends(get_d
     db.add(f); await db.commit(); await db.refresh(f)
     it = FeedbackOut.model_validate(f); it.author_name = user.name; it.author_avatar = user.avatar_url; it.author_bio = user.bio
     return it
+
+
+@router.get("/community/top")
+async def community_top(db: AsyncSession = Depends(get_db), user: User = Depends(get_current_user)):
+    rows = (await db.execute(
+        select(User.id, User.name, User.avatar_url, func.count(Feedback.id).label("n"))
+        .join(Feedback, Feedback.user_id == User.id)
+        .where(Feedback.status == "visible")
+        .group_by(User.id, User.name, User.avatar_url)
+        .order_by(func.count(Feedback.id).desc()).limit(10)
+    )).all()
+    return [{"id": str(r.id), "name": r.name, "avatar_url": r.avatar_url, "count": r.n} for r in rows]

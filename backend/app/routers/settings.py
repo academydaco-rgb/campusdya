@@ -11,6 +11,8 @@ router = APIRouter(prefix="/api", tags=["settings"])
 
 _VIDEO_URL = "dashboard_video_url"
 _VIDEO_COVER = "dashboard_video_cover"
+_ATT_HOURS = "attention_hours"
+_ATT_AVAILABLE = "team_available"
 
 
 class DashboardVideo(BaseModel):
@@ -42,3 +44,22 @@ async def set_dashboard_video(data: DashboardVideo, db: AsyncSession = Depends(g
     await _set(db, _VIDEO_COVER, (data.cover_url or None))
     await db.commit()
     return DashboardVideo(video_url=await _get(db, _VIDEO_URL), cover_url=await _get(db, _VIDEO_COVER))
+
+
+class AttentionCfg(BaseModel):
+    hours: str | None = None
+    available: bool = True
+
+
+@router.get("/settings/attention", response_model=AttentionCfg)
+async def get_attention(db: AsyncSession = Depends(get_db), user: User = Depends(get_current_user)):
+    av = await _get(db, _ATT_AVAILABLE)
+    return AttentionCfg(hours=await _get(db, _ATT_HOURS), available=(av != "0"))
+
+
+@router.put("/admin/settings/attention", response_model=AttentionCfg)
+async def set_attention(data: AttentionCfg, db: AsyncSession = Depends(get_db), a: User = Depends(require_admin)):
+    await _set(db, _ATT_HOURS, (data.hours or None))
+    await _set(db, _ATT_AVAILABLE, "1" if data.available else "0")
+    av = await _get(db, _ATT_AVAILABLE)
+    return AttentionCfg(hours=await _get(db, _ATT_HOURS), available=(av != "0"))

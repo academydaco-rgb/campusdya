@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { api, TeacherT } from "@/lib/api";
+import { api, TeacherT, AttentionCfgT } from "@/lib/api";
 import ImageUpload from "@/components/ImageUpload";
 
 const PHOTO_HINT = "Foto · 600 × 600 px (cuadrada)";
@@ -9,20 +9,37 @@ export default function AdminTeachers() {
   const [items, setItems] = useState<TeacherT[]>([]);
   const [name, setName] = useState(""); const [bio, setBio] = useState("");
   const [photo, setPhoto] = useState<string | null>(null); const [wa, setWa] = useState("");
+  const [att, setAtt] = useState<AttentionCfgT>({ hours: "", available: true }); const [attMsg, setAttMsg] = useState("");
   async function load() { setItems(await api.get<TeacherT[]>("/api/admin/teachers")); }
-  useEffect(() => { load().catch(() => {}); }, []);
+  useEffect(() => { load().catch(() => {}); api.get<AttentionCfgT>("/api/settings/attention").then((a) => setAtt({ hours: a.hours || "", available: a.available })).catch(() => {}); }, []);
   async function crear(e: React.FormEvent) {
     e.preventDefault(); if (!name.trim()) return;
     await api.post("/api/admin/teachers", { name: name.trim(), bio: bio.trim() || null, photo_url: photo, whatsapp: wa.trim() || null });
     setName(""); setBio(""); setPhoto(null); setWa(""); await load();
   }
   async function borrar(id: string) { await api.del(`/api/admin/teachers/${id}`); await load(); }
+  async function guardarAtt() {
+    const r = await api.put<AttentionCfgT>("/api/admin/settings/attention", { hours: att.hours || null, available: att.available });
+    setAtt({ hours: r.hours || "", available: r.available }); setAttMsg("Guardado ✓"); setTimeout(() => setAttMsg(""), 2000);
+  }
 
   return (
     <div className="grid" style={{ gap: 18 }}>
       <div>
         <h1 style={{ fontSize: 26, fontWeight: 800 }}>Profesores · control total 🎓</h1>
         <p className="muted" style={{ marginTop: 6 }}>Crea, edita y elimina profesores. La vista del alumno usa una parrilla de 3 columnas.</p>
+      </div>
+      <div className="card" style={{ padding: 18, display: "grid", gap: 12 }}>
+        <div style={{ fontWeight: 800 }}>Horario de atención</div>
+        <div><label className="label">Horario (texto libre)</label><input className="input" value={att.hours || ""} onChange={(e) => setAtt({ ...att, hours: e.target.value })} placeholder="Lun a Vie · 9:00 a 18:00" /></div>
+        <label style={{ display: "flex", alignItems: "center", gap: 10, cursor: "pointer" }}>
+          <input type="checkbox" checked={att.available} onChange={(e) => setAtt({ ...att, available: e.target.checked })} />
+          <span>{att.available ? "Equipo activo (atendiendo)" : "Equipo en descanso"}</span>
+        </label>
+        <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
+          <button type="button" className="btn btn-primary" onClick={guardarAtt}>Guardar horario</button>
+          {attMsg && <span className="muted" style={{ fontSize: 13 }}>{attMsg}</span>}
+        </div>
       </div>
       <form onSubmit={crear} className="card" style={{ padding: 18, display: "grid", gap: 12 }}>
         <div style={{ display: "grid", gap: 12, gridTemplateColumns: "1fr 1fr" }}>

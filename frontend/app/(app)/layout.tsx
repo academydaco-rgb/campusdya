@@ -5,14 +5,16 @@ import Link from "next/link";
 import { useAuth } from "@/lib/auth";
 import Spotlight from "@/components/Spotlight";
 import TopBar from "@/components/TopBar";
+import OnlineBar from "@/components/OnlineBar";
 import { Home, GraduationCap, CalendarDays, Video, Package, Award, Users, MessagesSquare,
-  BookOpen, UserCog, KeyRound, Megaphone, ShieldCheck, Rocket, Trophy, ExternalLink, Bell, type LucideIcon } from "lucide-react";
+  BookOpen, UserCog, KeyRound, Megaphone, ShieldCheck, Rocket, Trophy, Wrench, ExternalLink, Bell, type LucideIcon } from "lucide-react";
 
 const APRENDER: NavItem[] = [
   { href: "/dashboard", label: "Inicio", Icon: Home },
   { href: "/explorar", label: "Mis Diplomados", Icon: GraduationCap },
   { href: "/clases-en-vivo", label: "Clases en vivo", Icon: Video },
   { href: "/casos-exito", label: "Casos de éxito", Icon: Trophy },
+  { href: "/herramientas", label: "Herramientas", Icon: Wrench },
   { href: "/proveedores", label: "Proveedores", Icon: Package },
   { href: "/classroom", label: "Classroom", Icon: CalendarDays },
   { href: "/insignias", label: "Insignias", Icon: Award },
@@ -26,6 +28,7 @@ const ADMIN: NavItem[] = [
   { href: "/admin/profesores", label: "Profesores", Icon: Users },
   { href: "/admin/clases-en-vivo", label: "Clases en vivo", Icon: Video },
   { href: "/admin/casos-exito", label: "Casos de éxito", Icon: Trophy },
+  { href: "/admin/herramientas", label: "Herramientas", Icon: Wrench },
   { href: "/admin/proveedores", label: "Proveedores", Icon: Package },
   { href: "/admin/classroom", label: "Classroom", Icon: CalendarDays },
   { href: "/admin/comunicados", label: "Comunicados", Icon: Megaphone },
@@ -87,15 +90,16 @@ export default function AppLayout({ children }: { children: ReactNode }) {
 
         <div className="promo">
           <div className="crown"><Wolf size={30} /></div>
-          <h4 className="promo-title">Más de 1.700 estudiantes en 9 países</h4>
-          <p className="promo-sub">70% son casos de éxito… y tú serás el próximo.</p>
-          <div className="u" />
+          <h4 className="promo-title">Tú tienes derecho al acompañamiento personalizado</h4>
+          <p className="promo-sub">Solicítalo aquí</p>
+          <Link href="/profesores" className="promo-cta">Profesores</Link>
           <div className="planet" />
         </div>
       </aside>
       <main className="main">
         <TopBar />
         {children}
+        <OnlineBar />
       </main>
     </div>
   );

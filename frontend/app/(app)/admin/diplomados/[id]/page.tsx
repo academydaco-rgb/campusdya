@@ -2,7 +2,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
-import { api, uploadImage, AdminDiplomaT, AdminModuleT, AdminLessonT, PhaseLiteT, TeacherT } from "@/lib/api";
+import { api, uploadImage, AdminDiplomaT, AdminModuleT, AdminLessonT, PhaseLiteT, TeacherT , uploadFile} from "@/lib/api";
 
 function ImageUpload({ value, onChange, hint, ratio }: { value?: string | null; onChange: (url: string) => void; hint: string; ratio: string }) {
   const [busy, setBusy] = useState(false);
@@ -182,13 +182,30 @@ function LessonRow({ index, lesson, onSaved, onDelete }: {
   const [title, setTitle] = useState(lesson.title);
   const [video, setVideo] = useState(lesson.videopress_url || "");
   const [content, setContent] = useState(lesson.content || "");
+  const [materials, setMaterials] = useState<{ nombre: string; url: string }[]>(
+    Array.isArray(lesson.materials) ? (lesson.materials as { nombre: string; url: string }[]) : []
+  );
   const [saving, setSaving] = useState(false);
+  const [upBusy, setUpBusy] = useState(false);
+
+  function setMat(i: number, patch: Partial<{ nombre: string; url: string }>) {
+    setMaterials((m) => m.map((x, j) => (j === i ? { ...x, ...patch } : x)));
+  }
+  function addMat() { setMaterials((m) => [...m, { nombre: "", url: "" }]); }
+  function delMat(i: number) { setMaterials((m) => m.filter((_, j) => j !== i)); }
+  async function subirMat(i: number, file: File) {
+    setUpBusy(true);
+    try { const r = await uploadFile(file); setMat(i, { url: r.url, nombre: materials[i]?.nombre || r.name }); }
+    catch (e) { alert(e instanceof Error ? e.message : "Error al subir"); }
+    finally { setUpBusy(false); }
+  }
 
   async function guardar() {
     if (!title.trim()) return;
     setSaving(true);
     try {
-      await api.put(`/api/admin/lessons/${lesson.id}`, { title: title.trim(), videopress_url: video.trim() || null, content: content.trim() || null });
+      const mats = materials.filter((m) => m.url.trim()).map((m) => ({ nombre: m.nombre.trim() || "Descargar", url: m.url.trim() }));
+      await api.put(`/api/admin/lessons/${lesson.id}`, { title: title.trim(), videopress_url: video.trim() || null, content: content.trim() || null, materials: mats });
       setEdit(false); onSaved();
     } finally { setSaving(false); }
   }
@@ -199,6 +216,22 @@ function LessonRow({ index, lesson, onSaved, onDelete }: {
         <input className="input" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Título" />
         <input className="input" value={video} onChange={(e) => setVideo(e.target.value)} placeholder="URL del video (VideoPress)" />
         <textarea className="input" value={content} onChange={(e) => setContent(e.target.value)} placeholder="Contenido / descripción (opcional)" rows={3} style={{ resize: "vertical" }} />
+        <div style={{ display: "grid", gap: 8, padding: "10px 12px", borderRadius: 10, border: "1px dashed var(--line-2)" }}>
+          <div className="label" style={{ margin: 0 }}>Archivos / materiales de la clase</div>
+          {materials.map((m, i) => (
+            <div key={i} style={{ display: "grid", gap: 6, gridTemplateColumns: "1fr 1fr auto", alignItems: "center" }}>
+              <input className="input" value={m.nombre} onChange={(e) => setMat(i, { nombre: e.target.value })} placeholder="Nombre del botón" />
+              <input className="input" value={m.url} onChange={(e) => setMat(i, { url: e.target.value })} placeholder="Enlace o sube un archivo →" />
+              <div style={{ display: "flex", gap: 6 }}>
+                <label className="btn btn-ghost" style={{ fontSize: 12, padding: "6px 10px" }}>{upBusy ? "…" : "Subir"}
+                  <input type="file" style={{ display: "none" }} onChange={(e) => { const f = e.target.files?.[0]; if (f) subirMat(i, f); e.target.value = ""; }} />
+                </label>
+                <button type="button" className="btn btn-ghost" style={{ fontSize: 12, padding: "6px 9px" }} onClick={() => delMat(i)}>✕</button>
+              </div>
+            </div>
+          ))}
+          <button type="button" className="btn btn-ghost" style={{ fontSize: 12, justifySelf: "start" }} onClick={addMat}>+ Agregar archivo</button>
+        </div>
         <div style={{ display: "flex", gap: 8 }}>
           <button className="btn btn-primary" onClick={guardar} disabled={saving} type="button">Guardar</button>
           <button className="btn btn-ghost" onClick={() => { setEdit(false); setTitle(lesson.title); setVideo(lesson.videopress_url || ""); setContent(lesson.content || ""); }} type="button">Cancelar</button>
