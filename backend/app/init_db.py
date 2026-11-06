@@ -37,6 +37,13 @@ async def main():
         await conn.run_sync(Base.metadata.create_all)
         for sql in _MIGRATIONS:
             await conn.execute(text(sql))
+        # Nombres de usuarios con la primera letra de cada nombre en mayúscula (también los ya creados)
+        from app.services.text import nombre_propio
+        rows = (await conn.execute(text("SELECT id, name FROM users"))).all()
+        for uid, name in rows:
+            nuevo = nombre_propio(name)
+            if nuevo and nuevo != name:
+                await conn.execute(text("UPDATE users SET name = :n WHERE id = :i"), {"n": nuevo, "i": uid})
     print("[init_db] Tablas + migraciones OK")
 
 

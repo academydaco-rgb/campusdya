@@ -1,7 +1,7 @@
 import uuid
 from datetime import datetime
 from sqlalchemy import String, Text, DateTime
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, validates
 from app.core.database import Base
 from app.models.base_mixin import TimestampMixin, uuid_pk
 
@@ -12,6 +12,11 @@ class User(Base, TimestampMixin):
     email: Mapped[str] = mapped_column(String(255), unique=True, index=True, nullable=False)
     password_hash: Mapped[str] = mapped_column(String(255), nullable=False)
     name: Mapped[str] = mapped_column(String(255), nullable=False)
+
+    @validates("name")
+    def _normalizar_nombre(self, _key, value):
+        from app.services.text import nombre_propio
+        return nombre_propio(value)
     avatar_url: Mapped[str | None] = mapped_column(String(500), nullable=True)
     role: Mapped[str] = mapped_column(String(20), default="alumno", nullable=False)   # admin|instructor|alumno
     status: Mapped[str] = mapped_column(String(20), default="invited", nullable=False) # active|invited|disabled
