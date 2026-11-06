@@ -624,3 +624,7 @@ p{line-height:1.6}
 @keyframes nfFloat{0%,100%{translate:0 0}50%{translate:0 -6px}}
 @media(max-width:520px){.nf-badge{width:76px;height:76px}}
 .hexrow .badge-tip{display:block}
+
+/* Portada cuadrada en "Continúa tu formación" (la portada del diplomado es 800x800, se ve completa) */
+.cont-cover{width:120px;height:120px;aspect-ratio:1/1;border-radius:14px;flex:none;border:1px solid var(--line-2)}
+@media(max-width:520px){.cont-cover{width:84px;height:84px}}

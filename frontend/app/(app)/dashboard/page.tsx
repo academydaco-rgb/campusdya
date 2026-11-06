@@ -108,7 +108,7 @@ export default function DashboardPage() {
               <div className="sec-h"><span className="ic"><PlayCircle /></span><h2>Continúa tu formación</h2><Link className="all" href="/explorar">Ver todos <ArrowRight size={14} /></Link></div>
               {cont && (
                 <Link href={`/leccion/${cont.lesson_id}`} className="card card-hover" style={{ display: "flex", alignItems: "center", gap: 18, padding: 16, overflow: "hidden" }}>
-                  <div style={{ width: 170, height: 104, borderRadius: 14, flex: "none", background: contDip?.cover_url ? `center/cover url(${contDip.cover_url})` : "linear-gradient(135deg,#2a1150,#0e1140)", border: "1px solid var(--line-2)" }} />
+                  <div className="cont-cover" style={{ background: contDip?.cover_url ? `center/cover no-repeat url(${contDip.cover_url})` : "linear-gradient(135deg,#2a1150,#0e1140)" }} />
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <span className="chip" style={{ color: "#06202a", background: "linear-gradient(90deg,#22e0ff,#55f0c0)", border: 0, fontWeight: 700 }}>En curso</span>
                     <div style={{ fontWeight: 700, fontSize: 19, color: "#fff", margin: "8px 0 6px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{cont.diploma_title}</div>
