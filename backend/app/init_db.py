@@ -18,6 +18,11 @@ _MIGRATIONS = [
     "CREATE UNIQUE INDEX IF NOT EXISTS ix_user_badges_code ON user_badges (code)",
     "ALTER TABLE users ADD COLUMN IF NOT EXISTS bio TEXT",
     "ALTER TABLE users ADD COLUMN IF NOT EXISTS avatar_url VARCHAR(500)",
+    "ALTER TABLE users ADD COLUMN IF NOT EXISTS whatsapp VARCHAR(40)",
+    "ALTER TABLE users ADD COLUMN IF NOT EXISTS profile_type VARCHAR(20)",
+    "ALTER TABLE users ADD COLUMN IF NOT EXISTS last_seen_at TIMESTAMPTZ",
+    "ALTER TABLE providers ADD COLUMN IF NOT EXISTS whatsapp VARCHAR(40)",
+    "ALTER TABLE lessons ADD COLUMN IF NOT EXISTS materials JSONB",
 ]
 
 
