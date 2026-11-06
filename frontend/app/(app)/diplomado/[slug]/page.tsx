@@ -46,7 +46,6 @@ export default function DiplomaPage() {
                 <img src={d.badge_image_url} alt={`Insignia ${d.title}`} />
               </span>
             )}
-            <span className="nf-tag">Diplomado · Academy D&amp;A</span>
             <h1 className="nf-title">{d.title}</h1>
             {d.description && <p className="nf-desc">{d.description}</p>}
             {t && (
