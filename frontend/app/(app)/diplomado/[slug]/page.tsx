@@ -62,9 +62,9 @@ export default function DiplomaPage() {
           </div>
           <div className="nf-hero-media">
             {video ? (
-              <ProtectedVideo url={d.intro_video_url} title={`Presentación ${d.title}`} />
+              <ProtectedVideo url={d.intro_video_url} title={`Presentación ${d.title}`} poster={bg} />
             ) : (
-              <div className="nf-hero-poster" style={{ background: d.cover_url ? `center/cover url(${d.cover_url})` : "var(--grad)" }} />
+              <div className="nf-hero-poster" style={{ background: bg ? `center/cover url(${bg})` : "var(--grad)" }} />
             )}
           </div>
         </div>

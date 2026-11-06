@@ -531,3 +531,12 @@ p{line-height:1.6}
 .nf-hero-media .pv{position:absolute;inset:0;aspect-ratio:auto}
 .pv iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
 .pv-mark{position:absolute;z-index:2;pointer-events:none;font-size:12px;font-weight:700;letter-spacing:.04em;color:rgba(255,255,255,.22);text-shadow:0 1px 2px rgba(0,0,0,.5);transition:top 1.2s ease,left 1.2s ease;white-space:nowrap}
+
+/* Portada con botón de play palpitante */
+.pv-poster{display:grid;place-items:center;border:0;padding:0;cursor:pointer;background-size:cover;background-position:center;width:100%}
+.pv-poster::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at center,rgba(5,5,12,.15) 0%,rgba(5,5,12,.55) 100%);transition:background .3s}
+.pv-poster:hover::before{background:radial-gradient(circle at center,rgba(5,5,12,.05) 0%,rgba(5,5,12,.45) 100%)}
+.pv-play{position:relative;z-index:1;width:88px;height:88px;border-radius:999px;display:grid;place-items:center;color:#05050c;background:var(--cyan);padding-left:5px;box-shadow:0 0 0 0 rgba(34,224,255,.7),0 12px 40px -6px rgba(34,224,255,.8);animation:pvPulse 1.6s ease-out infinite;transition:transform .2s}
+.pv-poster:hover .pv-play{transform:scale(1.1)}
+@keyframes pvPulse{0%{box-shadow:0 0 0 0 rgba(34,224,255,.75),0 12px 40px -6px rgba(34,224,255,.8)}70%{box-shadow:0 0 0 28px rgba(34,224,255,0),0 12px 40px -6px rgba(34,224,255,.8)}100%{box-shadow:0 0 0 0 rgba(34,224,255,0),0 12px 40px -6px rgba(34,224,255,.8)}}
+@media(max-width:600px){.pv-play{width:68px;height:68px}}
