@@ -569,3 +569,9 @@ p{line-height:1.6}
 .pv-poster:hover .pv-play{transform:scale(1.08)}
 .pv-poster::before{background:linear-gradient(0deg,rgba(5,8,12,.3),rgba(5,8,12,.05))}
 @media(max-width:900px){.nf-pl{left:62%}}
+
+/* Botón de play (dashboard y diplomados): late moviéndose, sin sombra */
+@keyframes playBeat{0%,100%{transform:scale(1)}50%{transform:scale(1.12)}}
+.hero-video .play .pbtn,.pv-play{box-shadow:none!important;animation:playBeat 1.4s ease-in-out infinite}
+.hero-video .play:hover .pbtn,.pv-poster:hover .pv-play{animation-play-state:paused;transform:scale(1.12)}
+@media (prefers-reduced-motion:reduce){.hero-video .play .pbtn,.pv-play{animation:none}}
