@@ -572,9 +572,9 @@ p{line-height:1.6}
 
 /* Botón de play (dashboard y diplomados): late moviéndose, sin sombra */
 @keyframes playBeat{0%,100%{transform:scale(1)}50%{transform:scale(1.12)}}
-.hero-video .play .pbtn,.pv-play{box-shadow:none!important;animation:playBeat 1.4s ease-in-out infinite}
-.hero-video .play:hover .pbtn,.pv-poster:hover .pv-play{animation-play-state:paused;transform:scale(1.12)}
-@media (prefers-reduced-motion:reduce){.hero-video .play .pbtn,.pv-play{animation:none}}
+/* Late siempre (también con "reducir movimiento" del sistema y con el mouse encima) hasta que se abre el video */
+.hero-video .play .pbtn,.pv-play,
+.hero-video .play:hover .pbtn,.pv-poster:hover .pv-play{box-shadow:none!important;animation:playBeat 1.3s ease-in-out infinite!important;animation-play-state:running!important}
 
 /* Módulos desplegables (acordeón) */
 .mod-acc{padding:18px;transition:border-color .25s}
