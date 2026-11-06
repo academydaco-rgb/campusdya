@@ -145,7 +145,7 @@ async def public_teachers(db: AsyncSession = Depends(get_db), user: User = Depen
     dips = (await db.execute(select(Diploma).where(Diploma.status == "published", Diploma.teacher_id.isnot(None)))).scalars().all()
     by_t: dict[str, list] = {}
     for d in dips:
-        by_t.setdefault(str(d.teacher_id), []).append({"title": d.title, "slug": d.slug})
+        by_t.setdefault(str(d.teacher_id), []).append({"title": d.title, "slug": d.slug, "cover_url": d.cover_url})
     out = []
     for t in teachers:
         row = TeacherOut.model_validate(t).model_dump()
