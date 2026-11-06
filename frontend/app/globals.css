@@ -575,3 +575,14 @@ p{line-height:1.6}
 .hero-video .play .pbtn,.pv-play{box-shadow:none!important;animation:playBeat 1.4s ease-in-out infinite}
 .hero-video .play:hover .pbtn,.pv-poster:hover .pv-play{animation-play-state:paused;transform:scale(1.12)}
 @media (prefers-reduced-motion:reduce){.hero-video .play .pbtn,.pv-play{animation:none}}
+
+/* Módulos desplegables (acordeón) */
+.mod-acc{padding:18px;transition:border-color .25s}
+.mod-acc.is-open{border-color:rgba(217,70,239,.45)}
+.mod-head{display:flex;align-items:center;gap:14px;width:100%;background:none;border:0;padding:0;color:inherit;font:inherit;cursor:pointer}
+.mod-chev{width:38px;height:38px;border-radius:999px;display:grid;place-items:center;flex-shrink:0;color:#fff;background:var(--grad-soft);border:1px solid var(--line-2);transition:transform .3s ease,background .25s}
+.mod-head:hover .mod-chev{background:var(--grad)}
+.mod-acc.is-open .mod-chev{transform:rotate(180deg);background:var(--grad)}
+.mod-body{display:grid;grid-template-rows:0fr;transition:grid-template-rows .35s ease}
+.mod-acc.is-open .mod-body{grid-template-rows:1fr}
+.mod-inner{overflow:hidden;min-height:0}

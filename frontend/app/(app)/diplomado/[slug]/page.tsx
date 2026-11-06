@@ -10,6 +10,8 @@ export default function DiplomaPage() {
   const slug = params?.slug as string;
   const [d, setD] = useState<DiplomaDetailT | null>(null);
   const [error, setError] = useState("");
+  const [open, setOpen] = useState<Record<string, boolean>>({});
+  const toggle = (id: string) => setOpen((o) => ({ ...o, [id]: !o[id] }));
 
   useEffect(() => {
     if (!slug) return;
@@ -80,18 +82,25 @@ export default function DiplomaPage() {
       </div>
 
       {d.modules.map((m, mi) => (
-        <div key={m.id} className="card" style={{ padding: 18 }}>
-          {/* Cabecera del módulo: imagen cuadrada a la izquierda del título */}
-          <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+        <div key={m.id} className={`card mod-acc${open[m.id] ? " is-open" : ""}`}>
+          {/* Cabecera del módulo (clic para desplegar las lecciones) */}
+          <button type="button" className="mod-head" onClick={() => toggle(m.id)} aria-expanded={!!open[m.id]}>
             {m.cover_url && <div style={{ width: 88, height: 88, borderRadius: 12, flexShrink: 0, background: `center/cover url(${m.cover_url})` }} />}
-            <div style={{ minWidth: 0 }}>
+            <div style={{ minWidth: 0, flex: 1, textAlign: "left" }}>
               <div className="muted" style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: ".08em" }}>Módulo {mi + 1}</div>
               <div style={{ fontWeight: 800, fontSize: 19, color: "#fff", lineHeight: 1.2 }}>{m.title}</div>
               {m.description && <div className="muted" style={{ fontSize: 13, marginTop: 3 }}>{m.description}</div>}
+              <div className="muted" style={{ fontSize: 12.5, marginTop: 6 }}>
+                {m.lessons.length} {m.lessons.length === 1 ? "lección" : "lecciones"} · {m.lessons.filter((l) => l.completed).length} completadas
+              </div>
             </div>
-          </div>
+            <span className="mod-chev" aria-hidden>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round"><path d="M6 9l6 6 6-6" /></svg>
+            </span>
+          </button>
 
-          <div style={{ marginTop: 14, display: "grid", gap: 8 }}>
+          <div className="mod-body"><div className="mod-inner">
+          <div style={{ paddingTop: 14, display: "grid", gap: 8 }}>
             {m.lessons.map((l, li) => (
               <Link key={l.id} href={`/leccion/${l.id}`}
                 style={{ display: "flex", alignItems: "center", gap: 12, padding: "11px 14px", borderRadius: 12,
@@ -107,6 +116,7 @@ export default function DiplomaPage() {
             ))}
             {m.lessons.length === 0 && <span className="muted" style={{ fontSize: 13 }}>Sin lecciones todavía.</span>}
           </div>
+          </div></div>
         </div>
       ))}
     </div>
