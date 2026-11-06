@@ -2,6 +2,15 @@
 import { useEffect, useState } from "react";
 import Tilt from "@/components/Tilt";
 import { api, TeacherT, AttentionCfgT } from "@/lib/api";
+import { GraduationCap } from "lucide-react";
+
+const DAYS: { key: string; label: string; short: string }[] = [
+  { key: "mon", label: "Lunes", short: "Lun" }, { key: "tue", label: "Martes", short: "Mar" },
+  { key: "wed", label: "Miércoles", short: "Mié" }, { key: "thu", label: "Jueves", short: "Jue" },
+  { key: "fri", label: "Viernes", short: "Vie" }, { key: "sat", label: "Sábado", short: "Sáb" },
+  { key: "sun", label: "Domingo", short: "Dom" },
+];
+const fmtRanges = (rs?: [string, string][]) => (rs && rs.length ? rs.map((r) => `${r[0]}–${r[1]}`).join("  ·  ") : "Cerrado");
 
 export default function Profesores() {
   const [items, setItems] = useState<TeacherT[]>([]);
@@ -10,18 +19,45 @@ export default function Profesores() {
     api.get<TeacherT[]>("/api/teachers").then(setItems).catch(() => setItems([]));
     api.get<AttentionCfgT>("/api/settings/attention").then(setAtt).catch(() => {});
   }, []);
+
+  const now = new Date();
+  const todayKey = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"][now.getDay()];
+  const hhmm = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
+  const todayRanges = (att?.schedule || {})[todayKey] || [];
+  const withinHours = todayRanges.some((r) => hhmm >= r[0] && hhmm <= r[1]);
+  const activeNow = !!att?.available && withinHours;
+
   return (
     <div>
-      <h1 style={{ fontSize: 28, fontWeight: 800 }}>Profesores 🎓</h1>
-      <p className="muted" style={{ marginTop: 6, marginBottom: 18 }}>El equipo que te acompaña en tu camino.</p>
-      {att && (
-        <div className="att-banner" style={{ marginBottom: 22 }}>
-          <span className={`att-dot ${att.available ? "on" : "off"}`} />
-          <span className="att-state">{att.available ? "Equipo activo ahora" : "El equipo está en descanso"}</span>
-          {att.hours && <span className="att-hours">· {att.hours}</span>}
+      <section className="ce-hero prof-hero fade-up">
+        <div className="ce-hero-glow" /><div className="ce-hero-stars" />
+        <div className="ce-hero-in">
+          <span className="ce-badge"><GraduationCap size={14} /> Tu equipo de mentores</span>
+          <h1 className="ce-title">Profesores</h1>
+          <p className="ce-sub">No estás solo: aquí tienes acompañamiento real. Un equipo que te lleva de la mano, paso a paso, hasta tus resultados.</p>
+          <div className="ce-stats">
+            <div className="ce-stat"><b>{items.length}</b><span>profesores</span></div>
+            <div className="ce-stat"><b className={activeNow ? "" : "off"} style={activeNow ? {} : { WebkitTextFillColor: "#9b96bd", color: "#9b96bd" }}>{activeNow ? "Activos" : "En descanso"}</b><span>ahora mismo</span></div>
+            <div className="ce-stat"><b style={{ fontSize: 18 }}>{fmtRanges(todayRanges as [string, string][])}</b><span>hoy · {DAYS.find((d) => d.key === todayKey)?.label}</span></div>
+          </div>
+          {att?.schedule && Object.keys(att.schedule).length > 0 && (
+            <div className="prof-sched">
+              {DAYS.map((d) => {
+                const rs = (att.schedule || {})[d.key] as [string, string][] | undefined;
+                const isToday = d.key === todayKey;
+                return (
+                  <div key={d.key} className={`prof-sched-row${isToday ? " today" : ""}`}>
+                    <span className="prof-day">{d.label}</span>
+                    <span className="prof-hours">{fmtRanges(rs)}</span>
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </div>
-      )}
-      <div className="grid-3">
+      </section>
+
+      <div className="grid-3" style={{ marginTop: 24 }}>
         {items.map((t) => (
           <Tilt key={t.id} style={{ height: "100%" }}>
           <div className="card" style={{ width: "100%", height: "100%", overflow: "hidden", display: "flex", flexDirection: "column" }}>

@@ -466,3 +466,12 @@ p{line-height:1.6}
 .flip3d-back-name{font-weight:900;font-size:18px;text-transform:uppercase;letter-spacing:.02em;color:#fff;
   background:linear-gradient(92deg,#22e0ff,#d946ef);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
 .flip3d-back-sub{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#b9b3d6}
+
+/* ─────────── Horario semanal en Profesores (bloque dorado) ─────────── */
+.prof-sched{margin-top:22px;display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px}
+.prof-sched-row{display:flex;flex-direction:column;gap:3px;padding:10px 12px;border-radius:12px;border:1px solid rgba(255,196,110,.16);background:rgba(10,8,20,.4)}
+.prof-sched-row.today{border-color:rgba(255,196,110,.55);background:linear-gradient(160deg,rgba(255,196,110,.12),rgba(217,70,239,.06));box-shadow:0 0 22px -8px rgba(255,179,71,.4)}
+.prof-day{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;color:#ffd98a}
+.prof-sched-row:not(.today) .prof-day{color:#b9b3d6}
+.prof-hours{font-size:13px;font-weight:600;color:#eceaf7}
+.prof-sched-row:not(.today) .prof-hours{color:#9b96bd}

@@ -54,7 +54,8 @@ export interface LiveClassT { id: string; title: string; description?: string | 
 export interface ToolT { id: string; title: string; image_url?: string | null; link_url?: string | null; link_label?: string | null; order?: number; status?: string; }
 export interface OnlineUserT { id: string; name: string; avatar_url?: string | null; }
 export interface CommunityTopT { id: string; name: string; avatar_url?: string | null; count: number; }
-export interface AttentionCfgT { hours?: string | null; available: boolean; }
+export type DayRange = [string, string];
+export interface AttentionCfgT { available: boolean; schedule?: Record<string, DayRange[]> | null; }
 export interface CasoExitoT { id: string; title: string; description?: string | null; videopress_url?: string | null; external_url?: string | null; cover_url?: string | null; order?: number; status?: string; }
 export interface ProviderT { id: string; title: string; description?: string | null; videopress_url?: string | null; cover_url?: string | null; whatsapp?: string | null; order?: number; status?: string; }
 export interface FeedbackT { id: string; user_id: string; body: string; results?: string | null; rating?: number | null; image_url?: string | null; status: string; created_at: string; author_name?: string | null; author_avatar?: string | null; author_bio?: string | null; }

@@ -1,3 +1,4 @@
+import json
 from fastapi import APIRouter, Depends
 from pydantic import BaseModel
 from sqlalchemy import select
@@ -11,7 +12,7 @@ router = APIRouter(prefix="/api", tags=["settings"])
 
 _VIDEO_URL = "dashboard_video_url"
 _VIDEO_COVER = "dashboard_video_cover"
-_ATT_HOURS = "attention_hours"
+_ATT_SCHEDULE = "attention_schedule"
 _ATT_AVAILABLE = "team_available"
 
 
@@ -47,19 +48,29 @@ async def set_dashboard_video(data: DashboardVideo, db: AsyncSession = Depends(g
 
 
 class AttentionCfg(BaseModel):
-    hours: str | None = None
     available: bool = True
+    # schedule: { "mon": [["08:00","12:00"], ["14:00","18:00"]], ... }  (los huecos = descansos)
+    schedule: dict | None = None
+
+
+def _parse_schedule(raw: str | None) -> dict | None:
+    if not raw:
+        return None
+    try:
+        return json.loads(raw)
+    except Exception:
+        return None
 
 
 @router.get("/settings/attention", response_model=AttentionCfg)
 async def get_attention(db: AsyncSession = Depends(get_db), user: User = Depends(get_current_user)):
     av = await _get(db, _ATT_AVAILABLE)
-    return AttentionCfg(hours=await _get(db, _ATT_HOURS), available=(av != "0"))
+    return AttentionCfg(available=(av != "0"), schedule=_parse_schedule(await _get(db, _ATT_SCHEDULE)))
 
 
 @router.put("/admin/settings/attention", response_model=AttentionCfg)
 async def set_attention(data: AttentionCfg, db: AsyncSession = Depends(get_db), a: User = Depends(require_admin)):
-    await _set(db, _ATT_HOURS, (data.hours or None))
     await _set(db, _ATT_AVAILABLE, "1" if data.available else "0")
+    await _set(db, _ATT_SCHEDULE, json.dumps(data.schedule) if data.schedule is not None else None)
     av = await _get(db, _ATT_AVAILABLE)
-    return AttentionCfg(hours=await _get(db, _ATT_HOURS), available=(av != "0"))
+    return AttentionCfg(available=(av != "0"), schedule=_parse_schedule(await _get(db, _ATT_SCHEDULE)))
