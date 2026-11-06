@@ -1,6 +1,12 @@
 import os
 import uuid
+from io import BytesIO
 from fastapi import APIRouter, Depends, UploadFile, File, HTTPException
+try:
+    from PIL import Image
+    _HAS_PIL = True
+except Exception:
+    _HAS_PIL = False
 from app.core.deps import require_admin, get_current_user
 from app.core.config import settings
 from app.models.user import User
@@ -58,6 +64,39 @@ async def upload_file_admin(file: UploadFile = File(...), admin: User = Depends(
     return await _save_file(file)
 
 
+def _optimize_image(data: bytes, content_type: str) -> tuple[bytes, str]:
+    """Baja el peso: redimensiona y convierte a WebP. Devuelve (bytes, ext)."""
+    if not _HAS_PIL:
+        return data, _ALLOWED.get((content_type or "").lower(), "jpg")
+    try:
+        im = Image.open(BytesIO(data))
+        if im.mode == "P":
+            im = im.convert("RGBA")
+        MAX = 1600
+        if max(im.size) > MAX:
+            im.thumbnail((MAX, MAX))
+        buf = BytesIO()
+        im.save(buf, format="WEBP", quality=80, method=6)
+        return buf.getvalue(), "webp"
+    except Exception:
+        return data, _ALLOWED.get((content_type or "").lower(), "jpg")
+
+
+async def _save_user_optimized(file: UploadFile) -> dict:
+    ext_in = _ALLOWED.get((file.content_type or "").lower())
+    if not ext_in:
+        raise HTTPException(status_code=400, detail="Formato no válido. Usa PNG, JPG o WEBP.")
+    data = await file.read()
+    if len(data) > 3 * 1024 * 1024:
+        raise HTTPException(status_code=400, detail="La imagen supera 3 MB. Usa una más liviana.")
+    data, ext = _optimize_image(data, file.content_type)
+    os.makedirs(_DIR, exist_ok=True)
+    name = f"{uuid.uuid4().hex}.{ext}"
+    with open(os.path.join(_DIR, name), "wb") as f:
+        f.write(data)
+    return {"url": f"{settings.BACKEND_URL}/static/uploads/{name}"}
+
+
 @router.post("/api/admin/upload")
 async def upload_image_admin(file: UploadFile = File(...), admin: User = Depends(require_admin)):
     return await _save(file)
@@ -65,4 +104,4 @@ async def upload_image_admin(file: UploadFile = File(...), admin: User = Depends
 
 @router.post("/api/upload")
 async def upload_image_user(file: UploadFile = File(...), user: User = Depends(get_current_user)):
-    return await _save(file)
+    return await _save_user_optimized(file)

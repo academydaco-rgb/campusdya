@@ -86,7 +86,7 @@ export default function Comunidad() {
           <button className="btn btn-primary">Publicar</button>
           {msg && <span className="muted" style={{ fontSize: 13 }}>{msg}</span>}
         </div>
-        <span className="muted" style={{ fontSize: 11.5 }}>Formatos: PNG, JPG o WEBP · máx 8 MB.</span>
+        <span className="muted" style={{ fontSize: 11.5 }}>Formatos: PNG, JPG o WEBP · máx 3 MB.</span>
       </form>
 
       <div className="grid" style={{ gridTemplateColumns: "repeat(auto-fit,minmax(280px,1fr))" }}>

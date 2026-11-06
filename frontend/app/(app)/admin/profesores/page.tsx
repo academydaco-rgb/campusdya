@@ -24,7 +24,7 @@ export default function AdminTeachers() {
   }
   async function borrar(id: string) { await api.del(`/api/admin/teachers/${id}`); await load(); }
   async function guardarAtt() {
-    const r = await api.put<AttentionCfgT>("/api/admin/settings/attention", { available: att.available, schedule: att.schedule || {} });
+    const r = await api.put<AttentionCfgT>("/api/admin/settings/attention", { available: true, schedule: att.schedule || {} });
     setAtt({ available: r.available, schedule: r.schedule || {} }); setAttMsg("Guardado ✓"); setTimeout(() => setAttMsg(""), 2000);
   }
   function setDay(key: string, ranges: [string, string][]) {
@@ -48,10 +48,7 @@ export default function AdminTeachers() {
       </div>
       <div className="card" style={{ padding: 18, display: "grid", gap: 14 }}>
         <div style={{ fontWeight: 800 }}>Horario de atención del equipo</div>
-        <label style={{ display: "flex", alignItems: "center", gap: 10, cursor: "pointer" }}>
-          <input type="checkbox" checked={att.available} onChange={(e) => setAtt({ ...att, available: e.target.checked })} />
-          <span>{att.available ? "Equipo disponible (apágalo en vacaciones)" : "Equipo en descanso / vacaciones"}</span>
-        </label>
+        <p className="muted" style={{ fontSize: 12, margin: 0 }}>Dentro de estas franjas, en la página de profesores aparece “Activos ahora mismo”; fuera, “En descanso”. Automático según la hora de Colombia.</p>
         <div style={{ display: "grid", gap: 2 }}>
           {DAYS.map((d) => {
             const ranges = dayRanges(d.key); const open = ranges.length > 0;
