@@ -11,12 +11,12 @@ export default function Comunidad() {
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState("");
   const [profile, setProfile] = useState<FeedbackT | null>(null);
-  const [profileData, setProfileData] = useState<{ name: string; avatar_url?: string | null; bio?: string | null; whatsapp?: string | null; profile_type?: string | null; badges: { id: string; name: string; icon?: string | null; image_url?: string | null }[] } | null>(null);
+  const [profileData, setProfileData] = useState<{ name: string; avatar_url?: string | null; bio?: string | null; whatsapp?: string | null; profile_type?: string | null; badges: { id: string; name: string; icon?: string | null; image_url?: string | null; diploma_title?: string | null }[] } | null>(null);
   const [top, setTop] = useState<CommunityTopT[]>([]);
 
   function abrirPerfil(f: FeedbackT) {
     setProfile(f); setProfileData(null);
-    api.get<{ name: string; avatar_url?: string | null; bio?: string | null; whatsapp?: string | null; profile_type?: string | null; badges: { id: string; name: string; icon?: string | null; image_url?: string | null }[] }>(`/api/users/${f.user_id}/public`).then(setProfileData).catch(() => {});
+    api.get<{ name: string; avatar_url?: string | null; bio?: string | null; whatsapp?: string | null; profile_type?: string | null; badges: { id: string; name: string; icon?: string | null; image_url?: string | null; diploma_title?: string | null }[] }>(`/api/users/${f.user_id}/public`).then(setProfileData).catch(() => {});
   }
 
   async function load() { setItems(await api.get<FeedbackT[]>("/api/feedback")); }
@@ -132,9 +132,13 @@ export default function Comunidad() {
               <div style={{ marginTop: 16 }}>
                 <div className="eyebrow" style={{ marginBottom: 10 }}>Insignias</div>
                 <div style={{ display: "flex", gap: 12, flexWrap: "wrap", justifyContent: "center" }}>
-                  {badges.map((b) => b.image_url
-                    ? <img key={b.id} src={b.image_url} alt={b.name} title={b.name} style={{ width: 46, height: 46, objectFit: "contain", filter: "drop-shadow(0 0 10px var(--gold))" }} />
-                    : <div key={b.id} title={b.name} style={{ fontSize: 34, filter: "drop-shadow(0 0 10px var(--gold))" }}>{b.icon || "🏅"}</div>)}
+                  {badges.map((b) => (
+                    <span key={b.id} className="badge-tip" data-tip={b.diploma_title ? `Diplomado: ${b.diploma_title}` : b.name}>
+                      {b.image_url
+                        ? <img src={b.image_url} alt={b.diploma_title || b.name} style={{ width: 46, height: 46, objectFit: "contain", display: "block", filter: "drop-shadow(0 0 10px var(--gold))" }} />
+                        : <div style={{ fontSize: 34, filter: "drop-shadow(0 0 10px var(--gold))" }}>{b.icon || "🏅"}</div>}
+                    </span>
+                  ))}
                 </div>
               </div>
             )}

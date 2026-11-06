@@ -174,10 +174,10 @@ export default function DashboardPage() {
             ) : (
               <div className="hexrow">
                 {badges.slice(0, 3).map((b) => (
-                  <div key={b.id}>
+                  <div key={b.id} className="badge-tip" data-tip={b.diploma_title ? `Diplomado: ${b.diploma_title}` : b.name}>
                     {b.image_url
-                      ? <img src={b.image_url} alt={b.name} title={b.name} style={{ width: "100%", maxWidth: 92, aspectRatio: "1/1", objectFit: "contain", margin: "0 auto", display: "block", filter: "drop-shadow(0 6px 16px rgba(217,70,239,.4))" }} />
-                      : <div className="hexb" title={b.name}><Award /></div>}
+                      ? <img src={b.image_url} alt={b.diploma_title || b.name} style={{ width: "100%", maxWidth: 92, aspectRatio: "1/1", objectFit: "contain", margin: "0 auto", display: "block", filter: "drop-shadow(0 6px 16px rgba(217,70,239,.4))" }} />
+                      : <div className="hexb"><Award /></div>}
                   </div>
                 ))}
               </div>

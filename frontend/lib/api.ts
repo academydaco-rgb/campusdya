@@ -43,7 +43,7 @@ export interface DiplomaTeacherT { id: string; name: string; photo_url?: string 
 export interface DiplomaDetailT {
   id: string; title: string; slug: string; description?: string | null; cover_url?: string | null;
   teacher?: DiplomaTeacherT | null;
-  hero_image_url?: string | null; intro_video_url?: string | null;
+  hero_image_url?: string | null; intro_video_url?: string | null; badge_image_url?: string | null;
   modules: ModuleOutT[]; total_lessons: number; completed_lessons: number; progress: number;
 }
 export interface LessonDetailT {

@@ -129,6 +129,7 @@ async def diploma_detail(slug: str, db: AsyncSession = Depends(get_db), user: Us
         "id": str(dip.id), "title": dip.title, "slug": dip.slug,
         "description": dip.description, "cover_url": dip.cover_url, "teacher": teacher,
         "hero_image_url": dip.hero_image_url, "intro_video_url": dip.intro_video_url,
+        "badge_image_url": dip.badge_image_url,
         "modules": out_mods, "total_lessons": total, "completed_lessons": completadas,
         "progress": round(100 * completadas / total) if total else 0,
     }
@@ -296,7 +297,8 @@ async def public_user_profile(user_id: uuid.UUID, db: AsyncSession = Depends(get
     for ub, b in rows:
         dip = dmap.get(b.rule_value or "")
         badges.append({"id": str(b.id), "name": b.name, "icon": b.icon,
-                       "image_url": (dip.badge_image_url if dip else None)})
+                       "image_url": (dip.badge_image_url if dip else None),
+                       "diploma_title": (dip.title if dip else None)})
     return {"id": str(u.id), "name": u.name, "avatar_url": u.avatar_url, "bio": u.bio, "whatsapp": u.whatsapp, "profile_type": u.profile_type, "badges": badges}
 
 

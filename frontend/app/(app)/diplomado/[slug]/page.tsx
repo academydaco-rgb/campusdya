@@ -41,6 +41,11 @@ export default function DiplomaPage() {
         <div className="nf-neb" /><div className="nf-stars" /><div className="nf-pl" /><div className="nf-pl2" />
         <div className="nf-hero-grid">
           <div className="nf-hero-info">
+            {d.badge_image_url && (
+              <span className="nf-badge badge-tip" data-tip={`Insignia del diplomado ${d.title}`}>
+                <img src={d.badge_image_url} alt={`Insignia ${d.title}`} />
+              </span>
+            )}
             <span className="nf-tag">Diplomado · Academy D&amp;A</span>
             <h1 className="nf-title">{d.title}</h1>
             {d.description && <p className="nf-desc">{d.description}</p>}
