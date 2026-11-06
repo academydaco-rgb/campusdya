@@ -20,11 +20,14 @@ export default function Profesores() {
     api.get<AttentionCfgT>("/api/settings/attention").then(setAtt).catch(() => {});
   }, []);
 
-  const now = new Date();
-  const todayKey = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"][now.getDay()];
+  // Hora actual SIEMPRE en Colombia (America/Bogota), robusto ante SSR en UTC
+  const nowCo = new Date(new Date().toLocaleString("en-US", { timeZone: "America/Bogota" }));
+  const todayKey = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"][nowCo.getDay()];
+  const hhmm = `${String(nowCo.getHours()).padStart(2, "0")}:${String(nowCo.getMinutes()).padStart(2, "0")}`;
   const todayRanges = (att?.schedule || {})[todayKey] || [];
-  // El estado en vivo lo controla el toggle del admin (activo/descanso)
-  const activeNow = !!att?.available;
+  const withinHours = todayRanges.some((r) => hhmm >= r[0] && hhmm <= r[1]);
+  // Activo = el equipo esta disponible (toggle) Y estamos dentro del horario de hoy
+  const activeNow = !!att?.available && withinHours;
 
   return (
     <div>
