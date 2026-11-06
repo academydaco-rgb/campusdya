@@ -4,6 +4,7 @@ from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
+from app.core.hardening import SecurityHeadersMiddleware
 from app.routers import auth, admin_content, admin_users, student, admin_catalog, catalog_public, admin_upload, announcements, settings as settings_router, certificates, notifications
 
 
@@ -13,15 +14,22 @@ async def lifespan(app: FastAPI):
     yield
 
 
-app = FastAPI(title="Academia D&A API", version="0.1.0", lifespan=lifespan)
+_DOCS = os.getenv("API_DOCS", "0") == "1"   # documentación interactiva apagada en producción
+app = FastAPI(title="Academia D&A API", version="0.1.0", lifespan=lifespan,
+              docs_url="/docs" if _DOCS else None, redoc_url=None,
+              openapi_url="/openapi.json" if _DOCS else None)
+
+if settings.SECRET_KEY in ("", "cambia-esto-en-produccion", "genera-una-clave-larga-aleatoria") or len(settings.SECRET_KEY) < 32:
+    print("[SEGURIDAD] ⚠️  SECRET_KEY débil o por defecto. Pon una clave aleatoria de 64+ caracteres en .env")
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.cors_list,
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allow_headers=["Authorization", "Content-Type"],
 )
+app.add_middleware(SecurityHeadersMiddleware)
 
 
 @app.get("/health")

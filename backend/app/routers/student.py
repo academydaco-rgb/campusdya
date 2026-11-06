@@ -128,6 +128,7 @@ async def diploma_detail(slug: str, db: AsyncSession = Depends(get_db), user: Us
     return {
         "id": str(dip.id), "title": dip.title, "slug": dip.slug,
         "description": dip.description, "cover_url": dip.cover_url, "teacher": teacher,
+        "hero_image_url": dip.hero_image_url, "intro_video_url": dip.intro_video_url,
         "modules": out_mods, "total_lessons": total, "completed_lessons": completadas,
         "progress": round(100 * completadas / total) if total else 0,
     }

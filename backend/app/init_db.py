@@ -23,6 +23,8 @@ _MIGRATIONS = [
     "ALTER TABLE users ADD COLUMN IF NOT EXISTS last_seen_at TIMESTAMPTZ",
     "ALTER TABLE providers ADD COLUMN IF NOT EXISTS whatsapp VARCHAR(40)",
     "ALTER TABLE lessons ADD COLUMN IF NOT EXISTS materials JSONB",
+    "ALTER TABLE diplomas ADD COLUMN IF NOT EXISTS hero_image_url VARCHAR(500)",
+    "ALTER TABLE diplomas ADD COLUMN IF NOT EXISTS intro_video_url VARCHAR(600)",
 ]
 
 

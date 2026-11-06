@@ -66,6 +66,7 @@ export default function EditDiploma() {
     await api.put(`/api/admin/diplomas/${id}`, {
       title: dip.title, description: dip.description, cover_url: dip.cover_url,
       status: dip.status, order: dip.order, phase_id: dip.phase_id || null, teacher_id: dip.teacher_id || null, badge_image_url: dip.badge_image_url || null,
+      hero_image_url: dip.hero_image_url || null, intro_video_url: (dip.intro_video_url || "").trim() || null,
     });
     setMsg("Guardado ✓"); setTimeout(() => setMsg(""), 1500);
   }
@@ -107,6 +108,19 @@ export default function EditDiploma() {
         <div>
           <label className="label">Portada del diplomado</label>
           <ImageUpload value={dip.cover_url} onChange={(url) => setDip({ ...dip, cover_url: url })} ratio="square" hint="Cuadrada · 800 × 800 px (PNG o JPG)" />
+        </div>
+        <div style={{ display: "grid", gap: 12, padding: 16, borderRadius: 14, border: "1px dashed var(--line-2)", background: "rgba(34,224,255,.04)" }}>
+          <div style={{ fontWeight: 800, color: "#fff", fontSize: 14 }}>🎬 Cabecera del diplomado (estilo Netflix)</div>
+          <div>
+            <label className="label">Portada de la cabecera (fondo)</label>
+            <ImageUpload value={dip.hero_image_url} onChange={(url) => setDip({ ...dip, hero_image_url: url })} ratio="wide" hint="Horizontal · 1920 × 800 px (JPG o WEBP)" />
+          </div>
+          <div>
+            <label className="label">Video de presentación (VideoPress)</label>
+            <input className="input" value={dip.intro_video_url || ""} onChange={(e) => setDip({ ...dip, intro_video_url: e.target.value })}
+              placeholder="https://videopress.com/embed/XXXXXXXX" />
+            <div className="muted" style={{ fontSize: 12, marginTop: 6 }}>Pega el enlace de inserción (embed) de VideoPress. Se muestra a la derecha de la cabecera.</div>
+          </div>
         </div>
         <div>
           <label className="label">Insignia del diplomado</label>

@@ -18,6 +18,8 @@ class Diploma(Base, TimestampMixin):
     phase_id: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True), ForeignKey("phases.id", ondelete="SET NULL"), index=True, nullable=True)
     teacher_id: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True), ForeignKey("teachers.id", ondelete="SET NULL"), nullable=True)
     badge_image_url: Mapped[str | None] = mapped_column(String(500), nullable=True)
+    hero_image_url: Mapped[str | None] = mapped_column(String(500), nullable=True)   # portada panorámica (fondo cabecera estilo Netflix)
+    intro_video_url: Mapped[str | None] = mapped_column(String(600), nullable=True)  # video de presentación (VideoPress)
     created_by: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True), ForeignKey("users.id", ondelete="SET NULL"), nullable=True)
 
 

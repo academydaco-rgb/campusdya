@@ -13,6 +13,8 @@ class DiplomaCreate(BaseModel):
     phase_id: uuid.UUID | None = None
     teacher_id: uuid.UUID | None = None
     badge_image_url: str | None = None
+    hero_image_url: str | None = None
+    intro_video_url: str | None = None
 
 
 class DiplomaUpdate(BaseModel):
@@ -25,6 +27,8 @@ class DiplomaUpdate(BaseModel):
     phase_id: uuid.UUID | None = None
     teacher_id: uuid.UUID | None = None
     badge_image_url: str | None = None
+    hero_image_url: str | None = None
+    intro_video_url: str | None = None
 
 
 class DiplomaOut(BaseModel):
@@ -39,6 +43,8 @@ class DiplomaOut(BaseModel):
     phase_id: uuid.UUID | None = None
     teacher_id: uuid.UUID | None = None
     badge_image_url: str | None = None
+    hero_image_url: str | None = None
+    intro_video_url: str | None = None
 
 
 # ───── Módulo ─────

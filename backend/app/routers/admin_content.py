@@ -44,6 +44,8 @@ async def create_diploma(data: DiplomaCreate, db: AsyncSession = Depends(get_db)
         slug=await _unique_slug(db, Diploma, slug),
         description=data.description, cover_url=data.cover_url,
         status=data.status, order=data.order, phase_id=data.phase_id, created_by=admin.id,
+        teacher_id=data.teacher_id, badge_image_url=data.badge_image_url,
+        hero_image_url=data.hero_image_url, intro_video_url=data.intro_video_url,
     )
     db.add(obj); await db.commit(); await db.refresh(obj)
     return obj

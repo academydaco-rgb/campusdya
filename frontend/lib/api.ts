@@ -43,6 +43,7 @@ export interface DiplomaTeacherT { id: string; name: string; photo_url?: string 
 export interface DiplomaDetailT {
   id: string; title: string; slug: string; description?: string | null; cover_url?: string | null;
   teacher?: DiplomaTeacherT | null;
+  hero_image_url?: string | null; intro_video_url?: string | null;
   modules: ModuleOutT[]; total_lessons: number; completed_lessons: number; progress: number;
 }
 export interface LessonDetailT {
@@ -61,7 +62,7 @@ export interface ProviderT { id: string; title: string; description?: string | n
 export interface FeedbackT { id: string; user_id: string; body: string; results?: string | null; rating?: number | null; image_url?: string | null; status: string; created_at: string; author_name?: string | null; author_avatar?: string | null; author_bio?: string | null; }
 
 // ───────── Tipos admin ─────────
-export interface AdminDiplomaT { id: string; title: string; slug: string; description?: string | null; cover_url?: string | null; status: string; order: number; phase_id?: string | null; teacher_id?: string | null; badge_image_url?: string | null; }
+export interface AdminDiplomaT { id: string; title: string; slug: string; description?: string | null; cover_url?: string | null; status: string; order: number; phase_id?: string | null; teacher_id?: string | null; badge_image_url?: string | null; hero_image_url?: string | null; intro_video_url?: string | null; }
 export interface AdminModuleT { id: string; diploma_id: string; title: string; description?: string | null; cover_url?: string | null; order: number; status: string; }
 export interface AdminLessonT { id: string; module_id: string; title: string; slug?: string | null; videopress_url?: string | null; content?: string | null; duration_seconds: number; order: number; status: string; materials?: unknown[] | null; }
 export interface PhaseLiteT { id: string; name: string; slug: string; order: number; icon?: string | null; color?: string | null; description?: string | null; }

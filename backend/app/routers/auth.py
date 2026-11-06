@@ -1,7 +1,7 @@
 import secrets
 from datetime import datetime, timezone, timedelta
 from pydantic import BaseModel, EmailStr
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.database import get_db
@@ -10,6 +10,7 @@ from app.core.deps import get_current_user
 from app.models.user import User
 from app.models.reset import PasswordResetToken
 from app.core.config import settings
+from app.core.hardening import rate_limit, client_ip
 from app.services.mailer import send_reset
 from app.schemas.auth import LoginRequest, Token, UserOut
 
@@ -17,8 +18,11 @@ router = APIRouter(prefix="/api/auth", tags=["auth"])
 
 
 @router.post("/login", response_model=Token)
-async def login(data: LoginRequest, db: AsyncSession = Depends(get_db)):
+async def login(data: LoginRequest, request: Request, db: AsyncSession = Depends(get_db)):
     email = data.email.lower().strip()
+    ip = client_ip(request)
+    rate_limit(f"login-ip:{ip}", 60, 600)        # 60 intentos / 10 min por IP (salones comparten IP)
+    rate_limit(f"login-mail:{email}", 8, 900)    # 8 intentos / 15 min por cuenta
     user = (await db.execute(select(User).where(User.email == email))).scalar_one_or_none()
     if not user or not verify_password(data.password, user.password_hash):
         raise HTTPException(status_code=401, detail="Correo o contraseña incorrectos")
@@ -43,8 +47,10 @@ class ResetRequest(BaseModel):
 
 
 @router.post("/forgot-password")
-async def forgot_password(data: ForgotRequest, db: AsyncSession = Depends(get_db)):
+async def forgot_password(data: ForgotRequest, request: Request, db: AsyncSession = Depends(get_db)):
     email = data.email.lower().strip()
+    rate_limit(f"forgot-ip:{client_ip(request)}", 5, 900)
+    rate_limit(f"forgot-mail:{email}", 3, 3600)
     user = (await db.execute(select(User).where(User.email == email))).scalar_one_or_none()
     if user:
         tok = secrets.token_urlsafe(32)
@@ -58,9 +64,10 @@ async def forgot_password(data: ForgotRequest, db: AsyncSession = Depends(get_db
 
 
 @router.post("/reset-password")
-async def reset_password(data: ResetRequest, db: AsyncSession = Depends(get_db)):
-    if len(data.new_password) < 6:
-        raise HTTPException(status_code=400, detail="La contraseña debe tener al menos 6 caracteres")
+async def reset_password(data: ResetRequest, request: Request, db: AsyncSession = Depends(get_db)):
+    rate_limit(f"reset-ip:{client_ip(request)}", 10, 900)
+    if len(data.new_password) < 8:
+        raise HTTPException(status_code=400, detail="La contraseña debe tener al menos 8 caracteres")
     row = (await db.execute(select(PasswordResetToken).where(PasswordResetToken.token == data.token))).scalar_one_or_none()
     if not row or row.used or row.expires_at < datetime.now(timezone.utc):
         raise HTTPException(status_code=400, detail="El enlace no es válido o ya expiró")

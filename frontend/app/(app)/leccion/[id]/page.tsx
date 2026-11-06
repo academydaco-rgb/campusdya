@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
+import ProtectedVideo from "@/components/ProtectedVideo";
 import { api, uploadImageUser, LessonDetailT, DiplomaDetailT } from "@/lib/api";
 
 interface CommentT { id: string; body: string; rating?: number | null; image_url?: string | null; parent_id?: string | null; author_name?: string | null; created_at: string; }
@@ -99,9 +100,7 @@ export default function LessonPage() {
 
         <div className="card" style={{ overflow: "hidden" }}>
           {l.videopress_url ? (
-            <div style={{ position: "relative", paddingTop: "56.25%" }}>
-              <iframe src={l.videopress_url} allowFullScreen style={{ position: "absolute", inset: 0, width: "100%", height: "100%", border: 0 }} />
-            </div>
+            <ProtectedVideo url={l.videopress_url} title={l.title} />
           ) : <div style={{ padding: 40, textAlign: "center" }} className="muted">Esta lección aún no tiene video.</div>}
         </div>
 
