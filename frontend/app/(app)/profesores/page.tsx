@@ -22,10 +22,9 @@ export default function Profesores() {
 
   const now = new Date();
   const todayKey = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"][now.getDay()];
-  const hhmm = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
   const todayRanges = (att?.schedule || {})[todayKey] || [];
-  const withinHours = todayRanges.some((r) => hhmm >= r[0] && hhmm <= r[1]);
-  const activeNow = !!att?.available && withinHours;
+  // El estado en vivo lo controla el toggle del admin (activo/descanso)
+  const activeNow = !!att?.available;
 
   return (
     <div>
