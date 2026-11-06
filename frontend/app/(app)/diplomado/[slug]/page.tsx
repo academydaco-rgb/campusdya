@@ -36,8 +36,7 @@ export default function DiplomaPage() {
 
       {/* ───── Cabecera estilo Netflix ───── */}
       <section className="nf-hero" style={{ viewTransitionName: `dip-${d.slug}` }}>
-        {bg && <div className="nf-hero-bg" style={{ backgroundImage: `url(${bg})` }} />}
-        <div className="nf-hero-shade" />
+        <div className="nf-neb" /><div className="nf-stars" /><div className="nf-pl" /><div className="nf-pl2" />
         <div className="nf-hero-grid">
           <div className="nf-hero-info">
             <span className="nf-tag">Diplomado · Academy D&amp;A</span>

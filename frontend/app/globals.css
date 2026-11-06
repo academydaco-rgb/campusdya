@@ -540,3 +540,32 @@ p{line-height:1.6}
 .pv-poster:hover .pv-play{transform:scale(1.1)}
 @keyframes pvPulse{0%{box-shadow:0 0 0 0 rgba(34,224,255,.75),0 12px 40px -6px rgba(34,224,255,.8)}70%{box-shadow:0 0 0 28px rgba(34,224,255,0),0 12px 40px -6px rgba(34,224,255,.8)}100%{box-shadow:0 0 0 0 rgba(34,224,255,0),0 12px 40px -6px rgba(34,224,255,.8)}}
 @media(max-width:600px){.pv-play{width:68px;height:68px}}
+
+/* Cabecera del diplomado: fondo universo (como el dashboard) */
+.nf-hero{background:linear-gradient(120deg,#190f3a 0%,#140e34 45%,#260f33 100%)}
+.nf-neb{position:absolute;inset:0;pointer-events:none;background:
+  radial-gradient(40% 80% at 6% 0%, rgba(34,224,255,.22), transparent 70%),
+  radial-gradient(55% 90% at 98% 115%, rgba(217,70,239,.3), transparent 70%),
+  radial-gradient(35% 60% at 55% 50%, rgba(124,58,237,.18), transparent 70%)}
+.nf-stars{position:absolute;inset:0;pointer-events:none;opacity:.75;background:
+  radial-gradient(1.5px 1.5px at 20% 30%,#fff,transparent),radial-gradient(1.3px 1.3px at 40% 66%,#fff,transparent),
+  radial-gradient(1.4px 1.4px at 30% 84%,#fff,transparent),radial-gradient(1.3px 1.3px at 12% 54%,#dcd8ff,transparent),
+  radial-gradient(1.2px 1.2px at 52% 18%,#fff,transparent),radial-gradient(1.5px 1.5px at 64% 88%,#e9e4ff,transparent),
+  radial-gradient(1.2px 1.2px at 88% 12%,#fff,transparent),radial-gradient(1.3px 1.3px at 76% 40%,#dcd8ff,transparent),
+  radial-gradient(1.1px 1.1px at 6% 90%,#fff,transparent),radial-gradient(1.4px 1.4px at 46% 6%,#fff,transparent)}
+.nf-pl{position:absolute;left:40%;top:-46px;width:130px;height:130px;border-radius:50%;pointer-events:none;opacity:.55;
+  background:radial-gradient(120% 110% at 35% 25%, #4bc5ff, #1b56b8 42%, #0a1f52 70%);
+  box-shadow:0 0 50px -6px rgba(34,160,255,.5), inset -10px -14px 34px rgba(0,0,0,.55)}
+.nf-pl2{position:absolute;left:-30px;bottom:-40px;width:110px;height:110px;border-radius:50%;pointer-events:none;opacity:.45;
+  background:radial-gradient(120% 110% at 35% 25%, #f0abfc, #a21caf 45%, #3b0a45 75%);
+  box-shadow:0 0 46px -6px rgba(217,70,239,.5), inset -10px -14px 30px rgba(0,0,0,.55)}
+.nf-hero-grid{z-index:1}
+.nf-hero-media{border-color:var(--line-2);box-shadow:0 22px 54px -20px #000,0 0 44px -12px rgba(217,70,239,.45)}
+
+/* Botón de play: fucsia como el del dashboard, sin pulsación */
+.pv-play{width:62px;height:62px;padding-left:4px;color:#fff;background:var(--grad);animation:none;
+  box-shadow:0 10px 30px -6px rgba(217,70,239,.6),inset 0 1px 0 rgba(255,255,255,.3)}
+.pv-play svg{width:26px;height:26px}
+.pv-poster:hover .pv-play{transform:scale(1.08)}
+.pv-poster::before{background:linear-gradient(0deg,rgba(5,8,12,.3),rgba(5,8,12,.05))}
+@media(max-width:900px){.nf-pl{left:62%}}

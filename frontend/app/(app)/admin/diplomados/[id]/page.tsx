@@ -2,6 +2,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
+import { toEmbed } from "@/components/ProtectedVideo";
 import { api, uploadImage, AdminDiplomaT, AdminModuleT, AdminLessonT, PhaseLiteT, TeacherT , uploadFile} from "@/lib/api";
 
 function ImageUpload({ value, onChange, hint, ratio }: { value?: string | null; onChange: (url: string) => void; hint: string; ratio: string }) {
@@ -66,7 +67,7 @@ export default function EditDiploma() {
     await api.put(`/api/admin/diplomas/${id}`, {
       title: dip.title, description: dip.description, cover_url: dip.cover_url,
       status: dip.status, order: dip.order, phase_id: dip.phase_id || null, teacher_id: dip.teacher_id || null, badge_image_url: dip.badge_image_url || null,
-      hero_image_url: dip.hero_image_url || null, intro_video_url: (dip.intro_video_url || "").trim() || null,
+      hero_image_url: dip.hero_image_url || null, intro_video_url: toEmbed(dip.intro_video_url) || null,
     });
     setMsg("Guardado ✓"); setTimeout(() => setMsg(""), 1500);
   }
@@ -119,7 +120,11 @@ export default function EditDiploma() {
             <label className="label">Video de presentación (VideoPress)</label>
             <input className="input" value={dip.intro_video_url || ""} onChange={(e) => setDip({ ...dip, intro_video_url: e.target.value })}
               placeholder="https://videopress.com/embed/XXXXXXXX" />
-            <div className="muted" style={{ fontSize: 12, marginTop: 6 }}>Pega el enlace de inserción (embed) de VideoPress. Se muestra a la derecha de la cabecera.</div>
+            {dip.intro_video_url?.trim()
+              ? (toEmbed(dip.intro_video_url)
+                  ? <div style={{ fontSize: 12.5, marginTop: 6, color: "var(--f4)", fontWeight: 700 }}>✓ Video reconocido. Guarda el diplomado para publicarlo.</div>
+                  : <div style={{ fontSize: 12.5, marginTop: 6, color: "var(--danger)", fontWeight: 700 }}>✕ Enlace no válido. Pega el enlace de VideoPress (videopress.com/v/… o el código de inserción).</div>)
+              : <div className="muted" style={{ fontSize: 12, marginTop: 6 }}>Pega el enlace de VideoPress o el código de inserción completo.</div>}
           </div>
         </div>
         <div>
