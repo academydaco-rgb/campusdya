@@ -85,7 +85,9 @@ export default function DiplomaPage() {
         <div key={m.id} className={`card mod-acc${open[m.id] ? " is-open" : ""}`}>
           {/* Cabecera del módulo (clic para desplegar las lecciones) */}
           <button type="button" className="mod-head" onClick={() => toggle(m.id)} aria-expanded={!!open[m.id]}>
-            {m.cover_url && <div style={{ width: 88, height: 88, borderRadius: 12, flexShrink: 0, background: `center/cover url(${m.cover_url})` }} />}
+            <span className={`mod-ico mod-ico-${mi % 4}`} aria-hidden>
+              <span className="mod-ico-num">{String(mi + 1).padStart(2, "0")}</span>
+            </span>
             <div style={{ minWidth: 0, flex: 1, textAlign: "left" }}>
               <div className="muted" style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: ".08em" }}>Módulo {mi + 1}</div>
               <div style={{ fontWeight: 800, fontSize: 19, color: "#fff", lineHeight: 1.2 }}>{m.title}</div>

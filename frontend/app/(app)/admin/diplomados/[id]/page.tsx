@@ -167,7 +167,6 @@ function ModuleBlock({ index, module, lessons, onLessons, onModule, onDelete }: 
     setTitle(""); setVideo(""); onLessons();
   }
   async function borrar(lid: string) { await api.del(`/api/admin/lessons/${lid}`); onLessons(); }
-  async function setCover(url: string) { await api.put(`/api/admin/modules/${module.id}`, { cover_url: url }); onModule(); }
 
   return (
     <div className="card" style={{ padding: 18 }}>
@@ -175,10 +174,6 @@ function ModuleBlock({ index, module, lessons, onLessons, onModule, onDelete }: 
         <span style={{ fontWeight: 700 }}><span className="muted">Módulo {index + 1} · </span>{module.title}</span>
         <span style={{ flex: 1 }} />
         <button className="btn btn-ghost" style={{ padding: "6px 10px", fontSize: 12 }} onClick={onDelete} type="button">Eliminar módulo</button>
-      </div>
-      <div style={{ marginBottom: 14 }}>
-        <label className="label">Imagen del módulo</label>
-        <ImageUpload value={module.cover_url} onChange={setCover} ratio="square" hint="Cuadrada · 800 × 800 px" />
       </div>
       <div style={{ display: "grid", gap: 8 }}>
         {lessons.map((l, li) => (
