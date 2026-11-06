@@ -12,14 +12,14 @@ import { Home, GraduationCap, CalendarDays, Video, Package, Award, Users, Messag
 const APRENDER: NavItem[] = [
   { href: "/dashboard", label: "Inicio", Icon: Home },
   { href: "/explorar", label: "Mis Diplomados", Icon: GraduationCap },
+  { href: "/classroom", label: "Classroom", Icon: CalendarDays },
   { href: "/clases-en-vivo", label: "Clases en vivo", Icon: Video },
-  { href: "/casos-exito", label: "Casos de éxito", Icon: Trophy },
   { href: "/herramientas", label: "Herramientas", Icon: Wrench },
   { href: "/proveedores", label: "Proveedores", Icon: Package },
-  { href: "/classroom", label: "Classroom", Icon: CalendarDays },
-  { href: "/insignias", label: "Insignias", Icon: Award },
-  { href: "/feedback", label: "Comunidad", Icon: MessagesSquare },
   { href: "/profesores", label: "Profesores", Icon: Users },
+  { href: "/feedback", label: "Comunidad", Icon: MessagesSquare },
+  { href: "/insignias", label: "Insignias", Icon: Award },
+  { href: "/casos-exito", label: "Casos de éxito", Icon: Trophy },
 ];
 const ADMIN: NavItem[] = [
   { href: "/admin/diplomados", label: "Diplomados", Icon: BookOpen },
