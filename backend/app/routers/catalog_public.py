@@ -141,7 +141,17 @@ async def search(q: str = "", db: AsyncSession = Depends(get_db), user: User = D
 
 @router.get("/teachers", response_model=list[TeacherOut])
 async def public_teachers(db: AsyncSession = Depends(get_db), user: User = Depends(get_current_user)):
-    return (await db.execute(select(Teacher).where(Teacher.status == "active").order_by(Teacher.order))).scalars().all()
+    teachers = (await db.execute(select(Teacher).where(Teacher.status == "active").order_by(Teacher.order))).scalars().all()
+    dips = (await db.execute(select(Diploma).where(Diploma.status == "published", Diploma.teacher_id.isnot(None)))).scalars().all()
+    by_t: dict[str, list] = {}
+    for d in dips:
+        by_t.setdefault(str(d.teacher_id), []).append({"title": d.title, "slug": d.slug})
+    out = []
+    for t in teachers:
+        row = TeacherOut.model_validate(t).model_dump()
+        row["diplomas"] = by_t.get(str(t.id), [])
+        out.append(row)
+    return out
 
 
 @router.get("/live-classes", response_model=list[LiveClassOut])

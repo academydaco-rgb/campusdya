@@ -61,6 +61,7 @@ class TeacherOut(BaseModel):
     whatsapp: str | None = None
     order: int
     status: str
+    diplomas: list | None = None
 
 
 # ───── Clase en vivo (grabada) ─────
