@@ -32,6 +32,26 @@ function loadImg(src: string, cross = false): Promise<HTMLImageElement> {
   });
 }
 
+/** Devuelve un canvas con solo la parte visible de la imagen (sin bordes transparentes). */
+function recortarTrazo(im: HTMLImageElement): HTMLCanvasElement {
+  const w = im.naturalWidth || im.width, h = im.naturalHeight || im.height;
+  const t = document.createElement("canvas"); t.width = w; t.height = h;
+  const tc = t.getContext("2d");
+  if (!tc) return t;
+  tc.drawImage(im, 0, 0);
+  const d = tc.getImageData(0, 0, w, h).data;
+  let x0 = w, y0 = h, x1 = -1, y1 = -1;
+  for (let y = 0; y < h; y += 2) for (let x = 0; x < w; x += 2) {
+    if (d[(y * w + x) * 4 + 3] > 20) { if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y; }
+  }
+  if (x1 < 0) return t;
+  const pad = 6;
+  x0 = Math.max(0, x0 - pad); y0 = Math.max(0, y0 - pad); x1 = Math.min(w - 1, x1 + pad); y1 = Math.min(h - 1, y1 + pad);
+  const out = document.createElement("canvas"); out.width = x1 - x0 + 1; out.height = y1 - y0 + 1;
+  out.getContext("2d")?.drawImage(t, x0, y0, out.width, out.height, 0, 0, out.width, out.height);
+  return out;
+}
+
 async function descargarCertificado(b: MyBadgeT, userName: string) {
   const W = 1600, H = 1130;
   const c = document.createElement("canvas");
@@ -122,21 +142,25 @@ async function descargarCertificado(b: MyBadgeT, userName: string) {
   ctx.fillText(`Otorgado el ${fecha}`, cx, 872);
 
   // ── Firmas de fundadores ──
+  // Los PNG de firma traen mucho espacio transparente alrededor: se recorta solo el trazo
+  // para que la firma se vea grande y apoyada sobre la línea.
   const LINE_Y = 968;
   const firma = async (src: string, x: number, name: string) => {
     ctx.textAlign = "center";
     try {
-      const im = await loadImg(src);
-      const ratio = (im.height / im.width) || 0.4;
-      let dw = 320, dh = dw * ratio;        // firma grande y legible
-      const MAXH = 130;
+      const ink = recortarTrazo(await loadImg(src));
+      const ratio = ink.height / ink.width || 0.25;
+      let dw = 380, dh = dw * ratio;          // ancho casi igual a la línea
+      const MAXH = 118;
       if (dh > MAXH) { dh = MAXH; dw = dh / ratio; }
-      ctx.drawImage(im, x - dw / 2, LINE_Y - dh - 4, dw, dh);
+      ctx.save(); ctx.shadowColor = "rgba(34,224,255,.35)"; ctx.shadowBlur = 10;
+      ctx.drawImage(ink, x - dw / 2, LINE_Y - dh - 6, dw, dh);   // apoyada sobre la línea
+      ctx.restore();
     } catch { /* sin firma aún */ }
-    ctx.strokeStyle = "rgba(255,255,255,.35)"; ctx.lineWidth = 1.5;
-    ctx.beginPath(); ctx.moveTo(x - 180, LINE_Y); ctx.lineTo(x + 180, LINE_Y); ctx.stroke();
-    ctx.fillStyle = "#eafcff"; ctx.font = "700 27px Montserrat, Arial"; ctx.fillText(name, x, LINE_Y + 38);
-    ctx.fillStyle = "#9aa0b8"; ctx.font = "400 18px Montserrat, Arial"; ctx.fillText("Fundador · D&A Academy", x, LINE_Y + 66);
+    ctx.strokeStyle = "rgba(255,255,255,.4)"; ctx.lineWidth = 1.6;
+    ctx.beginPath(); ctx.moveTo(x - 200, LINE_Y); ctx.lineTo(x + 200, LINE_Y); ctx.stroke();
+    ctx.fillStyle = "#eafcff"; ctx.font = "700 27px Montserrat, Arial"; ctx.fillText(name, x, LINE_Y + 40);
+    ctx.fillStyle = "#9aa0b8"; ctx.font = "400 18px Montserrat, Arial"; ctx.fillText("Fundador · D&A Academy", x, LINE_Y + 68);
   };
   await firma("/firmadiego.png", 520, "Diego Patarroyo");
   await firma("/firmaandres.png", 1080, "Andrés Patarroyo");
