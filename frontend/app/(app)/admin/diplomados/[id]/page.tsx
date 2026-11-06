@@ -178,6 +178,14 @@ function ModuleBlock({ index, module, lessons, onLessons, onModule, onDelete, ha
   index: number; module: AdminModuleT; lessons: AdminLessonT[]; onLessons: () => void; onModule: () => void; onDelete: () => void;
   hasRoutes: boolean; routeA: string; routeB: string;
 }) {
+  const [editName, setEditName] = useState(false);
+  const [name, setName] = useState(module.title);
+  async function guardarNombre() {
+    const t = name.trim();
+    if (!t) return;
+    await api.put(`/api/admin/modules/${module.id}`, { title: t });
+    setEditName(false); onModule();
+  }
   async function setRoute(r: string) { await api.put(`/api/admin/modules/${module.id}`, { route: r || null }); onModule(); }
   const [title, setTitle] = useState("");
   const [video, setVideo] = useState("");
@@ -192,7 +200,21 @@ function ModuleBlock({ index, module, lessons, onLessons, onModule, onDelete, ha
   return (
     <div className="card" style={{ padding: 18 }}>
       <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
-        <span style={{ fontWeight: 700 }}><span className="muted">Módulo {index + 1} · </span>{module.title}</span>
+        {editName ? (
+          <div style={{ display: "flex", gap: 8, alignItems: "center", flex: 1, minWidth: 0 }}>
+            <span className="muted" style={{ fontWeight: 700, flexShrink: 0 }}>Módulo {index + 1} ·</span>
+            <input className="input" autoFocus value={name} onChange={(e) => setName(e.target.value)}
+              onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); guardarNombre(); } if (e.key === "Escape") { setName(module.title); setEditName(false); } }}
+              style={{ padding: "7px 10px", fontSize: 14 }} />
+            <button className="btn btn-primary" style={{ padding: "6px 12px", fontSize: 12 }} onClick={guardarNombre} type="button">Guardar</button>
+            <button className="btn btn-ghost" style={{ padding: "6px 10px", fontSize: 12 }} onClick={() => { setName(module.title); setEditName(false); }} type="button">Cancelar</button>
+          </div>
+        ) : (
+          <>
+            <span style={{ fontWeight: 700 }}><span className="muted">Módulo {index + 1} · </span>{module.title}</span>
+            <button className="btn btn-ghost" style={{ padding: "5px 10px", fontSize: 12 }} onClick={() => setEditName(true)} type="button">✏️ Editar nombre</button>
+          </>
+        )}
         {hasRoutes && module.route && (
           <span className="chip" style={{ fontSize: 11, fontWeight: 800, color: module.route === "A" ? "#05050c" : "#fff", background: module.route === "A" ? "#22e0ff" : "#d946ef" }}>
             Ruta {module.route}
