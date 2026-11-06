@@ -72,5 +72,6 @@ async def get_attention(db: AsyncSession = Depends(get_db), user: User = Depends
 async def set_attention(data: AttentionCfg, db: AsyncSession = Depends(get_db), a: User = Depends(require_admin)):
     await _set(db, _ATT_AVAILABLE, "1" if data.available else "0")
     await _set(db, _ATT_SCHEDULE, json.dumps(data.schedule) if data.schedule is not None else None)
+    await db.commit()
     av = await _get(db, _ATT_AVAILABLE)
     return AttentionCfg(available=(av != "0"), schedule=_parse_schedule(await _get(db, _ATT_SCHEDULE)))
