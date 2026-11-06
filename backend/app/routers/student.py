@@ -15,6 +15,7 @@ from app.models.learning import Enrollment, LessonProgress
 from app.models.community import Comment
 from app.models.gamification import Badge, UserBadge
 from app.services.badges import award_diploma_if_complete
+from app.services.routes import counts as route_counts, norm_route
 from app.services.mailer import send_reply_notice
 from app.core.config import settings as _settings
 from app.schemas.content import DiplomaOut, LessonOut
@@ -32,23 +33,31 @@ async def _is_enrolled(db: AsyncSession, user: User, diploma_id: uuid.UUID) -> b
 
 
 async def _diploma_progress(db: AsyncSession, user_id, diploma_id, is_admin: bool):
-    """(total_lecciones, completadas, siguiente_leccion_pendiente|None)."""
+    """(total_lecciones, completadas, siguiente_leccion_pendiente|None).
+    Con bifurcación cuenta módulos comunes + la ruta que lleva el estudiante."""
+    dip = (await db.execute(select(Diploma).where(Diploma.id == diploma_id))).scalar_one_or_none()
+    has_routes = bool(dip and dip.has_routes)
     mods = (await db.execute(select(Module).where(Module.diploma_id == diploma_id).order_by(Module.order))).scalars().all()
     done = set((await db.execute(select(LessonProgress.lesson_id).where(
         LessonProgress.user_id == user_id, LessonProgress.completed == True))).scalars().all())  # noqa: E712
-    total = 0; completed = 0; next_lesson = None
+    items = []  # (route, [lessons])
     for m in mods:
         if m.status != "published" and not is_admin:
             continue
         lessons = (await db.execute(select(Lesson).where(Lesson.module_id == m.id).order_by(Lesson.order))).scalars().all()
-        for l in lessons:
-            if l.status != "published" and not is_admin:
-                continue
-            total += 1
-            if l.id in done:
-                completed += 1
-            elif next_lesson is None:
+        items.append((norm_route(m.route) if has_routes else None,
+                      [l for l in lessons if l.status == "published" or is_admin]))
+    total, completed, chosen = route_counts([(r, [l.id for l in ls]) for r, ls in items], done, has_routes)
+    next_lesson = None
+    for r, ls in items:
+        if has_routes and r and r != chosen:
+            continue
+        for l in ls:
+            if l.id not in done:
                 next_lesson = l
+                break
+        if next_lesson:
+            break
     return total, completed, next_lesson
 
 
@@ -117,9 +126,10 @@ async def diploma_detail(slug: str, db: AsyncSession = Depends(get_db), user: Us
             "duration_seconds": l.duration_seconds, "order": l.order,
             "completed": l.id in done,
         } for l in lessons if (l.status == "published" or is_admin)]
-        out_mods.append({"id": str(m.id), "title": m.title, "description": m.description, "cover_url": m.cover_url, "order": m.order, "lessons": out_lessons})
-    total = sum(len(m["lessons"]) for m in out_mods)
-    completadas = sum(1 for m in out_mods for l in m["lessons"] if l["completed"])
+        out_mods.append({"id": str(m.id), "title": m.title, "description": m.description, "cover_url": m.cover_url, "order": m.order,
+                         "route": norm_route(m.route) if dip.has_routes else None, "lessons": out_lessons})
+    total, completadas, chosen = route_counts(
+        [(m["route"], [uuid.UUID(l["id"]) for l in m["lessons"]]) for m in out_mods], done, bool(dip.has_routes))
     teacher = None
     if dip.teacher_id:
         t = (await db.execute(select(Teacher).where(Teacher.id == dip.teacher_id))).scalar_one_or_none()
@@ -130,6 +140,8 @@ async def diploma_detail(slug: str, db: AsyncSession = Depends(get_db), user: Us
         "description": dip.description, "cover_url": dip.cover_url, "teacher": teacher,
         "hero_image_url": dip.hero_image_url, "intro_video_url": dip.intro_video_url,
         "badge_image_url": dip.badge_image_url,
+        "has_routes": bool(dip.has_routes), "chosen_route": chosen,
+        "route_a_name": dip.route_a_name or "Ruta A", "route_b_name": dip.route_b_name or "Ruta B",
         "modules": out_mods, "total_lessons": total, "completed_lessons": completadas,
         "progress": round(100 * completadas / total) if total else 0,
     }

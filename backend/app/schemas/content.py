@@ -15,6 +15,9 @@ class DiplomaCreate(BaseModel):
     badge_image_url: str | None = None
     hero_image_url: str | None = None
     intro_video_url: str | None = None
+    has_routes: bool | None = None
+    route_a_name: str | None = None
+    route_b_name: str | None = None
 
 
 class DiplomaUpdate(BaseModel):
@@ -29,6 +32,9 @@ class DiplomaUpdate(BaseModel):
     badge_image_url: str | None = None
     hero_image_url: str | None = None
     intro_video_url: str | None = None
+    has_routes: bool | None = None
+    route_a_name: str | None = None
+    route_b_name: str | None = None
 
 
 class DiplomaOut(BaseModel):
@@ -45,6 +51,9 @@ class DiplomaOut(BaseModel):
     badge_image_url: str | None = None
     hero_image_url: str | None = None
     intro_video_url: str | None = None
+    has_routes: bool | None = None
+    route_a_name: str | None = None
+    route_b_name: str | None = None
 
 
 # ───── Módulo ─────
@@ -53,6 +62,7 @@ class ModuleCreate(BaseModel):
     title: str
     description: str | None = None
     cover_url: str | None = None
+    route: str | None = None
     order: int = 0
     status: str = "draft"
 
@@ -61,6 +71,7 @@ class ModuleUpdate(BaseModel):
     title: str | None = None
     description: str | None = None
     cover_url: str | None = None
+    route: str | None = None
     order: int | None = None
     status: str | None = None
 
@@ -72,6 +83,7 @@ class ModuleOut(BaseModel):
     title: str
     description: str | None = None
     cover_url: str | None = None
+    route: str | None = None
     order: int
     status: str
 

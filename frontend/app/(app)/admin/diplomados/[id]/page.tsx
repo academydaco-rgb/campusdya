@@ -68,6 +68,7 @@ export default function EditDiploma() {
       title: dip.title, description: dip.description, cover_url: dip.cover_url,
       status: dip.status, order: dip.order, phase_id: dip.phase_id || null, teacher_id: dip.teacher_id || null, badge_image_url: dip.badge_image_url || null,
       hero_image_url: dip.hero_image_url || null, intro_video_url: toEmbed(dip.intro_video_url) || null,
+      has_routes: !!dip.has_routes, route_a_name: (dip.route_a_name || "").trim() || null, route_b_name: (dip.route_b_name || "").trim() || null,
     });
     setMsg("Guardado ✓"); setTimeout(() => setMsg(""), 1500);
   }
@@ -127,6 +128,23 @@ export default function EditDiploma() {
               : <div className="muted" style={{ fontSize: 12, marginTop: 6 }}>Pega el enlace de VideoPress o el código de inserción completo.</div>}
           </div>
         </div>
+        <div style={{ display: "grid", gap: 12, padding: 16, borderRadius: 14, border: "1px dashed var(--line-2)", background: "rgba(217,70,239,.05)" }}>
+          <label style={{ display: "flex", alignItems: "center", gap: 10, cursor: "pointer", fontWeight: 800, color: "#fff", fontSize: 14 }}>
+            <input type="checkbox" checked={!!dip.has_routes} onChange={(e) => setDip({ ...dip, has_routes: e.target.checked })} style={{ width: 18, height: 18, accentColor: "#d946ef" }} />
+            ⑂ Este diplomado tiene bifurcación (Ruta A / Ruta B)
+          </label>
+          {dip.has_routes && (<>
+            <div style={{ display: "grid", gap: 12, gridTemplateColumns: "1fr 1fr" }}>
+              <div><label className="label">Nombre de la Ruta A</label>
+                <input className="input" value={dip.route_a_name || ""} onChange={(e) => setDip({ ...dip, route_a_name: e.target.value })} placeholder="Ej: Proveedor" /></div>
+              <div><label className="label">Nombre de la Ruta B</label>
+                <input className="input" value={dip.route_b_name || ""} onChange={(e) => setDip({ ...dip, route_b_name: e.target.value })} placeholder="Ej: Dropshipper" /></div>
+            </div>
+            <div className="muted" style={{ fontSize: 12.5, lineHeight: 1.5 }}>
+              Guarda el diplomado y abajo, en cada módulo, elige si es <b>Común</b>, <b>Ruta A</b> o <b>Ruta B</b>. La bifurcación empieza en el primer módulo que marques como A o B; los módulos comunes que pongas después vuelven a unir las dos rutas.
+            </div>
+          </>)}
+        </div>
         <div>
           <label className="label">Insignia del diplomado</label>
           <ImageUpload value={dip.badge_image_url} onChange={(url) => setDip({ ...dip, badge_image_url: url })} ratio="square" hint="Cuadrada · 512 × 512 px (PNG con fondo transparente)" />
@@ -146,6 +164,7 @@ export default function EditDiploma() {
         <div className="grid" style={{ gap: 14 }}>
           {modules.map((m, mi) => (
             <ModuleBlock key={m.id} index={mi} module={m} lessons={lessons[m.id] || []}
+              hasRoutes={!!dip.has_routes} routeA={dip.route_a_name || "Ruta A"} routeB={dip.route_b_name || "Ruta B"}
               onLessons={() => loadLessons(m.id)} onModule={load} onDelete={() => borrarModulo(m.id)} />
           ))}
           {modules.length === 0 && <span className="muted">Agrega el primer módulo arriba.</span>}
@@ -155,9 +174,11 @@ export default function EditDiploma() {
   );
 }
 
-function ModuleBlock({ index, module, lessons, onLessons, onModule, onDelete }: {
+function ModuleBlock({ index, module, lessons, onLessons, onModule, onDelete, hasRoutes, routeA, routeB }: {
   index: number; module: AdminModuleT; lessons: AdminLessonT[]; onLessons: () => void; onModule: () => void; onDelete: () => void;
+  hasRoutes: boolean; routeA: string; routeB: string;
 }) {
+  async function setRoute(r: string) { await api.put(`/api/admin/modules/${module.id}`, { route: r || null }); onModule(); }
   const [title, setTitle] = useState("");
   const [video, setVideo] = useState("");
 
@@ -172,7 +193,19 @@ function ModuleBlock({ index, module, lessons, onLessons, onModule, onDelete }: 
     <div className="card" style={{ padding: 18 }}>
       <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
         <span style={{ fontWeight: 700 }}><span className="muted">Módulo {index + 1} · </span>{module.title}</span>
+        {hasRoutes && module.route && (
+          <span className="chip" style={{ fontSize: 11, fontWeight: 800, color: module.route === "A" ? "#05050c" : "#fff", background: module.route === "A" ? "#22e0ff" : "#d946ef" }}>
+            Ruta {module.route}
+          </span>
+        )}
         <span style={{ flex: 1 }} />
+        {hasRoutes && (
+          <select className="input" style={{ width: "auto", padding: "6px 10px", fontSize: 12.5 }} value={module.route || ""} onChange={(e) => setRoute(e.target.value)}>
+            <option value="">Común (todos)</option>
+            <option value="A">Ruta A · {routeA}</option>
+            <option value="B">Ruta B · {routeB}</option>
+          </select>
+        )}
         <button className="btn btn-ghost" style={{ padding: "6px 10px", fontSize: 12 }} onClick={onDelete} type="button">Eliminar módulo</button>
       </div>
       <div style={{ display: "grid", gap: 8 }}>

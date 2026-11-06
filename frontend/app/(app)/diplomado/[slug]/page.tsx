@@ -4,6 +4,7 @@ import { useParams } from "next/navigation";
 import Link from "next/link";
 import { api, DiplomaDetailT } from "@/lib/api";
 import ProtectedVideo, { toEmbed } from "@/components/ProtectedVideo";
+import { buildSegments, LabeledModule } from "@/lib/routes";
 
 export default function DiplomaPage() {
   const params = useParams<{ slug: string }>();
@@ -28,6 +29,7 @@ export default function DiplomaPage() {
   );
 
   const t = d.teacher;
+  const segments = buildSegments(d.modules, !!d.has_routes);
   const video = toEmbed(d.intro_video_url);
   const bg = d.hero_image_url || d.cover_url;
   const wa = t?.whatsapp ? t.whatsapp.replace(/[^0-9]/g, "") : "";
@@ -85,15 +87,51 @@ export default function DiplomaPage() {
         <div className="nf-bar"><div className="nf-bar-fill" style={{ width: `${d.progress}%` }} /></div>
       </div>
 
-      {d.modules.map((m, mi) => (
-        <div key={m.id} className={`card mod-acc${open[m.id] ? " is-open" : ""}`}>
+      {segments.map((seg) => seg.kind === "common" ? (
+        <ModuleCard key={seg.item.module.id} item={seg.item} open={!!open[seg.item.module.id]} onToggle={toggle} />
+      ) : (
+        <section key={seg.key} className="fork">
+          <div className="fork-head">
+            <span className="fork-ico" aria-hidden>
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><circle cx="6" cy="4" r="2"/><circle cx="6" cy="20" r="2"/><circle cx="18" cy="8" r="2"/><path d="M6 6v12"/><path d="M18 10c0 4-6 4-11.5 8.5"/></svg>
+            </span>
+            <div>
+              <div style={{ fontWeight: 900, color: "#fff", fontSize: 18 }}>Bifurcación: elige tu ruta</div>
+              <div className="muted" style={{ fontSize: 13 }}>Sigue una de las dos rutas. Al terminar la tuya completas el diplomado.</div>
+            </div>
+          </div>
+          <div className="fork-cols">
+            {(["A", "B"] as const).map((rk) => (
+              <div key={rk} className={`fork-col fork-col-${rk.toLowerCase()}${d.chosen_route === rk && d.completed_lessons > 0 ? " is-mine" : ""}`}>
+                <div className="fork-col-head">
+                  <span className="fork-letter">{rk}</span>
+                  <span style={{ fontWeight: 800, color: "#fff", fontSize: 15.5, flex: 1, minWidth: 0 }}>{rk === "A" ? d.route_a_name : d.route_b_name}</span>
+                  {d.chosen_route === rk && d.completed_lessons > 0 && <span className="fork-mine">Tu ruta</span>}
+                </div>
+                <div style={{ display: "grid", gap: 12 }}>
+                  {seg[rk].map((it) => <ModuleCard key={it.module.id} item={it} open={!!open[it.module.id]} onToggle={toggle} compact />)}
+                  {seg[rk].length === 0 && <span className="muted" style={{ fontSize: 13 }}>Sin módulos en esta ruta todavía.</span>}
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      ))}
+    </div>
+  );
+}
+
+function ModuleCard({ item, open, onToggle, compact }: { item: LabeledModule; open: boolean; onToggle: (id: string) => void; compact?: boolean }) {
+  const m = item.module;
+  return (
+        <div className={`card mod-acc${open ? " is-open" : ""}${compact ? " mod-compact" : ""}${item.route ? ` mod-route-${item.route.toLowerCase()}` : ""}`}>
           {/* Cabecera del módulo (clic para desplegar las lecciones) */}
-          <button type="button" className="mod-head" onClick={() => toggle(m.id)} aria-expanded={!!open[m.id]}>
-            <span className={`mod-ico mod-ico-${mi % 4}`} aria-hidden>
-              <span className="mod-ico-num">{String(mi + 1).padStart(2, "0")}</span>
+          <button type="button" className="mod-head" onClick={() => onToggle(m.id)} aria-expanded={open}>
+            <span className={`mod-ico ${item.route ? `mod-ico-r${item.route.toLowerCase()}` : `mod-ico-${item.colorIdx}`}`} aria-hidden>
+              <span className="mod-ico-num">{item.label}</span>
             </span>
             <div style={{ minWidth: 0, flex: 1, textAlign: "left" }}>
-              <div className="muted" style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: ".08em" }}>Módulo {mi + 1}</div>
+              <div className="muted" style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: ".08em" }}>{item.route ? `Ruta ${item.route} · Módulo ${item.label.slice(1)}` : `Módulo ${Number(item.label)}`}</div>
               <div style={{ fontWeight: 800, fontSize: 19, color: "#fff", lineHeight: 1.2 }}>{m.title}</div>
               {m.description && <div className="muted" style={{ fontSize: 13, marginTop: 3 }}>{m.description}</div>}
               <div className="muted" style={{ fontSize: 12.5, marginTop: 6 }}>
@@ -124,8 +162,5 @@ export default function DiplomaPage() {
           </div>
           </div></div>
         </div>
-      ))}
-    </div>
   );
 }
-

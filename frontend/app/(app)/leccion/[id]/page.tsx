@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import ProtectedVideo from "@/components/ProtectedVideo";
+import { buildSegments, pathModules, LabeledModule, RouteKey } from "@/lib/routes";
 import { api, uploadImageUser, LessonDetailT, DiplomaDetailT } from "@/lib/api";
 
 interface CommentT { id: string; body: string; rating?: number | null; image_url?: string | null; parent_id?: string | null; author_name?: string | null; created_at: string; }
@@ -30,10 +31,12 @@ export default function LessonPage() {
   const [rating, setRating] = useState(5);
   const [img, setImg] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+  const [pickRoute, setPickRoute] = useState<RouteKey | null>(null);
 
   useEffect(() => {
     if (!id) return;
     setL(null);
+    setPickRoute(null);
     api.get<LessonDetailT>(`/api/lessons/${id}`).then((lesson) => {
       setL(lesson);
       if (lesson.diploma_slug) api.get<DiplomaDetailT>(`/api/diplomas/${lesson.diploma_slug}`).then(setDiploma).catch(() => {});
@@ -72,7 +75,13 @@ export default function LessonPage() {
     finally { setSaving(false); }
   }
 
-  const flat = diploma ? diploma.modules.flatMap((m) => m.lessons.map((ls) => ({ id: ls.id, title: ls.title }))) : [];
+  const hasRoutes = !!diploma?.has_routes;
+  const curModule = diploma?.modules.find((m) => m.lessons.some((ls) => ls.id === id));
+  const curRoute = curModule && (curModule.route === "A" || curModule.route === "B") ? (curModule.route as RouteKey) : null;
+  const myRoute: RouteKey | null = hasRoutes ? (curRoute || ((diploma?.completed_lessons ?? 0) > 0 ? (diploma?.chosen_route || null) : null)) : null;
+  const sideRoute: RouteKey = pickRoute || myRoute || "A";
+  const segments = diploma ? buildSegments(diploma.modules, hasRoutes) : [];
+  const flat = diploma ? pathModules(diploma.modules, hasRoutes, curRoute || myRoute || "A").flatMap((m) => m.lessons.map((ls) => ({ id: ls.id, title: ls.title }))) : [];
   const idx = flat.findIndex((x) => x.id === id);
   const prev = idx > 0 ? flat[idx - 1] : null;
   const next = idx >= 0 && idx < flat.length - 1 ? flat[idx + 1] : null;
@@ -152,24 +161,25 @@ export default function LessonPage() {
         <div className="wh"><h2>Contenido</h2></div>
         <div className="card" style={{ padding: 10, position: "sticky", top: 20 }}>
           {!diploma ? <div style={{ padding: 12 }} className="muted">…</div> :
-            diploma.modules.map((m, mi) => (
-              <div key={m.id} style={{ marginBottom: 8 }}>
-                <div style={{ fontSize: 12, fontWeight: 700, color: "var(--muted)", padding: "8px 10px" }}>Módulo {mi + 1} · {m.title}</div>
-                {m.lessons.map((ls) => {
-                  const cur = ls.id === id;
-                  return (
-                    <Link key={ls.id} href={`/leccion/${ls.id}`}
-                      style={{ display: "flex", alignItems: "center", gap: 9, padding: "9px 10px", borderRadius: 9, fontSize: 13,
-                        background: cur ? "var(--grad-soft)" : "transparent", color: cur ? "#fff" : "var(--muted)", fontWeight: cur ? 700 : 500 }}>
-                      <span style={{ width: 18, height: 18, borderRadius: 999, display: "grid", placeItems: "center", fontSize: 10, flexShrink: 0,
-                        background: ls.completed ? "var(--f4)" : "transparent", color: ls.completed ? "#04110b" : "var(--muted)", border: ls.completed ? "none" : "1px solid var(--line-2)" }}>
-                        {ls.completed ? "✓" : ""}
-                      </span>
-                      <span style={{ flex: 1, minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{ls.title}</span>
-                      {cur && <span style={{ color: "var(--cyan)" }}>▶</span>}
-                    </Link>
-                  );
-                })}
+            segments.map((seg) => seg.kind === "common" ? (
+              <SideModule key={seg.item.module.id} item={seg.item} currentId={id} />
+            ) : (
+              <div key={seg.key} className="side-fork">
+                <div className="side-fork-t">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><circle cx="6" cy="4" r="2"/><circle cx="6" cy="20" r="2"/><circle cx="18" cy="8" r="2"/><path d="M6 6v12"/><path d="M18 10c0 4-6 4-11.5 8.5"/></svg>
+                  Elige tu ruta
+                </div>
+                <div className="side-tabs">
+                  {(["A", "B"] as const).map((rk) => (
+                    <button key={rk} type="button" className={`side-tab ${rk.toLowerCase()}${sideRoute === rk ? " on" : ""}`} onClick={() => setPickRoute(rk)}
+                      title={rk === "A" ? diploma.route_a_name || "Ruta A" : diploma.route_b_name || "Ruta B"}>
+                      <b>{rk}</b><span>{rk === "A" ? diploma.route_a_name || "Ruta A" : diploma.route_b_name || "Ruta B"}</span>
+                      {myRoute === rk && <i className="dot" aria-label="Estás en esta ruta" />}
+                    </button>
+                  ))}
+                </div>
+                {seg[sideRoute].map((it) => <SideModule key={it.module.id} item={it} currentId={id} />)}
+                {seg[sideRoute].length === 0 && <div className="muted" style={{ fontSize: 12.5, padding: "6px 10px" }}>Sin módulos en esta ruta.</div>}
               </div>
             ))}
         </div>
@@ -251,3 +261,28 @@ function CommentCard({ comment, replies, lessonId, onChange }: { comment: Commen
   );
 }
 
+function SideModule({ item, currentId }: { item: LabeledModule; currentId: string }) {
+  const m = item.module;
+  return (
+    <div style={{ marginBottom: 8 }}>
+      <div style={{ fontSize: 12, fontWeight: 700, color: item.route === "A" ? "#7deeff" : item.route === "B" ? "#f0abfc" : "var(--muted)", padding: "8px 10px" }}>
+        {item.route ? `${item.label}` : `Módulo ${Number(item.label)}`} · {m.title}
+      </div>
+                {item.module.lessons.map((ls) => {
+                  const cur = ls.id === currentId;
+                  return (
+                    <Link key={ls.id} href={`/leccion/${ls.id}`}
+                      style={{ display: "flex", alignItems: "center", gap: 9, padding: "9px 10px", borderRadius: 9, fontSize: 13,
+                        background: cur ? "var(--grad-soft)" : "transparent", color: cur ? "#fff" : "var(--muted)", fontWeight: cur ? 700 : 500 }}>
+                      <span style={{ width: 18, height: 18, borderRadius: 999, display: "grid", placeItems: "center", fontSize: 10, flexShrink: 0,
+                        background: ls.completed ? "var(--f4)" : "transparent", color: ls.completed ? "#04110b" : "var(--muted)", border: ls.completed ? "none" : "1px solid var(--line-2)" }}>
+                        {ls.completed ? "✓" : ""}
+                      </span>
+                      <span style={{ flex: 1, minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{ls.title}</span>
+                      {cur && <span style={{ color: "var(--cyan)" }}>▶</span>}
+                    </Link>
+                  );
+                })}
+    </div>
+  );
+}

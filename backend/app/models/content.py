@@ -1,5 +1,5 @@
 import uuid
-from sqlalchemy import String, Text, Integer, ForeignKey
+from sqlalchemy import String, Text, Integer, ForeignKey, Boolean
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy.dialects.postgresql import UUID, JSONB
 from app.core.database import Base
@@ -20,6 +20,9 @@ class Diploma(Base, TimestampMixin):
     badge_image_url: Mapped[str | None] = mapped_column(String(500), nullable=True)
     hero_image_url: Mapped[str | None] = mapped_column(String(500), nullable=True)   # portada panorámica (fondo cabecera estilo Netflix)
     intro_video_url: Mapped[str | None] = mapped_column(String(600), nullable=True)  # video de presentación (VideoPress)
+    has_routes: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)   # bifurcación Ruta A / Ruta B
+    route_a_name: Mapped[str | None] = mapped_column(String(120), nullable=True)
+    route_b_name: Mapped[str | None] = mapped_column(String(120), nullable=True)
     created_by: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True), ForeignKey("users.id", ondelete="SET NULL"), nullable=True)
 
 
@@ -32,6 +35,7 @@ class Module(Base, TimestampMixin):
     order: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
     status: Mapped[str] = mapped_column(String(20), default="draft", nullable=False)
     cover_url: Mapped[str | None] = mapped_column(String(500), nullable=True)
+    route: Mapped[str | None] = mapped_column(String(1), nullable=True)   # None = común · "A" · "B"
 
 
 class Lesson(Base, TimestampMixin):

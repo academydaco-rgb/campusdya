@@ -6,6 +6,7 @@ from app.core.database import get_db
 from app.core.deps import require_admin
 from app.models.user import User
 from app.models.content import Diploma, Module, Lesson
+from app.services.routes import norm_route
 from app.schemas.content import (
     DiplomaCreate, DiplomaUpdate, DiplomaOut,
     ModuleCreate, ModuleUpdate, ModuleOut,
@@ -46,6 +47,7 @@ async def create_diploma(data: DiplomaCreate, db: AsyncSession = Depends(get_db)
         status=data.status, order=data.order, phase_id=data.phase_id, created_by=admin.id,
         teacher_id=data.teacher_id, badge_image_url=data.badge_image_url,
         hero_image_url=data.hero_image_url, intro_video_url=data.intro_video_url,
+        has_routes=bool(data.has_routes), route_a_name=data.route_a_name, route_b_name=data.route_b_name,
     )
     db.add(obj); await db.commit(); await db.refresh(obj)
     return obj
@@ -66,6 +68,8 @@ async def get_diploma(diploma_id: uuid.UUID, db: AsyncSession = Depends(get_db),
 async def update_diploma(diploma_id: uuid.UUID, data: DiplomaUpdate, db: AsyncSession = Depends(get_db), admin: User = Depends(require_admin)):
     obj = await _get(db, Diploma, diploma_id)
     for k, v in data.model_dump(exclude_unset=True).items():
+        if k == "has_routes":
+            v = bool(v)
         setattr(obj, k, v)
     await db.commit(); await db.refresh(obj)
     return obj
@@ -82,7 +86,9 @@ async def delete_diploma(diploma_id: uuid.UUID, db: AsyncSession = Depends(get_d
 @router.post("/modules", response_model=ModuleOut)
 async def create_module(data: ModuleCreate, db: AsyncSession = Depends(get_db), admin: User = Depends(require_admin)):
     await _get(db, Diploma, data.diploma_id)  # valida que el diplomado exista
-    obj = Module(**data.model_dump())
+    payload = data.model_dump()
+    payload["route"] = norm_route(payload.get("route"))
+    obj = Module(**payload)
     db.add(obj); await db.commit(); await db.refresh(obj)
     return obj
 
@@ -97,6 +103,8 @@ async def list_modules(diploma_id: uuid.UUID = Query(...), db: AsyncSession = De
 async def update_module(module_id: uuid.UUID, data: ModuleUpdate, db: AsyncSession = Depends(get_db), admin: User = Depends(require_admin)):
     obj = await _get(db, Module, module_id)
     for k, v in data.model_dump(exclude_unset=True).items():
+        if k == "route":
+            v = norm_route(v)
         setattr(obj, k, v)
     await db.commit(); await db.refresh(obj)
     return obj
