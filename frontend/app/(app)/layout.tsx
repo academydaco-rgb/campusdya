@@ -35,21 +35,6 @@ const ADMIN: NavItem[] = [
   { href: "/admin/notificaciones", label: "Notificaciones", Icon: Bell },
   { href: "/admin/moderacion", label: "Moderación", Icon: ShieldCheck },
 ];
-// Ícono de lobo (D&A) — lucide no trae wolf
-function Wolf({ size = 24 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      strokeWidth={1.7} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <path d="M3.5 3.5l3.8 3.4" />
-      <path d="M20.5 3.5l-3.8 3.4" />
-      <path d="M7.3 6.9C6 8.7 5.3 10.6 5.3 12.7c0 1.4.4 2.7 1.2 3.8L12 21l5.5-4.5c.8-1.1 1.2-2.4 1.2-3.8 0-2.1-.7-4-2-5.8" />
-      <path d="M9.2 11.6l1.3 1.1" />
-      <path d="M14.8 11.6l-1.3 1.1" />
-      <path d="M12 14.6l-1.5 1.8h3L12 14.6z" />
-    </svg>
-  );
-}
-
 interface NavItem { href: string; label: string; Icon: LucideIcon; }
 
 function Item({ href, label, Icon, active }: NavItem & { active: boolean }) {
@@ -89,7 +74,6 @@ export default function AppLayout({ children }: { children: ReactNode }) {
         )}
 
         <div className="promo">
-          <div className="crown"><Wolf size={30} /></div>
           <h4 className="promo-title">Tú tienes derecho al acompañamiento personalizado</h4>
           <p className="promo-sub">Solicítalo aquí</p>
           <Link href="/profesores" className="promo-cta">Profesores</Link>
