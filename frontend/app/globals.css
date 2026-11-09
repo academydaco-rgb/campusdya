@@ -681,3 +681,11 @@ p{line-height:1.6}
 @media(max-width:820px){.grid-4{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:520px){.grid-4{grid-template-columns:1fr}}
 .play-badge{width:56px;height:56px;border-radius:999px;display:grid;place-items:center;background:var(--grad);color:#fff;font-size:19px;padding-left:3px;box-shadow:0 10px 30px -6px rgba(217,70,239,.6),inset 0 1px 0 rgba(255,255,255,.3);animation:playBeat 1.3s ease-in-out infinite}
+
+/* ─────────── Video inline en tarjeta + pantalla completa ─────────── */
+.live-expand{position:absolute;top:10px;right:10px;z-index:3;width:34px;height:34px;border-radius:9px;border:1px solid rgba(255,255,255,.18);display:grid;place-items:center;color:#fff;background:rgba(8,10,20,.6);backdrop-filter:blur(4px);cursor:pointer;transition:background .15s,transform .15s}
+.live-expand:hover{background:rgba(8,10,20,.9);transform:scale(1.07)}
+.live-frame:fullscreen{padding-top:0!important;width:100vw;height:100vh;background:#000;display:grid;place-items:center}
+.live-frame:fullscreen iframe{position:relative!important;width:min(100vw,177.78vh);height:min(56.25vw,100vh)}
+.live-frame:-webkit-full-screen{padding-top:0!important;width:100vw;height:100vh;background:#000;display:grid;place-items:center}
+.live-frame:-webkit-full-screen iframe{position:relative!important;width:min(100vw,177.78vh);height:min(56.25vw,100vh)}

@@ -1,13 +1,13 @@
 "use client";
 import { useEffect, useState } from "react";
 import Tilt from "@/components/Tilt";
+import InlineVideo from "@/components/InlineVideo";
 import { api, LiveClassT } from "@/lib/api";
 import SectionHero from "@/components/SectionHero";
 import { Video } from "lucide-react";
 
 export default function ClasesEnVivo() {
   const [items, setItems] = useState<LiveClassT[]>([]);
-  const [active, setActive] = useState<LiveClassT | null>(null);
   useEffect(() => {
     api.get<LiveClassT[]>("/api/live-classes").then((rows) => {
       // más reciente primero (por fecha; sin fecha, al final)
@@ -30,33 +30,16 @@ export default function ClasesEnVivo() {
         stats={[{ b: items.length, s: "grabaciones" }]}
       />
 
-      {active && (
-        <div className="card" style={{ overflow: "hidden", marginBottom: 22 }}>
-          {active.videopress_url ? (
-            <div style={{ position: "relative", paddingTop: "56.25%" }}>
-              <iframe src={active.videopress_url} allowFullScreen style={{ position: "absolute", inset: 0, width: "100%", height: "100%", border: 0 }} />
-            </div>
-          ) : <div style={{ padding: 30 }} className="muted">Sin video.</div>}
-          <div style={{ padding: 16, display: "flex", alignItems: "center", gap: 10 }}>
-            <div style={{ flex: 1, fontWeight: 700 }}>{active.title}</div>
-            <button className="btn btn-ghost" style={{ padding: "6px 12px", fontSize: 13 }} onClick={() => setActive(null)}>Cerrar</button>
-          </div>
-        </div>
-      )}
-
       <div className="grid-4">
         {items.map((c) => (
           <Tilt key={c.id} style={{ height: "100%" }}>
-          <button className="card card-hover" style={{ width: "100%", height: "100%", padding: 0, overflow: "hidden", textAlign: "left", display: "flex", flexDirection: "column", color: "var(--text)" }} onClick={() => setActive(c)}>
-            <div style={{ position: "relative", width: "100%", paddingTop: "56.25%",
-              background: c.cover_url ? `center/cover url(${c.cover_url})` : "linear-gradient(135deg,#132038,#0b1020)" }}>
-              <span style={{ position: "absolute", inset: 0, display: "grid", placeItems: "center" }}><span className="play-badge">▶</span></span>
+            <div className="card card-hover" style={{ width: "100%", height: "100%", padding: 0, overflow: "hidden", display: "flex", flexDirection: "column" }}>
+              <InlineVideo url={c.videopress_url} cover={c.cover_url} fallbackBg="linear-gradient(135deg,#132038,#0b1020)" />
+              <div style={{ padding: 14 }}>
+                <div style={{ fontWeight: 800, fontSize: 17, color: "#fff", lineHeight: 1.25 }}>{c.title}</div>
+                {c.happened_at && <div className="muted" style={{ fontSize: 12, marginTop: 6 }}>{new Date(c.happened_at).toLocaleDateString("es-CO", { day: "2-digit", month: "long", year: "numeric" })}</div>}
+              </div>
             </div>
-            <div style={{ padding: 14 }}>
-              <div style={{ fontWeight: 800, fontSize: 17, color: "#fff", lineHeight: 1.25 }}>{c.title}</div>
-              {c.happened_at && <div className="muted" style={{ fontSize: 12, marginTop: 6 }}>{new Date(c.happened_at).toLocaleDateString("es-CO", { day: "2-digit", month: "long", year: "numeric" })}</div>}
-            </div>
-          </button>
           </Tilt>
         ))}
         {items.length === 0 && <span className="muted">Aún no hay grabaciones.</span>}
