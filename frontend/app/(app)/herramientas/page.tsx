@@ -17,12 +17,12 @@ export default function Herramientas() {
         subtitle="Las herramientas y recursos que usamos en la academia, listas para que las uses en tu negocio."
         stats={[{ b: items.length, s: "herramientas" }]}
       />
-      <div className="grid-3">
+      <div className="grid-4">
         {items.map((t) => (
           <Tilt key={t.id} style={{ height: "100%" }}>
             <div className="toolcard">
               <div className="toolcard-img" style={{ background: t.image_url ? `center/cover url(${t.image_url})` : "linear-gradient(135deg,#1e1636,#0f0b1e)" }}>
-                {!t.image_url && <Wrench size={34} style={{ color: "rgba(255,255,255,.5)" }} />}
+                {!t.image_url && <Wrench size={26} style={{ color: "rgba(255,255,255,.5)" }} />}
               </div>
               <div className="toolcard-body">
                 <div className="toolcard-title">{t.title}</div>
