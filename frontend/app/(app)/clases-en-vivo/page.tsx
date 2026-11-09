@@ -2,6 +2,8 @@
 import { useEffect, useState } from "react";
 import Tilt from "@/components/Tilt";
 import { api, LiveClassT } from "@/lib/api";
+import SectionHero from "@/components/SectionHero";
+import { Video } from "lucide-react";
 
 export default function ClasesEnVivo() {
   const [items, setItems] = useState<LiveClassT[]>([]);
@@ -20,8 +22,13 @@ export default function ClasesEnVivo() {
 
   return (
     <div>
-      <h1 style={{ fontSize: 28, fontWeight: 800 }}>Clases en vivo 🎥</h1>
-      <p className="muted" style={{ marginTop: 6, marginBottom: 22 }}>Grabaciones de las clases, por si te perdiste alguna.</p>
+      <SectionHero
+        icon={<Video size={14} />}
+        badge="Biblioteca de clases"
+        title="Clases en vivo"
+        subtitle="Grabaciones de todas las clases, por si te perdiste alguna. Disponibles cuando quieras."
+        stats={[{ b: items.length, s: "grabaciones" }]}
+      />
 
       {active && (
         <div className="card" style={{ overflow: "hidden", marginBottom: 22 }}>

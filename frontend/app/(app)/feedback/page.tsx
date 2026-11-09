@@ -1,6 +1,8 @@
 "use client";
 import { useEffect, useState } from "react";
 import { api, uploadImageUser, FeedbackT, CommunityTopT } from "@/lib/api";
+import SectionHero from "@/components/SectionHero";
+import { MessagesSquare } from "lucide-react";
 
 export default function Comunidad() {
   const [items, setItems] = useState<FeedbackT[]>([]);
@@ -40,10 +42,13 @@ export default function Comunidad() {
 
   return (
     <div className="grid" style={{ gap: 22 }}>
-      <div>
-        <h1 style={{ fontSize: 28, fontWeight: 800 }}>Comunidad 💬</h1>
-        <p className="muted" style={{ marginTop: 6 }}>Cuéntanos cómo te ha parecido la plataforma y tus resultados. Puedes adjuntar una imagen.</p>
-      </div>
+      <SectionHero
+        icon={<MessagesSquare size={14} />}
+        badge="La comunidad"
+        title="Comunidad"
+        subtitle="Cuéntanos cómo te ha parecido la plataforma y tus resultados. Puedes adjuntar una imagen."
+        stats={[{ b: items.length, s: "aportes" }, { b: top.length, s: "miembros top" }]}
+      />
       {top.length > 0 && (
         <div className="card" style={{ padding: 18 }}>
           <div className="eyebrow" style={{ marginBottom: 12 }}>🏅 Los más activos de la comunidad</div>

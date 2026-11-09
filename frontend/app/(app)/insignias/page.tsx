@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { api, MyBadgeT } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
 import { Download, BadgeCheck } from "lucide-react";
+import SectionHero from "@/components/SectionHero";
 
 function rr(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, r: number) {
   ctx.beginPath();
@@ -177,11 +178,13 @@ export default function Insignias() {
   useEffect(() => { api.get<MyBadgeT[]>("/api/me/badges").then(setItems).catch(() => setItems([])); }, []);
   return (
     <div>
-      <div className="sec-h" style={{ marginBottom: 4 }}>
-        <span className="ic"><BadgeCheck /></span>
-        <h2 style={{ fontSize: 24 }}>Mis insignias y certificados</h2>
-      </div>
-      <p className="muted" style={{ marginTop: 6, marginBottom: 22 }}>Completa diplomados y gánate tu certificado con la insignia del diplomado y la firma de los fundadores.</p>
+      <SectionHero
+        icon={<BadgeCheck size={14} />}
+        badge="Tus logros"
+        title="Insignias"
+        subtitle="Completa diplomados y gánate tu certificado con la insignia del diplomado y la firma de los fundadores."
+        stats={[{ b: items.length, s: "certificados" }]}
+      />
       <div className="grid" style={{ gridTemplateColumns: "repeat(auto-fit,minmax(280px,1fr))" }}>
         {items.map((b) => (
           <div key={b.id} className="card" style={{ padding: 24, textAlign: "center" }}>

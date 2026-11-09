@@ -5,6 +5,8 @@ import { api, UniverseT, DiplomaCardT } from "@/lib/api";
 import Reveal from "@/components/Reveal";
 import Ring from "@/components/Ring";
 import Tilt from "@/components/Tilt";
+import SectionHero from "@/components/SectionHero";
+import { GraduationCap } from "lucide-react";
 
 export default function Explorar() {
   const router = useRouter();
@@ -13,14 +15,19 @@ export default function Explorar() {
 
   function open(d: DiplomaCardT) { if (d.enrolled) router.push(`/diplomado/${d.slug}`); }
 
+  const _ph = data?.phases || [];
+  const _dips = _ph.flatMap((p) => p.diplomas);
+  const _enr = _dips.filter((d) => d.enrolled);
+  const _avg = _enr.length ? Math.round(_enr.reduce((a, d) => a + (d.progress || 0), 0) / _enr.length) : 0;
   return (
     <div>
-      <div className="fade-up">
-        <h1>Tu ruta de aprendizaje</h1>
-        <p className="muted" style={{ marginTop: 8, maxWidth: 620 }}>
-          Cuatro fases para construir tu e-commerce rentable, paso a paso. Avanza por cada una y desbloquea tu siguiente nivel.
-        </p>
-      </div>
+      <SectionHero
+        icon={<GraduationCap size={14} />}
+        badge="Tu ruta de aprendizaje"
+        title="Mis Diplomados"
+        subtitle="Cuatro fases para construir tu e-commerce rentable, paso a paso. Avanza por cada una y desbloquea tu siguiente nivel."
+        stats={[{ b: _enr.length, s: "diplomados activos" }, { b: `${_avg}%`, s: "progreso promedio" }, { b: _ph.length, s: "fases" }]}
+      />
 
       <div style={{ marginTop: 28, display: "flex", flexDirection: "column", gap: 18 }}>
         {(data?.phases || []).map((p, i) => {

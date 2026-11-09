@@ -1,6 +1,8 @@
 "use client";
 import { useEffect, useMemo, useState } from "react";
 import { api, ScheduleT, TeacherT } from "@/lib/api";
+import SectionHero from "@/components/SectionHero";
+import { CalendarDays } from "lucide-react";
 
 const WEEK = ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"];
 const TWO_H = 2 * 60 * 60 * 1000;
@@ -44,8 +46,13 @@ export default function Classroom() {
 
   return (
     <div>
-      <h1 style={{ fontSize: 28, fontWeight: 800 }}>Classroom 📅</h1>
-      <p className="muted" style={{ marginTop: 6, marginBottom: 20 }}>Tu calendario de clases en vivo. El enlace de cada clase se envía por el grupo de WhatsApp.</p>
+      <SectionHero
+        icon={<CalendarDays size={14} />}
+        badge="Tu calendario"
+        title="Classroom"
+        subtitle="Tu calendario de clases en vivo. El enlace de cada clase se envía por el grupo de WhatsApp."
+        stats={[{ b: events.length, s: "clases programadas" }]}
+      />
 
       {/* Barra de mes */}
       <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>

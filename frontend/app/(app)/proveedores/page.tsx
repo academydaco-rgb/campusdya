@@ -2,6 +2,8 @@
 import { useEffect, useState } from "react";
 import Tilt from "@/components/Tilt";
 import { api, ProviderT } from "@/lib/api";
+import SectionHero from "@/components/SectionHero";
+import { Package } from "lucide-react";
 
 export default function Proveedores() {
   const [items, setItems] = useState<ProviderT[]>([]);
@@ -10,8 +12,13 @@ export default function Proveedores() {
 
   return (
     <div>
-      <h1 style={{ fontSize: 28, fontWeight: 800 }}>Proveedores ▦</h1>
-      <p className="muted" style={{ marginTop: 6, marginBottom: 22 }}>Conoce a los proveedores recomendados para tu e-commerce.</p>
+      <SectionHero
+        icon={<Package size={14} />}
+        badge="Aliados verificados"
+        title="Proveedores"
+        subtitle="Proveedores recomendados y verificados para tu e-commerce. Contáctalos directamente por WhatsApp."
+        stats={[{ b: items.length, s: "proveedores" }]}
+      />
 
       {active && (
         <div className="card" style={{ overflow: "hidden", marginBottom: 22 }}>

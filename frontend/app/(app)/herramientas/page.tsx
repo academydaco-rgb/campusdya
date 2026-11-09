@@ -3,14 +3,20 @@ import { useEffect, useState } from "react";
 import Tilt from "@/components/Tilt";
 import { api, ToolT } from "@/lib/api";
 import { Wrench, ArrowUpRight } from "lucide-react";
+import SectionHero from "@/components/SectionHero";
 
 export default function Herramientas() {
   const [items, setItems] = useState<ToolT[]>([]);
   useEffect(() => { api.get<ToolT[]>("/api/tools").then(setItems).catch(() => setItems([])); }, []);
   return (
     <div>
-      <div className="sec-h" style={{ marginBottom: 4 }}><span className="ic"><Wrench /></span><h2 style={{ fontSize: 24 }}>Herramientas</h2></div>
-      <p className="muted" style={{ marginTop: 6, marginBottom: 22 }}>Accede a las herramientas y recursos que usamos en la academia.</p>
+      <SectionHero
+        icon={<Wrench size={14} />}
+        badge="Tu arsenal"
+        title="Herramientas"
+        subtitle="Las herramientas y recursos que usamos en la academia, listas para que las uses en tu negocio."
+        stats={[{ b: items.length, s: "herramientas" }]}
+      />
       <div className="grid-3">
         {items.map((t) => (
           <Tilt key={t.id} style={{ height: "100%" }}>
