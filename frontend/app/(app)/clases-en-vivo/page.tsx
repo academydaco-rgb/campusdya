@@ -37,13 +37,13 @@ export default function ClasesEnVivo() {
         </div>
       )}
 
-      <div className="grid-3">
+      <div className="grid-4">
         {items.map((c) => (
           <Tilt key={c.id} style={{ height: "100%" }}>
           <button className="card card-hover" style={{ width: "100%", height: "100%", padding: 0, overflow: "hidden", textAlign: "left", display: "flex", flexDirection: "column", color: "var(--text)" }} onClick={() => setActive(c)}>
             <div style={{ position: "relative", width: "100%", paddingTop: "56.25%",
               background: c.cover_url ? `center/cover url(${c.cover_url})` : "linear-gradient(135deg,#132038,#0b1020)" }}>
-              <span style={{ position: "absolute", inset: 0, display: "grid", placeItems: "center", fontSize: 30, color: "rgba(255,255,255,.85)" }}>▶</span>
+              <span style={{ position: "absolute", inset: 0, display: "grid", placeItems: "center" }}><span className="play-badge">▶</span></span>
             </div>
             <div style={{ padding: 14 }}>
               <div style={{ fontWeight: 800, fontSize: 17, color: "#fff", lineHeight: 1.25 }}>{c.title}</div>
