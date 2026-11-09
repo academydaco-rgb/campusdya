@@ -97,15 +97,23 @@ export default function Classroom() {
               <button key={i} onClick={() => setSelected(day)} className={`cal-cell${isToday ? " is-today" : ""}${isSel ? " is-sel" : ""}`}>
                 <span className="cal-num">{day.getDate()}</span>
                 {evs.length > 0 && (
-                  <div className="cal-dots">
-                    {evs.slice(0, 3).map((e) => {
+                  <div className="cal-evs">
+                    {evs.slice(0, 2).map((e) => {
                       const t = e.teacher_id ? teachers[e.teacher_id] : undefined;
                       const expired = Date.now() > +new Date(e.starts_at) + TWO_H;
-                      return t?.photo_url
-                        ? <span key={e.id} className="cal-av" style={{ backgroundImage: `url(${t.photo_url})`, opacity: expired ? .45 : 1 }} />
-                        : <span key={e.id} className="cal-dot" style={{ background: expired ? "var(--muted-soft)" : "var(--cyan)" }} />;
+                      return (
+                        <span key={e.id} className={`cal-ev${expired ? " past" : ""}`}>
+                          <span className="cal-ev-av" style={t?.photo_url ? { backgroundImage: `url(${t.photo_url})` } : { background: "var(--grad)" }}>
+                            {!t?.photo_url && (t?.name?.charAt(0).toUpperCase() || "")}
+                          </span>
+                          <span className="cal-ev-tx">
+                            <span className="cal-ev-title">{e.title}</span>
+                            {t && <span className="cal-ev-teacher">{t.name}</span>}
+                          </span>
+                        </span>
+                      );
                     })}
-                    {evs.length > 3 && <span className="cal-more">+{evs.length - 3}</span>}
+                    {evs.length > 2 && <span className="cal-ev-more">+{evs.length - 2} más</span>}
                   </div>
                 )}
               </button>
