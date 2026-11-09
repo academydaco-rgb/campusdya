@@ -29,7 +29,7 @@ export default function NewsBlock({ news }: { news: AnnouncementT[] }) {
         <span className="muted" style={{ fontSize: 13 }}>Aquí verás los comunicados de la academia.</span>
       ) : (
         <div style={{ display: "flex", gap: 14, alignItems: "center" }}>
-          <div style={{ width: 92, height: 74, borderRadius: 12, flex: "none", display: "grid", placeItems: "center", overflow: "hidden", background: n.image_url ? `center/cover url(${n.image_url})` : "linear-gradient(150deg,#2a1250,#141140)", color: "#e8b3ff", border: "1px solid var(--line-2)" }}>
+          <div style={{ width: 84, height: 84, borderRadius: 12, flex: "none", display: "grid", placeItems: "center", overflow: "hidden", background: n.image_url ? `center/cover url(${n.image_url})` : "linear-gradient(150deg,#2a1250,#141140)", color: "#e8b3ff", border: "1px solid var(--line-2)" }}>
             {!n.image_url && <Megaphone size={26} />}
           </div>
           <div style={{ minWidth: 0, flex: 1 }}>
@@ -48,7 +48,7 @@ export default function NewsBlock({ news }: { news: AnnouncementT[] }) {
       {open && (
         <div onClick={() => setOpen(null)} style={{ position: "fixed", inset: 0, zIndex: 120, background: "rgba(4,4,10,.72)", backdropFilter: "blur(4px)", display: "grid", placeItems: "center", padding: 20 }}>
           <div onClick={(e) => e.stopPropagation()} className="card" style={{ maxWidth: 560, width: "100%", maxHeight: "86vh", overflow: "auto", borderColor: "var(--line-2)" }}>
-            {open.image_url && <div style={{ width: "100%", aspectRatio: "16/7", background: `center/cover url(${open.image_url})` }} />}
+            {open.image_url && <img src={open.image_url} alt="" style={{ width: "100%", maxHeight: "60vh", objectFit: "contain", background: "#0b0a14", display: "block" }} />}
             <div style={{ padding: 24, position: "relative" }}>
               <button onClick={() => setOpen(null)} aria-label="Cerrar" style={{ position: "absolute", top: 16, right: 16, width: 34, height: 34, borderRadius: 10, border: "1px solid var(--line)", background: "rgba(255,255,255,.05)", color: "#cbb8ff", display: "grid", placeItems: "center" }}><X size={18} /></button>
               <span className="eyebrow" style={{ color: "#c9b7ff" }}>Comunicado</span>

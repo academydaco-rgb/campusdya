@@ -225,7 +225,7 @@ function CommentCard({ comment, replies, lessonId, onChange }: { comment: Commen
         <span style={{ fontWeight: 700, fontSize: 13 }}>{comment.author_name || "Alumno"}</span>
         {comment.rating ? <Stars value={comment.rating} /> : null}
       </div>
-      <div style={{ fontSize: 14, marginTop: 7, whiteSpace: "pre-wrap" }}>{comment.body}</div>
+      <div style={{ fontSize: 14, marginTop: 7, whiteSpace: "pre-wrap", overflowWrap: "anywhere", wordBreak: "break-word" }}>{comment.body}</div>
       {comment.image_url && <img src={comment.image_url} alt="" style={{ marginTop: 10, maxWidth: "100%", borderRadius: 10, display: "block" }} />}
       <div style={{ marginTop: 8 }}>
         <button className="btn btn-ghost" style={{ padding: "4px 10px", fontSize: 12 }} onClick={() => setOpen((o) => !o)}>↳ Responder</button>
