@@ -10,6 +10,11 @@ const TWO_H = 2 * 60 * 60 * 1000;
 function sameDay(a: Date, b: Date) {
   return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
 }
+function fmtHora(d: Date) {
+  const hh = d.getHours(), mm = d.getMinutes();
+  const h12 = ((hh + 11) % 12) + 1;
+  return { hm: `${h12}:${String(mm).padStart(2, "0")}`, ap: hh < 12 ? "a.m." : "p.m." };
+}
 
 export default function Classroom() {
   const [events, setEvents] = useState<ScheduleT[]>([]);
@@ -26,7 +31,8 @@ export default function Classroom() {
   }, []);
 
   const year = cursor.getFullYear(); const month = cursor.getMonth();
-  const monthLabel = cursor.toLocaleDateString("es-CO", { month: "long", year: "numeric" });
+  const _ml = cursor.toLocaleDateString("es-CO", { month: "long", year: "numeric" });
+  const monthLabel = _ml.charAt(0).toUpperCase() + _ml.slice(1);
 
   const cells = useMemo(() => {
     const first = new Date(year, month, 1);
@@ -54,48 +60,39 @@ export default function Classroom() {
         stats={[{ b: events.length, s: "clases programadas" }]}
       />
 
-      {/* Barra de mes */}
-      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
-        <button className="btn btn-ghost" style={{ padding: "8px 12px" }} onClick={() => setCursor(new Date(year, month - 1, 1))}>←</button>
-        <div style={{ flex: 1, textAlign: "center", fontWeight: 800, fontSize: 18, textTransform: "capitalize" }}>{monthLabel}</div>
-        <button className="btn btn-ghost" style={{ padding: "8px 12px", fontSize: 13 }} onClick={() => { const n = new Date(); setCursor(new Date(n.getFullYear(), n.getMonth(), 1)); setSelected(n); }}>Hoy</button>
-        <button className="btn btn-ghost" style={{ padding: "8px 12px" }} onClick={() => setCursor(new Date(year, month + 1, 1))}>→</button>
-      </div>
-
       {/* Calendario */}
-      <div className="card" style={{ padding: 14 }}>
-        <div className="calgrid" style={{ display: "grid", gridTemplateColumns: "repeat(7,1fr)", gap: 6 }}>
-          {WEEK.map((w) => <div key={w} style={{ textAlign: "center", fontSize: 11, fontWeight: 700, color: "var(--muted-soft)", textTransform: "uppercase", letterSpacing: ".06em", padding: "2px 0 6px" }}>{w}</div>)}
+      <div className="cal-card">
+        <div className="cal-head">
+          <h2 className="cal-month">{monthLabel}</h2>
+          <div className="cal-ctrls">
+            <button className="cal-nav" onClick={() => setCursor(new Date(year, month - 1, 1))} aria-label="Mes anterior">←</button>
+            <button className="cal-today" onClick={() => { const n = new Date(); setCursor(new Date(n.getFullYear(), n.getMonth(), 1)); setSelected(n); }}>Hoy</button>
+            <button className="cal-nav" onClick={() => setCursor(new Date(year, month + 1, 1))} aria-label="Mes siguiente">→</button>
+          </div>
+        </div>
+
+        <div className="calgrid" style={{ display: "grid", gridTemplateColumns: "repeat(7,1fr)", gap: 7 }}>
+          {WEEK.map((w) => <div key={w} className="cal-wd">{w}</div>)}
           {cells.map((day, i) => {
             if (!day) return <div key={i} />;
             const evs = eventsOf(day);
             const isToday = sameDay(day, today);
             const isSel = sameDay(day, selected);
             return (
-              <button key={i} onClick={() => setSelected(day)}
-                style={{
-                  minHeight: 78, borderRadius: 12, padding: 6, textAlign: "left", color: "var(--text)",
-                  border: isSel ? "1px solid var(--cyan)" : "1px solid var(--line)",
-                  background: isSel ? "var(--grad-soft)" : "rgba(255,255,255,.015)",
-                  display: "flex", flexDirection: "column", gap: 4, cursor: "pointer",
-                }}>
-                <span style={{ fontSize: 12, fontWeight: 700, width: 22, height: 22, display: "grid", placeItems: "center", borderRadius: 999,
-                  background: isToday ? "var(--grad)" : "transparent", color: isToday ? "#04121a" : "var(--muted)" }}>{day.getDate()}</span>
-                {evs.slice(0, 2).map((e) => {
-                  const t = e.teacher_id ? teachers[e.teacher_id] : undefined;
-                  const expired = Date.now() > +new Date(e.starts_at) + TWO_H;
-                  return (
-                    <span key={e.id} className="calev" style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 10.5, fontWeight: 600,
-                      padding: "2px 4px", borderRadius: 6, background: expired ? "rgba(255,255,255,.04)" : "rgba(34,211,238,.14)",
-                      color: expired ? "var(--muted-soft)" : "#bdeffb", overflow: "hidden", whiteSpace: "nowrap", textOverflow: "ellipsis" }}>
-                      {t?.photo_url
-                        ? <span style={{ width: 14, height: 14, borderRadius: 999, flexShrink: 0, background: `center/cover url(${t.photo_url})` }} />
-                        : <span style={{ width: 6, height: 6, borderRadius: 999, flexShrink: 0, background: expired ? "var(--muted-soft)" : "var(--cyan)" }} />}
-                      <span className="calev-t" style={{ overflow: "hidden", textOverflow: "ellipsis" }}>{e.title}</span>
-                    </span>
-                  );
-                })}
-                {evs.length > 2 && <span style={{ fontSize: 10, color: "var(--muted-soft)" }}>+{evs.length - 2} más</span>}
+              <button key={i} onClick={() => setSelected(day)} className={`cal-cell${isToday ? " is-today" : ""}${isSel ? " is-sel" : ""}`}>
+                <span className="cal-num">{day.getDate()}</span>
+                {evs.length > 0 && (
+                  <div className="cal-dots">
+                    {evs.slice(0, 3).map((e) => {
+                      const t = e.teacher_id ? teachers[e.teacher_id] : undefined;
+                      const expired = Date.now() > +new Date(e.starts_at) + TWO_H;
+                      return t?.photo_url
+                        ? <span key={e.id} className="cal-av" style={{ backgroundImage: `url(${t.photo_url})`, opacity: expired ? .45 : 1 }} />
+                        : <span key={e.id} className="cal-dot" style={{ background: expired ? "var(--muted-soft)" : "var(--cyan)" }} />;
+                    })}
+                    {evs.length > 3 && <span className="cal-more">+{evs.length - 3}</span>}
+                  </div>
+                )}
               </button>
             );
           })}
@@ -103,38 +100,34 @@ export default function Classroom() {
       </div>
 
       {/* Detalle del día seleccionado */}
-      <div style={{ marginTop: 20 }}>
-        <h2 style={{ fontSize: 16, marginBottom: 12, textTransform: "capitalize" }}>
-          {selected.toLocaleDateString("es-CO", { weekday: "long", day: "2-digit", month: "long" })}
+      <div style={{ marginTop: 22 }}>
+        <h2 className="cl-dayhead">
+          {(() => { const d = selected.toLocaleDateString("es-CO", { weekday: "long", day: "2-digit", month: "long" }); return d.charAt(0).toUpperCase() + d.slice(1); })()}
+          {selEvents.length > 0 && <span className="cl-count">{selEvents.length} {selEvents.length === 1 ? "clase" : "clases"}</span>}
         </h2>
-        <div className="grid" style={{ gap: 12 }}>
+        <div className="cl-list">
           {selEvents.map((e) => {
             const t = e.teacher_id ? teachers[e.teacher_id] : undefined;
-            const hora = new Date(e.starts_at).toLocaleTimeString("es-CO", { hour: "2-digit", minute: "2-digit" });
+            const { hm, ap } = fmtHora(new Date(e.starts_at));
             return (
-              <div key={e.id} className="card" style={{ overflow: "hidden", display: "flex", flexDirection: "column" }}>
-                <div className="starfield" style={{ position: "relative", padding: 18, display: "flex", alignItems: "center", gap: 14, background: "var(--aurora)" }}>
-                  <div style={{ width: 60, height: 60, borderRadius: 999, flexShrink: 0, border: "2px solid rgba(255,255,255,.28)", boxShadow: "0 8px 22px -6px rgba(0,0,0,.6)", display: "grid", placeItems: "center", color: "#fff", fontWeight: 800, fontSize: 22,
-                    background: t?.photo_url ? `center/cover url(${t.photo_url})` : "var(--grad)" }}>
-                    {!t?.photo_url && (t?.name?.charAt(0).toUpperCase() || "📚")}
-                  </div>
-                  <div style={{ minWidth: 0 }}>
-                    <div style={{ fontWeight: 800, fontSize: 18, color: "#fff" }}>{e.title}</div>
-                    <div style={{ fontSize: 12.5, color: "rgba(255,255,255,.78)", marginTop: 2 }}>{hora}{t ? ` · ${t.name}` : ""}</div>
-                  </div>
+              <div key={e.id} className="cl-item">
+                <div className="cl-time"><b>{hm}</b><span>{ap}</span></div>
+                <div className="cl-av" style={t?.photo_url ? { backgroundImage: `url(${t.photo_url})` } : { background: "var(--grad)" }}>
+                  {!t?.photo_url && (t?.name?.charAt(0).toUpperCase() || "📚")}
                 </div>
-                <div style={{ padding: 16, display: "flex", alignItems: "center", gap: 12 }}>
-                  {e.description && <p className="muted" style={{ fontSize: 13, flex: 1, margin: 0 }}>{e.description}</p>}
-                  <span style={{ flex: e.description ? "unset" : 1 }} />
-                  <span className="chip" style={{ color: "#25D366", background: "rgba(37,211,102,.12)", border: "1px solid rgba(37,211,102,.3)" }}>
-                    <svg width="14" height="14" viewBox="0 0 448 512" fill="currentColor" style={{ marginRight: 5, verticalAlign: "-2px" }} aria-hidden><path d="M380.9 97.1C339 55.1 283.2 32 223.9 32c-122.4 0-222 99.6-222 222 0 39.1 10.2 77.3 29.6 111L0 480l117.7-30.9c32.4 17.7 68.9 27 106.1 27h.1c122.3 0 224.1-99.6 224.1-222 0-59.3-25.2-115-67.1-157zM223.9 438.6c-33.2 0-65.7-8.9-94-25.7l-6.7-4-69.8 18.3L72 359.2l-4.4-7c-18.5-29.4-28.2-63.3-28.2-98.2 0-101.7 82.8-184.5 184.6-184.5 49.3 0 95.6 19.2 130.4 54.1 34.8 34.9 56.2 81.2 56.1 130.5 0 101.8-84.9 184.5-186.6 184.5z"/></svg>
-                    El enlace se envía por el grupo de WhatsApp
-                  </span>
+                <div className="cl-body">
+                  <div className="cl-title">{e.title}</div>
+                  {t && <div className="cl-teacher">con {t.name}</div>}
+                  {e.description && <p className="cl-desc">{e.description}</p>}
                 </div>
+                <span className="cl-wa">
+                  <svg width="14" height="14" viewBox="0 0 448 512" fill="currentColor" style={{ flexShrink: 0 }} aria-hidden><path d="M380.9 97.1C339 55.1 283.2 32 223.9 32c-122.4 0-222 99.6-222 222 0 39.1 10.2 77.3 29.6 111L0 480l117.7-30.9c32.4 17.7 68.9 27 106.1 27h.1c122.3 0 224.1-99.6 224.1-222 0-59.3-25.2-115-67.1-157zM223.9 438.6c-33.2 0-65.7-8.9-94-25.7l-6.7-4-69.8 18.3L72 359.2l-4.4-7c-18.5-29.4-28.2-63.3-28.2-98.2 0-101.7 82.8-184.5 184.6-184.5 49.3 0 95.6 19.2 130.4 54.1 34.8 34.9 56.2 81.2 56.1 130.5 0 101.8-84.9 184.5-186.6 184.5z"/></svg>
+                  Enlace por WhatsApp
+                </span>
               </div>
             );
           })}
-          {selEvents.length === 0 && <div className="card" style={{ padding: 20 }}><span className="muted">No hay clases este día.</span></div>}
+          {selEvents.length === 0 && <div className="card" style={{ padding: 22, textAlign: "center" }}><span className="muted">No hay clases este día.</span></div>}
         </div>
       </div>
     </div>
