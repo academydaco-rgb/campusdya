@@ -2,7 +2,7 @@
 import { ReactNode, useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
-import { motion } from "framer-motion";
+import { motion, MotionConfig } from "framer-motion";
 import { useAuth } from "@/lib/auth";
 import Spotlight from "@/components/Spotlight";
 import TopBar from "@/components/TopBar";
@@ -66,6 +66,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
   const match = (h: string) => pathname === h || pathname.startsWith(h + "/");
 
   return (
+    <MotionConfig reducedMotion="never">
     <div className="shell">
       <Spotlight />
       <div className="grain" aria-hidden />
@@ -99,5 +100,6 @@ export default function AppLayout({ children }: { children: ReactNode }) {
         <OnlineBar />
       </main>
     </div>
+    </MotionConfig>
   );
 }

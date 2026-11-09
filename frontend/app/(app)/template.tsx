@@ -1,21 +1,14 @@
 "use client";
-import { motion, useReducedMotion } from "framer-motion";
+import { motion } from "framer-motion";
 
 export default function Template({ children }: { children: React.ReactNode }) {
-  const reduce = useReducedMotion();
-  // Navegar es una accion del usuario: aun con "reducir movimiento" mostramos un
-  // deslizamiento + fundido claramente visible. Sin esa opcion, el efecto completo.
-  const initial = reduce
-    ? { opacity: 0, y: 16 }
-    : { opacity: 0, y: 24, filter: "blur(10px)", scale: 0.985 };
-  const animate = reduce
-    ? { opacity: 1, y: 0 }
-    : { opacity: 1, y: 0, filter: "blur(0px)", scale: 1 };
+  // Navegar es una accion del usuario: siempre mostramos un deslizamiento + fundido
+  // claramente visible (aun con "Reducir movimiento" del sistema: MotionConfig lo fuerza).
   return (
     <motion.div
-      initial={initial}
-      animate={animate}
-      transition={{ duration: reduce ? 0.4 : 0.52, ease: [0.22, 0.61, 0.26, 1] }}
+      initial={{ opacity: 0, y: 26, filter: "blur(8px)", scale: 0.975 }}
+      animate={{ opacity: 1, y: 0, filter: "blur(0px)", scale: 1 }}
+      transition={{ duration: 0.55, ease: [0.22, 0.61, 0.26, 1] }}
       style={{ willChange: "opacity, transform, filter" }}
     >
       {children}
