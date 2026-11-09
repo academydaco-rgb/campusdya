@@ -3,11 +3,11 @@ import { motion, useReducedMotion } from "framer-motion";
 
 export default function Template({ children }: { children: React.ReactNode }) {
   const reduce = useReducedMotion();
-  // Con "reducir movimiento" NO apagamos del todo: mostramos una version suave
-  // (solo fundido + leve desplazamiento). Sin esa opcion, el efecto completo.
+  // Navegar es una accion del usuario: aun con "reducir movimiento" mostramos un
+  // deslizamiento + fundido claramente visible. Sin esa opcion, el efecto completo.
   const initial = reduce
-    ? { opacity: 0, y: 8 }
-    : { opacity: 0, y: 20, filter: "blur(8px)", scale: 0.99 };
+    ? { opacity: 0, y: 16 }
+    : { opacity: 0, y: 24, filter: "blur(10px)", scale: 0.985 };
   const animate = reduce
     ? { opacity: 1, y: 0 }
     : { opacity: 1, y: 0, filter: "blur(0px)", scale: 1 };
@@ -15,7 +15,7 @@ export default function Template({ children }: { children: React.ReactNode }) {
     <motion.div
       initial={initial}
       animate={animate}
-      transition={{ duration: reduce ? 0.32 : 0.5, ease: [0.2, 0.7, 0.3, 1] }}
+      transition={{ duration: reduce ? 0.4 : 0.52, ease: [0.22, 0.61, 0.26, 1] }}
       style={{ willChange: "opacity, transform, filter" }}
     >
       {children}

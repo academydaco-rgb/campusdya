@@ -2,6 +2,7 @@
 import { ReactNode, useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
+import { motion } from "framer-motion";
 import { useAuth } from "@/lib/auth";
 import Spotlight from "@/components/Spotlight";
 import TopBar from "@/components/TopBar";
@@ -38,7 +39,19 @@ const ADMIN: NavItem[] = [
 interface NavItem { href: string; label: string; Icon: LucideIcon; }
 
 function Item({ href, label, Icon, active }: NavItem & { active: boolean }) {
-  return <Link href={href} className={`nav-item${active ? " active" : ""}`}><span className="ic"><Icon size={19} strokeWidth={2} /></span>{label}</Link>;
+  return (
+    <Link href={href} className={`nav-item${active ? " active" : ""}`}>
+      {active && (
+        <motion.span
+          layoutId="nav-pill"
+          className="nav-pill"
+          transition={{ type: "spring", stiffness: 480, damping: 38, mass: 0.7 }}
+        />
+      )}
+      <span className="ic"><Icon size={19} strokeWidth={2} /></span>
+      <span className="nav-label-t">{label}</span>
+    </Link>
+  );
 }
 
 export default function AppLayout({ children }: { children: ReactNode }) {
