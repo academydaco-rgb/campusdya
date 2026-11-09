@@ -7,6 +7,7 @@ import { useAuth } from "@/lib/auth";
 import Spotlight from "@/components/Spotlight";
 import TopBar from "@/components/TopBar";
 import OnlineBar from "@/components/OnlineBar";
+import ClassReminders from "@/components/ClassReminders";
 import { Home, GraduationCap, CalendarDays, Video, Package, Award, Users, MessagesSquare,
   BookOpen, UserCog, KeyRound, Megaphone, ShieldCheck, Rocket, Trophy, Wrench, ExternalLink, Bell, type LucideIcon } from "lucide-react";
 
@@ -98,6 +99,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
         <TopBar />
         {children}
         <OnlineBar />
+        <ClassReminders />
       </main>
     </div>
     </MotionConfig>

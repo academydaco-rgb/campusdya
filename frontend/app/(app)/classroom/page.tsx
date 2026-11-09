@@ -2,7 +2,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { api, ScheduleT, TeacherT } from "@/lib/api";
 import SectionHero from "@/components/SectionHero";
-import { CalendarDays } from "lucide-react";
+import { CalendarDays, Bell } from "lucide-react";
+import { getReminders, toggleReminder } from "@/lib/reminders";
 
 const WEEK = ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"];
 const TWO_H = 2 * 60 * 60 * 1000;
@@ -49,6 +50,20 @@ export default function Classroom() {
     return events.filter((e) => sameDay(new Date(e.starts_at), day)).sort((a, b) => +new Date(a.starts_at) - +new Date(b.starts_at));
   }
   const selEvents = eventsOf(selected);
+
+  const [remOn, setRemOn] = useState<Set<string>>(new Set());
+  useEffect(() => {
+    const sync = () => setRemOn(new Set(getReminders()));
+    sync();
+    window.addEventListener("class-reminders-changed", sync);
+    return () => window.removeEventListener("class-reminders-changed", sync);
+  }, []);
+  async function toggleRem(id: string) {
+    if (!remOn.has(id)) {
+      try { if ("Notification" in window && Notification.permission === "default") await Notification.requestPermission(); } catch {}
+    }
+    toggleReminder(id);
+  }
 
   return (
     <div>
@@ -120,10 +135,23 @@ export default function Classroom() {
                   {t && <div className="cl-teacher">con {t.name}</div>}
                   {e.description && <p className="cl-desc">{e.description}</p>}
                 </div>
-                <span className="cl-wa">
-                  <svg width="14" height="14" viewBox="0 0 448 512" fill="currentColor" style={{ flexShrink: 0 }} aria-hidden><path d="M380.9 97.1C339 55.1 283.2 32 223.9 32c-122.4 0-222 99.6-222 222 0 39.1 10.2 77.3 29.6 111L0 480l117.7-30.9c32.4 17.7 68.9 27 106.1 27h.1c122.3 0 224.1-99.6 224.1-222 0-59.3-25.2-115-67.1-157zM223.9 438.6c-33.2 0-65.7-8.9-94-25.7l-6.7-4-69.8 18.3L72 359.2l-4.4-7c-18.5-29.4-28.2-63.3-28.2-98.2 0-101.7 82.8-184.5 184.6-184.5 49.3 0 95.6 19.2 130.4 54.1 34.8 34.9 56.2 81.2 56.1 130.5 0 101.8-84.9 184.5-186.6 184.5z"/></svg>
-                  Enlace por WhatsApp
-                </span>
+                {(() => {
+                  const future = +new Date(e.starts_at) > Date.now();
+                  const on = remOn.has(e.id);
+                  return (
+                    <div className="cl-actions">
+                      {future && (
+                        <button className={`cl-bell${on ? " on" : ""}`} onClick={() => toggleRem(e.id)} title="Notificarme 15 min antes">
+                          <Bell size={14} /> {on ? "Te avisaré" : "Notificarme"}
+                        </button>
+                      )}
+                      <span className="cl-wa-note">
+                        <svg width="13" height="13" viewBox="0 0 448 512" fill="currentColor" style={{ flexShrink: 0 }} aria-hidden><path d="M380.9 97.1C339 55.1 283.2 32 223.9 32c-122.4 0-222 99.6-222 222 0 39.1 10.2 77.3 29.6 111L0 480l117.7-30.9c32.4 17.7 68.9 27 106.1 27h.1c122.3 0 224.1-99.6 224.1-222 0-59.3-25.2-115-67.1-157zM223.9 438.6c-33.2 0-65.7-8.9-94-25.7l-6.7-4-69.8 18.3L72 359.2l-4.4-7c-18.5-29.4-28.2-63.3-28.2-98.2 0-101.7 82.8-184.5 184.6-184.5 49.3 0 95.6 19.2 130.4 54.1 34.8 34.9 56.2 81.2 56.1 130.5 0 101.8-84.9 184.5-186.6 184.5z"/></svg>
+                        Enlace por WhatsApp
+                      </span>
+                    </div>
+                  );
+                })()}
               </div>
             );
           })}
