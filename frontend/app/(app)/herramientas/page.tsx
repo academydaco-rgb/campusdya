@@ -4,13 +4,13 @@ import { api, ToolT } from "@/lib/api";
 import { Wrench, ArrowUpRight, Layers } from "lucide-react";
 import SectionHero from "@/components/SectionHero";
 
-const ACCENTS = [
-  "linear-gradient(135deg,#22e0ff,#6d5efc)",
-  "linear-gradient(135deg,#d946ef,#7c3aed)",
-  "linear-gradient(135deg,#fb7185,#d946ef)",
-  "linear-gradient(135deg,#22e67a,#22e0ff)",
-  "linear-gradient(135deg,#f6c453,#fb7185)",
-  "linear-gradient(135deg,#8b5cf6,#22e0ff)",
+const CATS = [
+  { grad: "linear-gradient(135deg,#22e0ff,#6d5efc)", tint: "34,224,255" },
+  { grad: "linear-gradient(135deg,#d946ef,#7c3aed)", tint: "217,70,239" },
+  { grad: "linear-gradient(135deg,#fb7185,#d946ef)", tint: "251,113,133" },
+  { grad: "linear-gradient(135deg,#22e67a,#22e0ff)", tint: "34,230,122" },
+  { grad: "linear-gradient(135deg,#f6c453,#fb7185)", tint: "246,196,83" },
+  { grad: "linear-gradient(135deg,#8b5cf6,#22e0ff)", tint: "139,92,246" },
 ];
 
 function hostOf(u?: string | null) {
@@ -47,12 +47,19 @@ export default function Herramientas() {
       {items.length === 0 && <span className="muted">Pronto verás herramientas aquí.</span>}
 
       {groups.map(([cat, tools], gi) => {
-        const accent = ACCENTS[gi % ACCENTS.length];
+        const c = CATS[gi % CATS.length];
         return (
-          <section className="toolcat" key={cat}>
+          <section
+            className="toolcat-block"
+            key={cat}
+            style={{
+              background: `linear-gradient(160deg, rgba(${c.tint},.11), rgba(${c.tint},.025) 58%, rgba(10,8,20,.35))`,
+              borderColor: `rgba(${c.tint},.30)`,
+            }}
+          >
             {!onlyGeneral && (
               <div className="toolcat-head">
-                <span className="toolcat-ic" style={{ background: accent }}><Layers size={20} /></span>
+                <span className="toolcat-ic" style={{ background: c.grad }}><Layers size={20} /></span>
                 <div className="toolcat-meta">
                   <h2 className="toolcat-title">{cat}</h2>
                   <span className="toolcat-count">{tools.length} {tools.length === 1 ? "herramienta" : "herramientas"}</span>
@@ -64,7 +71,7 @@ export default function Herramientas() {
                 const host = hostOf(t.link_url);
                 const common = (
                   <>
-                    <span className="tool2-ic" style={t.image_url ? { backgroundImage: `url(${t.image_url})` } : { background: accent }}>
+                    <span className="tool2-ic" style={t.image_url ? { backgroundImage: `url(${t.image_url})` } : { background: c.grad }}>
                       {!t.image_url && t.title.charAt(0).toUpperCase()}
                     </span>
                     <span className="tool2-main">

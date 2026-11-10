@@ -797,13 +797,20 @@ p{line-height:1.6}
 @media(max-width:1100px){.tool2-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media(max-width:780px){.tool2-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:480px){.tool2-grid{grid-template-columns:1fr}}
-.tool2{display:flex;align-items:center;gap:12px;padding:12px 13px;border-radius:14px;border:1px solid var(--line);background:linear-gradient(135deg,rgba(22,18,42,.55),rgba(12,10,24,.6));text-decoration:none;color:var(--text);transition:border-color .16s,transform .12s,background .16s,box-shadow .16s}
+.tool2{display:flex;align-items:flex-start;gap:12px;padding:13px;border-radius:14px;border:1px solid rgba(255,255,255,.07);background:linear-gradient(135deg,rgba(16,13,30,.82),rgba(9,7,18,.88));text-decoration:none;color:var(--text);transition:border-color .16s,transform .12s,background .16s,box-shadow .16s}
 .tool2:hover{border-color:var(--line-2);transform:translateY(-2px);background:linear-gradient(135deg,rgba(30,23,58,.85),rgba(15,12,30,.85));box-shadow:0 14px 30px -18px #000}
 .tool2-nolink{cursor:default}
 .tool2-nolink:hover{transform:none}
 .tool2-ic{width:46px;height:46px;border-radius:12px;flex-shrink:0;display:grid;place-items:center;font-weight:800;font-size:18px;color:#05070d;background-size:cover;background-position:center;overflow:hidden;box-shadow:inset 0 1px 0 rgba(255,255,255,.25)}
 .tool2-main{min-width:0;flex:1;display:flex;flex-direction:column}
-.tool2-title{font-weight:700;font-size:14px;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.2}
+.tool2-title{font-weight:700;font-size:14px;color:#fff;line-height:1.25;overflow-wrap:anywhere}
 .tool2-host{font-size:11.5px;color:var(--muted-soft);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
 .tool2-arrow{flex-shrink:0;color:var(--muted-soft);transition:color .16s,transform .16s}
 .tool2:hover .tool2-arrow{color:var(--cyan);transform:translate(2px,-2px)}
+
+/* ─────────── Herramientas: bloque por categoría ─────────── */
+.toolcat-block{border:1px solid var(--line-2);border-radius:22px;padding:20px;margin-top:20px}
+.toolcat-block:first-of-type{margin-top:22px}
+.toolcat-block .toolcat-head{margin-bottom:16px}
+.toolcat-block .toolcat-head::after{display:none}
+@media(max-width:520px){.toolcat-block{padding:14px;border-radius:18px}}
