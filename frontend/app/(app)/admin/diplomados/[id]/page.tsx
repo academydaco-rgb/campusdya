@@ -91,6 +91,22 @@ export default function EditDiploma() {
     });
     setMsg("Guardado ✓"); setTimeout(() => setMsg(""), 1500);
   }
+
+  // Guarda al instante una imagen apenas se sube (sin esperar al botón Guardar)
+  async function saveImage(patch: Partial<AdminDiplomaT>) {
+    if (!dip) return;
+    const next = { ...dip, ...patch };
+    setDip(next);
+    try {
+      await api.put(`/api/admin/diplomas/${id}`, {
+        title: next.title, description: next.description, cover_url: next.cover_url,
+        status: next.status, order: next.order, phase_id: next.phase_id || null, teacher_id: next.teacher_id || null, badge_image_url: next.badge_image_url || null,
+        hero_image_url: next.hero_image_url || null, intro_video_url: toEmbed(next.intro_video_url) || null,
+        has_routes: !!next.has_routes, route_a_name: (next.route_a_name || "").trim() || null, route_b_name: (next.route_b_name || "").trim() || null,
+      });
+      setMsg("Imagen guardada ✓"); setTimeout(() => setMsg(""), 1500);
+    } catch { setMsg("No se pudo guardar la imagen"); setTimeout(() => setMsg(""), 2500); }
+  }
   async function crearModulo() {
     if (!newModule.trim()) return;
     await api.post("/api/admin/modules", { diploma_id: id, title: newModule.trim(), status: "published", order: modules.length });
@@ -128,13 +144,13 @@ export default function EditDiploma() {
         </div>
         <div>
           <label className="label">Portada del diplomado</label>
-          <ImageUpload value={dip.cover_url} onChange={(url) => setDip({ ...dip, cover_url: url })} ratio="square" hint="Cuadrada · 1080 × 1080 px (PNG o JPG)" />
+          <ImageUpload value={dip.cover_url} onChange={(url) => saveImage({ cover_url: url })} ratio="square" hint="Cuadrada · 1080 × 1080 px (PNG o JPG)" />
         </div>
         <div style={{ display: "grid", gap: 12, padding: 16, borderRadius: 14, border: "1px dashed var(--line-2)", background: "rgba(34,224,255,.04)" }}>
           <div style={{ fontWeight: 800, color: "#fff", fontSize: 14 }}>🎬 Cabecera del diplomado (estilo Netflix)</div>
           <div>
             <label className="label">Portada de la cabecera (fondo)</label>
-            <ImageUpload value={dip.hero_image_url} onChange={(url) => setDip({ ...dip, hero_image_url: url })} ratio="wide" hint="Horizontal · 1920 × 800 px (JPG o WEBP)" />
+            <ImageUpload value={dip.hero_image_url} onChange={(url) => saveImage({ hero_image_url: url })} ratio="wide" hint="Horizontal · 1920 × 800 px (JPG o WEBP)" />
           </div>
           <div>
             <label className="label">Video de presentación (VideoPress)</label>
@@ -166,7 +182,7 @@ export default function EditDiploma() {
         </div>
         <div>
           <label className="label">Insignia del diplomado</label>
-          <ImageUpload value={dip.badge_image_url} onChange={(url) => setDip({ ...dip, badge_image_url: url })} ratio="square" hint="Cuadrada · 512 × 512 px (PNG con fondo transparente)" />
+          <ImageUpload value={dip.badge_image_url} onChange={(url) => saveImage({ badge_image_url: url })} ratio="square" hint="Cuadrada · 512 × 512 px (PNG con fondo transparente)" />
         </div>
         <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
           <button className="btn btn-primary">Guardar diplomado</button>
