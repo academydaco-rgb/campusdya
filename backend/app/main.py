@@ -1,4 +1,16 @@
 import os
+import mimetypes
+
+# El contenedor base no tiene .webp/.heic en su base de MIME y Starlette los
+# servía como text/plain, por eso el navegador no mostraba las imágenes.
+for _ext, _mt in ((".webp", "image/webp"), (".heic", "image/heic"),
+                   (".heif", "image/heif"), (".jpg", "image/jpeg"),
+                   (".jpeg", "image/jpeg"), (".png", "image/png")):
+    mimetypes.add_type(_mt, _ext)
+
+_IMG_TYPES = {".webp": "image/webp", ".heic": "image/heic", ".heif": "image/heif",
+              ".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".png": "image/png",
+              ".gif": "image/gif", ".svg": "image/svg+xml"}
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
@@ -44,6 +56,9 @@ class CachedStaticFiles(StaticFiles):
         resp = await super().get_response(path, scope)
         try:
             resp.headers["Cache-Control"] = "public, max-age=31536000, immutable"
+            _ext = os.path.splitext(str(path))[1].lower()
+            if _ext in _IMG_TYPES:
+                resp.headers["Content-Type"] = _IMG_TYPES[_ext]
         except Exception:
             pass
         return resp
