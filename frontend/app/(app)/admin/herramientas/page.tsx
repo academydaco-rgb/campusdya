@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { api, ToolT } from "@/lib/api";
 import ImageUpload from "@/components/ImageUpload";
 
-const IMG_HINT = "Imagen cuadrada · 800 × 800 px";
+const IMG_HINT = "Imagen cuadrada · 1080 × 1080 px";
 
 export default function AdminHerramientas() {
   const [items, setItems] = useState<ToolT[]>([]);
@@ -28,7 +28,7 @@ export default function AdminHerramientas() {
     <div className="grid" style={{ gap: 18 }}>
       <div>
         <h1 style={{ fontSize: 26, fontWeight: 800 }}>Herramientas · control total 🧰</h1>
-        <p className="muted" style={{ marginTop: 6 }}>Sube una imagen cuadrada (800×800), un título, el enlace del botón y agrúpala por categoría.</p>
+        <p className="muted" style={{ marginTop: 6 }}>Sube una imagen cuadrada (1080×1080), un título, el enlace del botón y agrúpala por categoría.</p>
       </div>
       <datalist id="tool-cats">{cats.map((c) => <option key={c} value={c} />)}</datalist>
       <form onSubmit={crear} className="card" style={{ padding: 18, display: "grid", gap: 12 }}>
@@ -37,7 +37,7 @@ export default function AdminHerramientas() {
           <div><label className="label">Categoría</label><input className="input" list="tool-cats" value={category} onChange={(e) => setCategory(e.target.value)} placeholder="Ej: IA, Diseño, Logística…" /></div>
           <div><label className="label">Orden</label><input className="input" type="number" value={order} onChange={(e) => setOrder(Number(e.target.value))} /></div>
         </div>
-        <div><label className="label">Imagen (800×800)</label><ImageUpload value={img} onChange={setImg} ratio="square" hint={IMG_HINT} /></div>
+        <div><label className="label">Imagen (1080×1080)</label><ImageUpload value={img} onChange={setImg} ratio="square" hint={IMG_HINT} /></div>
         <div style={{ display: "grid", gap: 12, gridTemplateColumns: "2fr 1fr" }}>
           <div><label className="label">Enlace del botón</label><input className="input" value={url} onChange={(e) => setUrl(e.target.value)} placeholder="https://…" /></div>
           <div><label className="label">Texto del botón</label><input className="input" value={label} onChange={(e) => setLabel(e.target.value)} placeholder="Abrir" /></div>

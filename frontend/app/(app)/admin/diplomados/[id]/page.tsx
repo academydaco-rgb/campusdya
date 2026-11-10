@@ -128,7 +128,7 @@ export default function EditDiploma() {
         </div>
         <div>
           <label className="label">Portada del diplomado</label>
-          <ImageUpload value={dip.cover_url} onChange={(url) => setDip({ ...dip, cover_url: url })} ratio="square" hint="Cuadrada · 800 × 800 px (PNG o JPG)" />
+          <ImageUpload value={dip.cover_url} onChange={(url) => setDip({ ...dip, cover_url: url })} ratio="square" hint="Cuadrada · 1080 × 1080 px (PNG o JPG)" />
         </div>
         <div style={{ display: "grid", gap: 12, padding: 16, borderRadius: 14, border: "1px dashed var(--line-2)", background: "rgba(34,224,255,.04)" }}>
           <div style={{ fontWeight: 800, color: "#fff", fontSize: 14 }}>🎬 Cabecera del diplomado (estilo Netflix)</div>

@@ -61,7 +61,7 @@ export default function AdminComunicados() {
           <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
             <div style={{ width: 64, height: 64, borderRadius: 10, border: "1px solid var(--line)", background: image ? `center/cover url(${image})` : "rgba(8,6,15,.6)", flexShrink: 0 }} />
             <label className="btn btn-ghost" style={{ fontSize: 13 }}>{busy ? "Subiendo…" : image ? "Cambiar imagen" : "Subir imagen"}<input type="file" accept="image/png,image/jpeg,image/webp" onChange={subir} style={{ display: "none" }} /></label>
-            <span className="muted" style={{ fontSize: 12 }}>Cuadrada · 800 × 800 px</span>
+            <span className="muted" style={{ fontSize: 12 }}>Cuadrada · 1080 × 1080 px</span>
           </div>
         </div>
         <label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, cursor: "pointer" }}>
