@@ -12,3 +12,4 @@ python-multipart==0.0.12
 alembic==1.13.3
 email-validator==2.2.0
 Pillow==10.4.0
+pillow-heif==0.18.0

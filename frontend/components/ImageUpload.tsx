@@ -22,7 +22,7 @@ export default function ImageUpload({ value, onChange, hint, ratio = "wide" }: {
           background: value ? `center/cover url(${value})` : "rgba(5,8,15,.6)" }} />
         <label className="btn btn-ghost" style={{ fontSize: 13 }}>
           {busy ? "Subiendo…" : value ? "Cambiar imagen" : "Subir imagen"}
-          <input type="file" accept="image/png,image/jpeg,image/webp" onChange={pick} style={{ display: "none" }} />
+          <input type="file" accept="image/*,.heic,.heif" onChange={pick} style={{ display: "none" }} />
         </label>
         <span className="muted" style={{ fontSize: 12 }}>{hint}</span>
       </div>
