@@ -1,6 +1,5 @@
 "use client";
 import { useEffect, useMemo, useState } from "react";
-import Tilt from "@/components/Tilt";
 import { api, ToolT } from "@/lib/api";
 import { Wrench, ArrowUpRight, Layers } from "lucide-react";
 import SectionHero from "@/components/SectionHero";
@@ -13,6 +12,11 @@ const ACCENTS = [
   "linear-gradient(135deg,#f6c453,#fb7185)",
   "linear-gradient(135deg,#8b5cf6,#22e0ff)",
 ];
+
+function hostOf(u?: string | null) {
+  if (!u) return "";
+  try { return new URL(u).host.replace(/^www\./, ""); } catch { return ""; }
+}
 
 export default function Herramientas() {
   const [items, setItems] = useState<ToolT[]>([]);
@@ -36,44 +40,50 @@ export default function Herramientas() {
         icon={<Wrench size={14} />}
         badge="Tu arsenal"
         title="Herramientas"
-        subtitle="Las herramientas y recursos que usamos en la academia, organizados por categoría y listos para tu negocio."
+        subtitle="Todas las plataformas y recursos de la academia, organizados por categoría. Toca una tarjeta para abrirla."
         stats={[{ b: items.length, s: "herramientas" }, { b: onlyGeneral ? 1 : groups.length, s: "categorías" }]}
       />
 
       {items.length === 0 && <span className="muted">Pronto verás herramientas aquí.</span>}
 
-      {groups.map(([cat, tools], gi) => (
-        <section className="toolcat" key={cat}>
-          {!onlyGeneral && (
-            <div className="toolcat-head">
-              <span className="toolcat-ic" style={{ background: ACCENTS[gi % ACCENTS.length] }}><Layers size={20} /></span>
-              <div className="toolcat-meta">
-                <h2 className="toolcat-title">{cat}</h2>
-                <span className="toolcat-count">{tools.length} {tools.length === 1 ? "herramienta" : "herramientas"}</span>
-              </div>
-            </div>
-          )}
-          <div className="grid-4">
-            {tools.map((t) => (
-              <Tilt key={t.id} style={{ height: "100%" }}>
-                <div className="toolcard">
-                  <div className="toolcard-img" style={{ background: t.image_url ? `center/cover url(${t.image_url})` : "linear-gradient(135deg,#1e1636,#0f0b1e)" }}>
-                    {!t.image_url && <Wrench size={26} style={{ color: "rgba(255,255,255,.5)" }} />}
-                  </div>
-                  <div className="toolcard-body">
-                    <div className="toolcard-title">{t.title}</div>
-                    {t.link_url && (
-                      <a className="btn btn-primary toolcard-btn" href={t.link_url} target="_blank" rel="noreferrer">
-                        {t.link_label || "Abrir"} <ArrowUpRight size={15} />
-                      </a>
-                    )}
-                  </div>
+      {groups.map(([cat, tools], gi) => {
+        const accent = ACCENTS[gi % ACCENTS.length];
+        return (
+          <section className="toolcat" key={cat}>
+            {!onlyGeneral && (
+              <div className="toolcat-head">
+                <span className="toolcat-ic" style={{ background: accent }}><Layers size={20} /></span>
+                <div className="toolcat-meta">
+                  <h2 className="toolcat-title">{cat}</h2>
+                  <span className="toolcat-count">{tools.length} {tools.length === 1 ? "herramienta" : "herramientas"}</span>
                 </div>
-              </Tilt>
-            ))}
-          </div>
-        </section>
-      ))}
+              </div>
+            )}
+            <div className="tool2-grid">
+              {tools.map((t) => {
+                const host = hostOf(t.link_url);
+                const common = (
+                  <>
+                    <span className="tool2-ic" style={t.image_url ? { backgroundImage: `url(${t.image_url})` } : { background: accent }}>
+                      {!t.image_url && t.title.charAt(0).toUpperCase()}
+                    </span>
+                    <span className="tool2-main">
+                      <span className="tool2-title">{t.title}</span>
+                      {host && <span className="tool2-host">{host}</span>}
+                    </span>
+                    {t.link_url && <ArrowUpRight size={17} className="tool2-arrow" />}
+                  </>
+                );
+                return t.link_url ? (
+                  <a key={t.id} className="tool2" href={t.link_url} target="_blank" rel="noreferrer">{common}</a>
+                ) : (
+                  <div key={t.id} className="tool2 tool2-nolink">{common}</div>
+                );
+              })}
+            </div>
+          </section>
+        );
+      })}
     </div>
   );
 }
