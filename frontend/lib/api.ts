@@ -53,7 +53,7 @@ export interface LessonDetailT {
 }
 export interface TeacherT { id: string; name: string; bio?: string | null; photo_url?: string | null; whatsapp?: string | null; order?: number; status?: string; diplomas?: { title: string; slug: string; cover_url?: string | null }[] | null; }
 export interface LiveClassT { id: string; title: string; description?: string | null; videopress_url?: string | null; cover_url?: string | null; happened_at?: string | null; diploma_id?: string | null; phase_id?: string | null; status?: string; }
-export interface ToolT { id: string; title: string; image_url?: string | null; link_url?: string | null; link_label?: string | null; order?: number; status?: string; }
+export interface ToolT { id: string; title: string; image_url?: string | null; link_url?: string | null; link_label?: string | null; category?: string | null; order?: number; status?: string; }
 export interface OnlineUserT { id: string; name: string; avatar_url?: string | null; }
 export interface CommunityTopT { id: string; name: string; avatar_url?: string | null; count: number; }
 export type DayRange = [string, string];

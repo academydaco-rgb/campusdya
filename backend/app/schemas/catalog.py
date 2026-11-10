@@ -137,6 +137,7 @@ class ToolCreate(BaseModel):
     image_url: str | None = None
     link_url: str | None = None
     link_label: str | None = None
+    category: str | None = None
     order: int = 0
     status: str = "published"
 
@@ -146,6 +147,7 @@ class ToolUpdate(BaseModel):
     image_url: str | None = None
     link_url: str | None = None
     link_label: str | None = None
+    category: str | None = None
     order: int | None = None
     status: str | None = None
 
@@ -157,5 +159,6 @@ class ToolOut(BaseModel):
     image_url: str | None = None
     link_url: str | None = None
     link_label: str | None = None
+    category: str | None = None
     order: int
     status: str

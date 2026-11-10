@@ -782,3 +782,13 @@ p{line-height:1.6}
   .cal-ev-more{text-align:center}
   .notifpanel{position:fixed;left:12px;right:12px;top:66px;width:auto;max-width:none}
 }
+
+/* ─────────── Herramientas: categorías (diseño pro) ─────────── */
+.toolcat{margin-top:28px}
+.toolcat:first-of-type{margin-top:22px}
+.toolcat-head{display:flex;align-items:center;gap:13px;margin-bottom:16px}
+.toolcat-head::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,var(--line-2),transparent);margin-left:6px}
+.toolcat-ic{width:46px;height:46px;border-radius:13px;display:grid;place-items:center;flex-shrink:0;color:#05070d;box-shadow:0 10px 24px -8px rgba(0,0,0,.65),inset 0 1px 0 rgba(255,255,255,.35)}
+.toolcat-meta{display:flex;flex-direction:column;gap:2px}
+.toolcat-title{font-size:19px;font-weight:800;color:#fff;margin:0;line-height:1.1;letter-spacing:-.01em}
+.toolcat-count{font-size:11px;color:var(--muted-soft);text-transform:uppercase;letter-spacing:.07em;font-weight:700}
