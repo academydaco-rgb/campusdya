@@ -102,23 +102,44 @@ export interface MyBadgeT { id: string; name: string; description?: string | nul
 export interface ContinueT { diploma_slug: string; diploma_title: string; lesson_id: string; lesson_title: string; progress: number; }
 
 
-export async function uploadImage(file: File): Promise<string> {
+// Sube una imagen con reintentos automáticos si el servidor responde 5xx o hay
+// fallo de red (el droplet a veces da 503 bajo carga). No reintenta errores 4xx.
+async function uploadWithRetry(path: string, file: File): Promise<string> {
   const fd = new FormData();
   fd.append("file", file);
   let token: string | null = null;
   try { token = typeof window !== "undefined" ? localStorage.getItem("academia_token") : null; } catch { token = null; }
-  const res = await fetch(`${API_URL}/api/admin/upload`, {
-    method: "POST",
-    headers: token ? { Authorization: `Bearer ${token}` } : {},
-    body: fd,
-  });
-  if (!res.ok) {
-    let detail = "No se pudo subir la imagen";
-    try { const j = await res.json(); detail = j.detail || detail; } catch { /* ignore */ }
-    throw new Error(detail);
+  const headers: Record<string, string> = token ? { Authorization: `Bearer ${token}` } : {};
+  let lastErr: Error | null = null;
+  for (let attempt = 0; attempt < 4; attempt++) {
+    let retryable = false;
+    try {
+      const res = await fetch(`${API_URL}${path}`, { method: "POST", headers, body: fd });
+      if (res.ok) { const j = await res.json(); return j.url as string; }
+      if (res.status >= 500) {
+        retryable = true;
+        lastErr = new Error("El servidor está ocupado. Reintentando…");
+      } else {
+        let detail = "No se pudo subir la imagen";
+        try { const j = await res.json(); detail = j.detail || detail; } catch { /* ignore */ }
+        throw new Error(detail); // 4xx: no reintentar
+      }
+    } catch (e) {
+      if (e instanceof TypeError) {
+        retryable = true;
+        lastErr = new Error("Fallo de red al subir la imagen.");
+      } else {
+        throw e;
+      }
+    }
+    if (!retryable) break;
+    if (attempt < 3) await new Promise((r) => setTimeout(r, 700 * (attempt + 1)));
   }
-  const j = await res.json();
-  return j.url as string;
+  throw lastErr || new Error("No se pudo subir la imagen");
+}
+
+export async function uploadImage(file: File): Promise<string> {
+  return uploadWithRetry("/api/admin/upload", file);
 }
 
 export async function uploadFile(file: File): Promise<{ url: string; name: string }> {
@@ -141,22 +162,7 @@ export async function uploadFile(file: File): Promise<{ url: string; name: strin
 }
 
 export async function uploadImageUser(file: File): Promise<string> {
-  const fd = new FormData();
-  fd.append("file", file);
-  let token: string | null = null;
-  try { token = typeof window !== "undefined" ? localStorage.getItem("academia_token") : null; } catch { token = null; }
-  const res = await fetch(`${API_URL}/api/upload`, {
-    method: "POST",
-    headers: token ? { Authorization: `Bearer ${token}` } : {},
-    body: fd,
-  });
-  if (!res.ok) {
-    let detail = "No se pudo subir la imagen";
-    try { const j = await res.json(); detail = j.detail || detail; } catch { /* ignore */ }
-    throw new Error(detail);
-  }
-  const j = await res.json();
-  return j.url as string;
+  return uploadWithRetry("/api/upload", file);
 }
 
 export interface AnnouncementT { id: string; title: string; body: string; image_url?: string | null; status: string; starts_at: string; expires_at?: string | null; created_at: string; teacher_id?: string | null; teacher_name?: string | null; teacher_photo_url?: string | null; }

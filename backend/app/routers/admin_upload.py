@@ -94,7 +94,7 @@ def _optimize_image(data: bytes, content_type: str) -> tuple[bytes, str]:
         if max(im.size) > MAX:
             im.thumbnail((MAX, MAX))
         buf = BytesIO()
-        im.save(buf, format="WEBP", quality=80, method=6)
+        im.save(buf, format="WEBP", quality=80, method=4)
         return buf.getvalue(), "webp"
     except Exception:
         return data, _ALLOWED.get((content_type or "").lower(), "jpg")
