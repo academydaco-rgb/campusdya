@@ -827,26 +827,26 @@ p{line-height:1.6}
 .notifmodal-x{position:absolute;top:16px;right:16px;width:34px;height:34px;border-radius:10px;border:1px solid var(--line);background:rgba(255,255,255,.05);color:#cbb8ff;display:grid;place-items:center;cursor:pointer}
 .notifmodal-title{font-size:23px;margin:8px 40px 0 0;color:#fff;line-height:1.18}
 .notifmodal-body{font-size:14.5px;line-height:1.7;color:#d6d8ea;white-space:pre-wrap;overflow-wrap:anywhere;margin:0}
-
-/* ─────────── Herramientas: directorio sobrio (favicon + neutro) ─────────── */
+/* ─────────── Herramientas: directorio con acento de color ─────────── */
 .tl-sec{margin-top:30px}
 .tl-sec:first-of-type{margin-top:24px}
-.tl-sec-head{display:flex;align-items:center;gap:10px;margin-bottom:14px;padding-bottom:11px;border-bottom:1px solid var(--line)}
-.tl-sec-title{font-size:15px;font-weight:700;color:#fff;margin:0;letter-spacing:.01em}
-.tl-sec-count{font-size:11px;font-weight:700;color:var(--muted-soft);background:rgba(255,255,255,.05);border:1px solid var(--line);padding:2px 9px;border-radius:999px}
-.tl-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.tl-sec-head{display:flex;align-items:center;gap:10px;margin-bottom:15px;padding-bottom:11px;border-bottom:1px solid var(--line)}
+.tl-sec-bar{width:4px;height:20px;border-radius:3px;flex-shrink:0}
+.tl-sec-title{font-size:16px;font-weight:800;color:#fff;margin:0;letter-spacing:.01em}
+.tl-sec-count{font-size:11px;font-weight:800;border:1px solid var(--line);padding:2px 10px;border-radius:999px}
+.tl-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
 @media(max-width:1100px){.tl-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media(max-width:780px){.tl-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:480px){.tl-grid{grid-template-columns:1fr}}
-.tl-card{display:flex;align-items:center;gap:12px;padding:13px 14px;border-radius:13px;border:1px solid var(--line);background:rgba(255,255,255,.018);text-decoration:none;color:var(--text);transition:border-color .16s,background .16s,transform .12s}
-.tl-card:hover{border-color:var(--line-2);background:rgba(255,255,255,.045);transform:translateY(-1px)}
+.tl-card{display:flex;align-items:center;gap:14px;padding:14px;border-radius:15px;border:1px solid var(--line);border-left:3px solid var(--acc,#888);background:linear-gradient(135deg,rgba(22,18,42,.5),rgba(11,9,22,.6));text-decoration:none;color:var(--text);box-shadow:0 3px 12px -8px rgba(0,0,0,.55);transition:border-color .16s,background .16s,transform .12s,box-shadow .16s}
+.tl-card:hover{border-color:var(--acc,#555);transform:translateY(-2px);background:linear-gradient(135deg,rgba(30,24,54,.75),rgba(14,11,28,.8));box-shadow:0 14px 30px -14px rgba(var(--accrgb,0,0,0),.55)}
 .tl-card-nolink{cursor:default}
-.tl-card-nolink:hover{transform:none;background:rgba(255,255,255,.018)}
-.tl-fav{width:54px;height:54px;border-radius:13px;flex-shrink:0;display:grid;place-items:center;background:rgba(255,255,255,.05);border:1px solid var(--line);overflow:hidden;background-size:cover;background-position:center}
-.tl-fav img{width:30px;height:30px;object-fit:contain}
-.tl-fav-ltr{font-weight:700;font-size:21px;color:var(--muted)}
-.tl-main{min-width:0;flex:1;display:flex;flex-direction:column;gap:2px}
-.tl-name{font-size:13.5px;font-weight:600;color:#fff;line-height:1.25;overflow-wrap:anywhere}
-.tl-host{font-size:11px;color:var(--muted-soft);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.tl-arr{flex-shrink:0;color:var(--muted-soft);opacity:.55;transition:opacity .16s,transform .16s,color .16s}
-.tl-card:hover .tl-arr{opacity:1;color:var(--cyan);transform:translate(2px,-2px)}
+.tl-card-nolink:hover{transform:none}
+.tl-fav{width:84px;height:84px;border-radius:16px;flex-shrink:0;display:grid;place-items:center;background:rgba(255,255,255,.05);overflow:hidden;background-size:cover;background-position:center;box-shadow:inset 0 0 0 1px rgba(255,255,255,.08)}
+.tl-fav img{width:52px;height:52px;object-fit:contain}
+.tl-fav-ltr{font-weight:800;font-size:32px}
+.tl-main{min-width:0;flex:1;display:flex;flex-direction:column;gap:3px}
+.tl-name{font-size:15px;font-weight:700;color:#fff;line-height:1.25;overflow-wrap:anywhere}
+.tl-host{font-size:12px;color:var(--muted-soft);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tl-arr{flex-shrink:0;color:var(--muted-soft);opacity:.6;transition:opacity .16s,transform .16s,color .16s;align-self:flex-start}
+.tl-card:hover .tl-arr{opacity:1;color:var(--acc,#22e0ff);transform:translate(2px,-2px)}

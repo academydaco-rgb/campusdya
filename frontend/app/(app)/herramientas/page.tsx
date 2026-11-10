@@ -4,16 +4,25 @@ import { api, ToolT } from "@/lib/api";
 import { Wrench, ArrowUpRight } from "lucide-react";
 import SectionHero from "@/components/SectionHero";
 
+const CATS = [
+  { acc: "#22e0ff", rgb: "34,224,255" },
+  { acc: "#d946ef", rgb: "217,70,239" },
+  { acc: "#fb7185", rgb: "251,113,133" },
+  { acc: "#22e67a", rgb: "34,230,122" },
+  { acc: "#f6c453", rgb: "246,196,83" },
+  { acc: "#8b5cf6", rgb: "139,92,246" },
+];
+
 function hostOf(u?: string | null) {
   if (!u) return "";
   try { return new URL(u).host.replace(/^www\./, ""); } catch { return ""; }
 }
 
-function Fav({ img, host, letter }: { img?: string | null; host: string; letter: string }) {
+function Fav({ img, host, letter, acc, rgb }: { img?: string | null; host: string; letter: string; acc: string; rgb: string }) {
   const [err, setErr] = useState(false);
   if (img) return <span className="tl-fav" style={{ backgroundImage: `url(${img})`, backgroundSize: "cover", backgroundPosition: "center" }} />;
-  if (host && !err) return <span className="tl-fav"><img src={`https://www.google.com/s2/favicons?domain=${host}&sz=64`} alt="" onError={() => setErr(true)} /></span>;
-  return <span className="tl-fav"><span className="tl-fav-ltr">{letter}</span></span>;
+  if (host && !err) return <span className="tl-fav" style={{ background: `rgba(${rgb},.12)` }}><img src={`https://www.google.com/s2/favicons?domain=${host}&sz=128`} alt="" onError={() => setErr(true)} /></span>;
+  return <span className="tl-fav" style={{ background: `rgba(${rgb},.14)` }}><span className="tl-fav-ltr" style={{ color: acc }}>{letter}</span></span>;
 }
 
 export default function Herramientas() {
@@ -44,36 +53,41 @@ export default function Herramientas() {
 
       {items.length === 0 && <span className="muted">Pronto verás herramientas aquí.</span>}
 
-      {groups.map(([cat, tools]) => (
-        <section className="tl-sec" key={cat}>
-          {!onlyGeneral && (
-            <div className="tl-sec-head">
-              <h2 className="tl-sec-title">{cat}</h2>
-              <span className="tl-sec-count">{tools.length}</span>
+      {groups.map(([cat, tools], gi) => {
+        const c = CATS[gi % CATS.length];
+        return (
+          <section className="tl-sec" key={cat}>
+            {!onlyGeneral && (
+              <div className="tl-sec-head">
+                <span className="tl-sec-bar" style={{ background: c.acc }} />
+                <h2 className="tl-sec-title">{cat}</h2>
+                <span className="tl-sec-count" style={{ color: c.acc, background: `rgba(${c.rgb},.12)`, borderColor: `rgba(${c.rgb},.3)` }}>{tools.length}</span>
+              </div>
+            )}
+            <div className="tl-grid">
+              {tools.map((t) => {
+                const host = hostOf(t.link_url);
+                const vars = { ["--acc" as string]: c.acc, ["--accrgb" as string]: c.rgb } as React.CSSProperties;
+                const inner = (
+                  <>
+                    <Fav img={t.image_url} host={host} letter={t.title.charAt(0).toUpperCase()} acc={c.acc} rgb={c.rgb} />
+                    <span className="tl-main">
+                      <span className="tl-name">{t.title}</span>
+                      {host && <span className="tl-host">{host}</span>}
+                    </span>
+                    {t.link_url && <ArrowUpRight size={17} className="tl-arr" />}
+                  </>
+                );
+                return t.link_url ? (
+                  <a key={t.id} className="tl-card" style={vars} href={t.link_url} target="_blank" rel="noreferrer">{inner}</a>
+                ) : (
+                  <div key={t.id} className="tl-card tl-card-nolink" style={vars}>{inner}</div>
+                );
+              })}
             </div>
-          )}
-          <div className="tl-grid">
-            {tools.map((t) => {
-              const host = hostOf(t.link_url);
-              const inner = (
-                <>
-                  <Fav img={t.image_url} host={host} letter={t.title.charAt(0).toUpperCase()} />
-                  <span className="tl-main">
-                    <span className="tl-name">{t.title}</span>
-                    {host && <span className="tl-host">{host}</span>}
-                  </span>
-                  {t.link_url && <ArrowUpRight size={16} className="tl-arr" />}
-                </>
-              );
-              return t.link_url ? (
-                <a key={t.id} className="tl-card" href={t.link_url} target="_blank" rel="noreferrer">{inner}</a>
-              ) : (
-                <div key={t.id} className="tl-card tl-card-nolink">{inner}</div>
-              );
-            })}
-          </div>
-        </section>
-      ))}
+          </section>
+        );
+      })}
     </div>
   );
 }
