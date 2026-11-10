@@ -842,9 +842,9 @@ p{line-height:1.6}
 .tl-card:hover{border-color:var(--line-2);background:rgba(255,255,255,.045);transform:translateY(-1px)}
 .tl-card-nolink{cursor:default}
 .tl-card-nolink:hover{transform:none;background:rgba(255,255,255,.018)}
-.tl-fav{width:40px;height:40px;border-radius:10px;flex-shrink:0;display:grid;place-items:center;background:rgba(255,255,255,.05);border:1px solid var(--line);overflow:hidden;background-size:cover;background-position:center}
-.tl-fav img{width:22px;height:22px;object-fit:contain}
-.tl-fav-ltr{font-weight:700;font-size:16px;color:var(--muted)}
+.tl-fav{width:54px;height:54px;border-radius:13px;flex-shrink:0;display:grid;place-items:center;background:rgba(255,255,255,.05);border:1px solid var(--line);overflow:hidden;background-size:cover;background-position:center}
+.tl-fav img{width:30px;height:30px;object-fit:contain}
+.tl-fav-ltr{font-weight:700;font-size:21px;color:var(--muted)}
 .tl-main{min-width:0;flex:1;display:flex;flex-direction:column;gap:2px}
 .tl-name{font-size:13.5px;font-weight:600;color:#fff;line-height:1.25;overflow-wrap:anywhere}
 .tl-host{font-size:11px;color:var(--muted-soft);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
