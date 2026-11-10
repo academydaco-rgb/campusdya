@@ -59,11 +59,11 @@ async def create(data: AnnouncementCreate, db: AsyncSession = Depends(get_db), a
     obj = Announcement(title=data.title, body=data.body, image_url=data.image_url, teacher_id=data.teacher_id,
                        expires_at=_expiry(data.visible_days), created_by=a.id)
     db.add(obj); await db.commit(); await db.refresh(obj)
-    # Notificar a todos (campanita) cuando se publica un comunicado
-    body_short = (data.body or "").strip()
-    if len(body_short) > 280:
-        body_short = body_short[:279] + "…"
-    db.add(Notification(title=f"📣 {data.title}", body=body_short or "Nuevo comunicado en la academia.",
+    # Notificar a todos (campanita) cuando se publica un comunicado.
+    # Guardamos el cuerpo COMPLETO para poder abrir el comunicado entero en un modal
+    # desde la campanita (la lista lo recorta por CSS, el modal lo muestra completo).
+    body_full = (data.body or "").strip() or "Nuevo comunicado en la academia."
+    db.add(Notification(title=f"📣 {data.title}", body=body_full,
                         image_url=data.image_url or None, link_url="/dashboard", link_label="Ver comunicado",
                         created_by=a.id))
     await db.commit()

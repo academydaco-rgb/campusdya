@@ -23,6 +23,7 @@ export default function TopBar() {
   const [openMenu, setOpenMenu] = useState(false);
   const [openNotif, setOpenNotif] = useState(false);
   const [notifs, setNotifs] = useState<Notif[]>([]);
+  const [view, setView] = useState<Notif | null>(null);
   const [unread, setUnread] = useState(0);
   const wrapRef = useRef<HTMLDivElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -108,28 +109,44 @@ export default function TopBar() {
                 <div className="search-empty">No tienes notificaciones.</div>
               ) : (
                 notifs.map((n) => (
-                  <div key={n.id} className={`notifitem${n.read ? "" : " unread"}`}>
+                  <button key={n.id} type="button" className={`notifitem${n.read ? "" : " unread"}`} onClick={() => { setView(n); setOpenNotif(false); }}>
                     {n.image_url && <div className="nimg" style={{ background: `center/cover url(${n.image_url})` }} />}
-                    <div style={{ minWidth: 0, flex: 1 }}>
+                    <div style={{ minWidth: 0, flex: 1, textAlign: "left" }}>
                       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
                         {!n.read && <span className="ndot" />}
                         <b style={{ fontSize: 13.5, color: "#fff" }}>{n.title}</b>
                         <span className="muted" style={{ fontSize: 11, marginLeft: "auto" }}>{fdate(n.created_at)}</span>
                       </div>
-                      <p className="muted" style={{ fontSize: 12.5, margin: "4px 0 0", whiteSpace: "pre-wrap" }}>{n.body}</p>
-                      {n.link_url && (
-                        <a className="btn btn-primary" href={n.link_url} target="_blank" rel="noreferrer" style={{ marginTop: 10, padding: "7px 14px", fontSize: 12.5 }}>
-                          {n.link_label || "Abrir"} <ExternalLink size={13} />
-                        </a>
-                      )}
+                      <p className="notifitem-body" style={{ fontSize: 12.5, margin: "4px 0 0" }}>{n.body}</p>
+                      <span className="notifitem-cta">{n.link_label || "Ver"} →</span>
                     </div>
-                  </div>
+                  </button>
                 ))
               )}
             </div>
           </div>
         )}
       </div>
+
+      {view && (
+        <div className="notifmodal-ov" onClick={() => setView(null)}>
+          <div className="notifmodal" onClick={(e) => e.stopPropagation()}>
+            {view.image_url && <img src={view.image_url} alt="" className="notifmodal-img" />}
+            <div className="notifmodal-in">
+              <button className="notifmodal-x" onClick={() => setView(null)} aria-label="Cerrar"><X size={18} /></button>
+              <span className="eyebrow" style={{ color: "#c9b7ff" }}>Comunicado</span>
+              <h2 className="notifmodal-title">{(view.title || "").replace(/^📣\s*/, "")}</h2>
+              <div className="muted" style={{ fontSize: 12.5, margin: "8px 0 14px" }}>{fdate(view.created_at)}</div>
+              <p className="notifmodal-body">{view.body}</p>
+              {/^https?:\/\//i.test(view.link_url || "") && (
+                <a className="btn btn-primary" href={view.link_url!} target="_blank" rel="noreferrer" style={{ marginTop: 16, alignSelf: "flex-start" }}>
+                  {view.link_label || "Abrir"} <ExternalLink size={14} />
+                </a>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Usuario */}
       <div className="userchip" ref={menuRef} onClick={() => setOpenMenu((v) => !v)} role="button" style={{ cursor: "pointer" }}>
