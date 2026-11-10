@@ -13,6 +13,11 @@ const nextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,          // no revelar que es Next.js
   productionBrowserSourceMaps: false,
+  compress: true,
+  experimental: {
+    // tree-shaking agresivo de barriles grandes -> JS mucho mas liviano
+    optimizePackageImports: ["lucide-react", "framer-motion"],
+  },
   async headers() {
     return [{ source: "/:path*", headers: securityHeaders }];
   },

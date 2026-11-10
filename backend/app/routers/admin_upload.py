@@ -40,6 +40,7 @@ async def _save(file: UploadFile) -> dict:
     if len(data) > 8 * 1024 * 1024:
         raise HTTPException(status_code=400, detail="La imagen supera 8 MB.")
     _check_magic(data, ext)
+    data, ext = _optimize_image(data, file.content_type)  # baja peso + WebP
     os.makedirs(_DIR, exist_ok=True)
     name = f"{uuid.uuid4().hex}.{ext}"
     with open(os.path.join(_DIR, name), "wb") as f:

@@ -22,13 +22,41 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   return (await res.json()) as T;
 }
 
+// ── Caché de GET (en memoria) con TTL: navegar de ida y vuelta es instantáneo.
+//    Se limpia tras cualquier mutación (post/put/del). No cachea tiempo real.
+type CacheEntry = { ts: number; data: unknown };
+const _getCache = new Map<string, CacheEntry>();
+const _CACHE_TTL = 60_000;
+const _NO_CACHE = /(me\/ping|online-users|unread_count|notifications|\/search)/;
+
+function _clearCache() { _getCache.clear(); }
+
+async function cachedGet<T>(p: string): Promise<T> {
+  const can = typeof window !== "undefined" && !_NO_CACHE.test(p);
+  if (can) {
+    const hit = _getCache.get(p);
+    if (hit && Date.now() - hit.ts < _CACHE_TTL) return hit.data as T;
+  }
+  const data = await request<T>(p);
+  if (can) _getCache.set(p, { ts: Date.now(), data });
+  return data;
+}
+
 export const api = {
-  get: <T,>(p: string) => request<T>(p),
-  post: <T,>(p: string, body?: unknown) =>
-    request<T>(p, { method: "POST", body: body !== undefined ? JSON.stringify(body) : undefined }),
-  put: <T,>(p: string, body?: unknown) =>
-    request<T>(p, { method: "PUT", body: body !== undefined ? JSON.stringify(body) : undefined }),
-  del: <T,>(p: string) => request<T>(p, { method: "DELETE" }),
+  get: <T,>(p: string) => cachedGet<T>(p),
+  post: <T,>(p: string, body?: unknown) => {
+    _clearCache();
+    return request<T>(p, { method: "POST", body: body !== undefined ? JSON.stringify(body) : undefined });
+  },
+  put: <T,>(p: string, body?: unknown) => {
+    _clearCache();
+    return request<T>(p, { method: "PUT", body: body !== undefined ? JSON.stringify(body) : undefined });
+  },
+  del: <T,>(p: string) => {
+    _clearCache();
+    return request<T>(p, { method: "DELETE" });
+  },
+  clearCache: _clearCache,
 };
 
 // ───────── Tipos ─────────

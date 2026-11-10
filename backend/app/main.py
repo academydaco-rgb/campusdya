@@ -3,6 +3,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.gzip import GZipMiddleware
 from app.core.config import settings
 from app.core.hardening import SecurityHeadersMiddleware
 from app.routers import auth, admin_content, admin_users, student, admin_catalog, catalog_public, admin_upload, announcements, settings as settings_router, certificates, notifications
@@ -30,6 +31,7 @@ app.add_middleware(
     allow_headers=["Authorization", "Content-Type"],
 )
 app.add_middleware(SecurityHeadersMiddleware)
+app.add_middleware(GZipMiddleware, minimum_size=600)
 
 
 @app.get("/health")
@@ -37,12 +39,22 @@ async def health():
     return {"status": "ok", "service": "academia-da"}
 
 
+class CachedStaticFiles(StaticFiles):
+    async def get_response(self, path, scope):
+        resp = await super().get_response(path, scope)
+        try:
+            resp.headers["Cache-Control"] = "public, max-age=31536000, immutable"
+        except Exception:
+            pass
+        return resp
+
+
 _STATIC_DIR = os.getenv("STATIC_DIR", "/app/static")
 try:
     os.makedirs(os.path.join(_STATIC_DIR, "uploads"), exist_ok=True)
 except Exception:
     pass
-app.mount("/static", StaticFiles(directory=_STATIC_DIR, check_dir=False), name="static")
+app.mount("/static", CachedStaticFiles(directory=_STATIC_DIR, check_dir=False), name="static")
 
 app.include_router(auth.router)
 app.include_router(admin_content.router)
