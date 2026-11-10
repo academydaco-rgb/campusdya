@@ -28,8 +28,8 @@ async def _seed_admin(db):
 async def _seed_phases(db):
     fases = [
         ("Preparación y logística", "Alista tu operación: cuentas, proveedores y bases.", "🚀", "#22d3ee", 1),
-        ("Creación", "Crea producto, oferta y activos: landing, imágenes y videos.", "🪐", "#a855f7", 2),
-        ("Embudos de venta", "Arma y lanza tus campañas y embudos que convierten.", "🌌", "#f59e0b", 3),
+        ("Creación", "Produce tus anuncios ganadores: imágenes y videos publicitarios, y campañas en Meta Ads y TikTok Ads.", "🪐", "#a855f7", 2),
+        ("Destinos de venta", "Monta tus destinos de venta: landing pages, tienda en Shopify y chatbots de IA (Lucidbot y Zetterchat).", "🌌", "#f59e0b", 3),
         ("Optimización y escalamiento", "Mide, optimiza y escala lo que funciona.", "⭐", "#34d399", 4),
     ]
     creadas = 0
