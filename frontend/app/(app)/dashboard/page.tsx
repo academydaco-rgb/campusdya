@@ -65,7 +65,6 @@ export default function DashboardPage() {
               <Link className="cta" href={cont ? `/leccion/${cont.lesson_id}` : "/explorar"}>Continuar aprendiendo <ArrowRight size={16} /></Link>
             </div>
             <div className="hero-video">
-              <span className="vtag"><Play size={11} style={{ display: "inline", verticalAlign: "-1px" }} /> Video de bienvenida</span>
               {video?.video_url ? (
                 playing || !video.cover_url ? (
                   <iframe src={videoSrc!} allow="autoplay; fullscreen; picture-in-picture" allowFullScreen />
