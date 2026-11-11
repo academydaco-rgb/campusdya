@@ -10,8 +10,11 @@ function ytId(u: string): string | null {
 /** Convierte la URL al embed reproducible (YouTube o VideoPress/otros) con autoplay. */
 function toEmbed(url: string): string {
   const id = ytId(url);
-  if (id) return `https://www.youtube.com/embed/${id}?autoplay=1&rel=0&playsinline=1`;
-  return url.includes("?") ? `${url}&autoplay=1` : `${url}?autoplay=1`;
+  if (id) return `https://www.youtube.com/embed/${id}?autoplay=1&rel=0&playsinline=1&vq=hd1080`;
+  // VideoPress: forzamos HD por defecto (máxima calidad disponible)
+  const vp = url.match(/(?:videopress\.com|video\.wordpress\.com)\/(?:v|embed)\/([A-Za-z0-9]+)/i);
+  if (vp) return `https://videopress.com/embed/${vp[1]}?hd=1&cover=1&playsinline=1&autoPlay=1`;
+  return url.includes("?") ? `${url}&hd=1&autoplay=1` : `${url}?hd=1&autoplay=1`;
 }
 
 /**
