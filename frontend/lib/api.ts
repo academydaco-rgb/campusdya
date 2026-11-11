@@ -100,6 +100,7 @@ export interface EnrollmentT { id: string; user_id: string; diploma_id: string; 
 export interface ScheduleT { id: string; title: string; description?: string | null; starts_at: string; ends_at?: string | null; diploma_id?: string | null; module_id?: string | null; live_url?: string | null; teacher_id?: string | null; }
 export interface MyBadgeT { id: string; name: string; description?: string | null; icon?: string | null; image_url?: string | null; code?: string | null; awarded_at?: string | null; diploma_title?: string | null; diploma_slug?: string | null; }
 export interface ContinueT { diploma_slug: string; diploma_title: string; lesson_id: string; lesson_title: string; progress: number; }
+export interface InProgressT { diploma_slug: string; diploma_title: string; cover_url?: string | null; total_lessons: number; completed_lessons: number; progress: number; lesson_id?: string | null; lesson_title?: string | null; }
 
 
 // Sube una imagen con reintentos automáticos si el servidor responde 5xx o hay

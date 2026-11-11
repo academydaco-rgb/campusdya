@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { api, DiplomaOutT, AnnouncementT, ScheduleT, MyBadgeT, ContinueT } from "@/lib/api";
+import { api, DiplomaOutT, AnnouncementT, ScheduleT, MyBadgeT, ContinueT, InProgressT } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
 import Tilt from "@/components/Tilt";
 import NewsBlock from "@/components/NewsBlock";
@@ -20,6 +20,7 @@ export default function DashboardPage() {
   const [events, setEvents] = useState<ScheduleT[]>([]);
   const [badges, setBadges] = useState<MyBadgeT[]>([]);
   const [cont, setCont] = useState<ContinueT | null>(null);
+  const [inprog, setInprog] = useState<InProgressT[]>([]);
   const [video, setVideo] = useState<{ video_url?: string | null; cover_url?: string | null } | null>(null);
   const [playing, setPlaying] = useState(false);
 
@@ -29,6 +30,7 @@ export default function DashboardPage() {
     api.get<ScheduleT[]>("/api/classroom").then(setEvents).catch(() => {});
     api.get<MyBadgeT[]>("/api/me/badges").then(setBadges).catch(() => {});
     api.get<ContinueT | null>("/api/me/continue").then(setCont).catch(() => {});
+    api.get<InProgressT[]>("/api/me/in-progress").then(setInprog).catch(() => {});
     api.get<{ video_url?: string | null; cover_url?: string | null }>("/api/settings/dashboard-video").then(setVideo).catch(() => {});
   }, []);
 
@@ -43,8 +45,6 @@ export default function DashboardPage() {
   const doneLessons = mine.reduce((a, d) => a + (d.completed_lessons || 0), 0);
   const overall = totalLessons ? Math.round((100 * doneLessons) / totalLessons) : 0;
 
-  const contDip = cont ? mine.find((d) => d.title === cont.diploma_title) : null;
-  const minis = mine.filter((d) => !cont || d.title !== cont.diploma_title).slice(0, 2);
   const firstNews = news[0];
 
   const videoSrc = video?.video_url
@@ -103,32 +103,35 @@ export default function DashboardPage() {
           </div>
 
           {/* Continúa tu formación */}
-          {(cont || mine.length > 0) && (
+          {inprog.length > 0 && (
             <div className="sec fade-up d2">
               <div className="sec-h"><span className="ic"><PlayCircle /></span><h2>Continúa tu formación</h2><Link className="all" href="/explorar">Ver todos <ArrowRight size={14} /></Link></div>
-              {cont && (
-                <Link href={`/leccion/${cont.lesson_id}`} className="card card-hover" style={{ display: "flex", alignItems: "center", gap: 18, padding: 16, overflow: "hidden" }}>
-                  <div className="cont-cover" style={{ background: contDip?.cover_url ? `center/cover no-repeat url(${contDip.cover_url})` : "linear-gradient(135deg,#2a1150,#0e1140)" }} />
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <span className="chip" style={{ color: "#06202a", background: "linear-gradient(90deg,#22e0ff,#55f0c0)", border: 0, fontWeight: 700 }}>En curso</span>
-                    <div style={{ fontWeight: 700, fontSize: 19, color: "#fff", margin: "8px 0 6px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{cont.diploma_title}</div>
-                    <div className="muted" style={{ fontSize: 12.5, display: "flex", gap: 8, alignItems: "center", overflow: "hidden" }}><Play size={13} /> {cont.lesson_title}</div>
-                    <div style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 12 }}>
-                      <div style={{ flex: 1, height: 6, borderRadius: 6, background: "rgba(255,255,255,.08)", overflow: "hidden" }}><i style={{ display: "block", height: "100%", width: `${cont.progress}%`, background: "var(--grad-cm)" }} /></div>
-                      <b style={{ fontSize: 13 }}>{cont.progress}%</b>
+              {(() => {
+                const feat = inprog[0];
+                return (
+                  <Link href={feat.lesson_id ? `/leccion/${feat.lesson_id}` : `/diplomado/${feat.diploma_slug}`} className="card card-hover" style={{ display: "flex", alignItems: "center", gap: 18, padding: 16, overflow: "hidden" }}>
+                    <div className="cont-cover" style={{ background: feat.cover_url ? `center/cover no-repeat url(${feat.cover_url})` : "linear-gradient(135deg,#2a1150,#0e1140)" }} />
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <span className="chip" style={{ color: "#06202a", background: "linear-gradient(90deg,#22e0ff,#55f0c0)", border: 0, fontWeight: 700 }}>En curso</span>
+                      <div style={{ fontWeight: 700, fontSize: 19, color: "#fff", margin: "8px 0 6px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{feat.diploma_title}</div>
+                      {feat.lesson_title && <div className="muted" style={{ fontSize: 12.5, display: "flex", gap: 8, alignItems: "center", overflow: "hidden" }}><Play size={13} /> {feat.lesson_title}</div>}
+                      <div style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 12 }}>
+                        <div style={{ flex: 1, height: 6, borderRadius: 6, background: "rgba(255,255,255,.08)", overflow: "hidden" }}><i style={{ display: "block", height: "100%", width: `${feat.progress}%`, background: "var(--grad-cm)" }} /></div>
+                        <b style={{ fontSize: 13 }}>{feat.progress}%</b>
+                      </div>
                     </div>
-                  </div>
-                  <span style={{ width: 52, height: 52, borderRadius: "50%", flex: "none", display: "grid", placeItems: "center", background: "rgba(124,58,237,.25)", border: "1px solid var(--line-2)", color: "#e5d5ff" }}><Play size={20} /></span>
-                </Link>
-              )}
-              {minis.length > 0 && (
+                    <span style={{ width: 52, height: 52, borderRadius: "50%", flex: "none", display: "grid", placeItems: "center", background: "rgba(124,58,237,.25)", border: "1px solid var(--line-2)", color: "#e5d5ff" }}><Play size={20} /></span>
+                  </Link>
+                );
+              })()}
+              {inprog.length > 1 && (
                 <div className="grid" style={{ gridTemplateColumns: "repeat(2,minmax(0,1fr))", marginTop: 14 }}>
-                  {minis.map((d) => (
-                    <TLink key={d.id} href={`/diplomado/${d.slug}`} className="card card-hover" style={{ display: "flex", alignItems: "center", gap: 12, padding: 14 }}>
+                  {inprog.slice(1, 3).map((d) => (
+                    <TLink key={d.diploma_slug} href={`/diplomado/${d.diploma_slug}`} className="card card-hover" style={{ display: "flex", alignItems: "center", gap: 12, padding: 14 }}>
                       <div style={{ width: 46, height: 46, borderRadius: 12, flex: "none", background: d.cover_url ? `center/cover url(${d.cover_url})` : "rgba(124,58,237,.2)", border: "1px solid var(--line-2)" }} />
                       <div style={{ flex: 1, minWidth: 0 }}>
-                        <b style={{ fontSize: 14, color: "#fff", display: "block", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{d.title}</b>
-                        <div className="muted" style={{ fontSize: 12, marginTop: 3 }}>{d.completed_lessons || 0}/{d.total_lessons || 0} lecciones · {d.progress || 0}%</div>
+                        <b style={{ fontSize: 14, color: "#fff", display: "block", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{d.diploma_title}</b>
+                        <div className="muted" style={{ fontSize: 12, marginTop: 3 }}>{d.completed_lessons}/{d.total_lessons} lecciones · {d.progress}%</div>
                       </div>
                       <span style={{ width: 34, height: 34, borderRadius: "50%", flex: "none", display: "grid", placeItems: "center", background: "rgba(255,255,255,.05)", border: "1px solid var(--line)", color: "#cbb8ff" }}><ChevronRight size={18} /></span>
                     </TLink>

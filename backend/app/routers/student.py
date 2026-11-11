@@ -3,7 +3,7 @@ import secrets
 from pydantic import BaseModel
 from datetime import datetime, timezone
 from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy import select
+from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.database import get_db
 from app.core.deps import get_current_user
@@ -104,6 +104,44 @@ async def continue_learning(db: AsyncSession = Depends(get_db), user: User = Dep
     return best[1] if best else None
 
 
+@router.get("/me/in-progress")
+async def in_progress(limit: int = 3, db: AsyncSession = Depends(get_db), user: User = Depends(get_current_user)):
+    """Diplomados que el alumno ha EMPEZADO (tiene actividad) y aún no completa,
+    ordenados por lo más reciente que estudió. Para 'Continúa tu formación'."""
+    is_admin = user.role in ("admin", "instructor")
+    if is_admin:
+        dips = (await db.execute(select(Diploma).order_by(Diploma.order))).scalars().all()
+    else:
+        dips = (await db.execute(select(Diploma).join(Enrollment, Enrollment.diploma_id == Diploma.id)
+                .where(Enrollment.user_id == user.id, Diploma.status == "published")
+                .order_by(Diploma.order))).scalars().all()
+    items = []
+    for d in dips:
+        total, completed, nxt = await _diploma_progress(db, user.id, d.id, is_admin)
+        if total == 0 or completed >= total:
+            continue  # sin lecciones o ya completado -> no es "continuar"
+        mod_ids = (await db.execute(select(Module.id).where(Module.diploma_id == d.id))).scalars().all()
+        if not mod_ids:
+            continue
+        lesson_ids = (await db.execute(select(Lesson.id).where(Lesson.module_id.in_(mod_ids)))).scalars().all()
+        if not lesson_ids:
+            continue
+        last = (await db.execute(select(func.max(LessonProgress.updated_at)).where(
+            LessonProgress.user_id == user.id, LessonProgress.lesson_id.in_(lesson_ids)))).scalar_one_or_none()
+        if last is None:
+            continue  # no ha estudiado nada de este diplomado
+        items.append((last, {
+            "diploma_slug": d.slug, "diploma_title": d.title, "cover_url": d.cover_url,
+            "total_lessons": total, "completed_lessons": completed,
+            "progress": round(100 * completed / total) if total else 0,
+            "lesson_id": str(nxt.id) if nxt else None,
+            "lesson_title": nxt.title if nxt else None,
+        }))
+    items.sort(key=lambda x: x[0], reverse=True)
+    n = max(1, min(limit, 6))
+    return [it for _, it in items[:n]]
+
+
 @router.get("/diplomas/{slug}")
 async def diploma_detail(slug: str, db: AsyncSession = Depends(get_db), user: User = Depends(get_current_user)):
     dip = (await db.execute(select(Diploma).where(Diploma.slug == slug))).scalar_one_or_none()
@@ -157,6 +195,14 @@ async def lesson_detail(lesson_id: uuid.UUID, db: AsyncSession = Depends(get_db)
         raise HTTPException(status_code=403, detail="No tienes acceso a esta lección")
     prog = (await db.execute(select(LessonProgress).where(
         LessonProgress.user_id == user.id, LessonProgress.lesson_id == lesson_id))).scalar_one_or_none()
+    # Registrar que el alumno ESTUDIÓ esta lección (aunque no la complete) + recencia
+    if not (user.role in ("admin", "instructor")):
+        now = datetime.now(timezone.utc)
+        if prog is None:
+            db.add(LessonProgress(user_id=user.id, lesson_id=lesson_id, completed=False))
+        else:
+            prog.updated_at = now
+        await db.commit()
     data = LessonOut.model_validate(lesson).model_dump()
     data["completed"] = bool(prog and prog.completed)
     data["diploma_id"] = str(module.diploma_id)
