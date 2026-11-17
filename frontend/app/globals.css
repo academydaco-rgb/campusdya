@@ -744,14 +744,31 @@ p{line-height:1.6}
 @media(max-width:640px){.cl-actions{width:100%;align-items:flex-start;order:5}}
 
 /* ─────────── Avisos de recordatorio de clase ─────────── */
-.rem-toasts{position:fixed;top:78px;right:20px;z-index:120;display:flex;flex-direction:column;gap:10px;max-width:340px}
-.rem-toast{display:flex;align-items:flex-start;gap:11px;padding:13px 14px;border-radius:14px;border:1px solid var(--line-2);background:linear-gradient(120deg,#190f3a,#140e34);box-shadow:0 18px 44px -18px #000,0 0 40px -14px rgba(217,70,239,.5);animation:remIn .35s cubic-bezier(.2,.7,.3,1)}
-.rem-toast-ic{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;flex-shrink:0;color:#04121a;background:var(--grad-cm)}
-.rem-toast-title{font-weight:800;font-size:14px;color:#fff;line-height:1.2}
-.rem-toast-body{font-size:12px;color:var(--muted);margin-top:3px;line-height:1.4}
-.rem-toast-x{background:transparent;border:0;color:var(--muted-soft);font-size:18px;line-height:1;cursor:pointer;flex-shrink:0;padding:0 2px}
-@keyframes remIn{from{opacity:0;transform:translateX(16px)}to{opacity:1;transform:none}}
-@media(max-width:600px){.rem-toasts{left:16px;right:16px;max-width:none;top:70px}}
+.cn-stack{position:fixed;bottom:20px;right:20px;z-index:140;display:flex;flex-direction:column;gap:14px;align-items:flex-end;max-width:390px}
+.cn{position:relative;width:390px;max-width:100%;overflow:hidden;border-radius:20px;background:linear-gradient(165deg,rgba(18,30,24,.97),rgba(9,14,11,.98));border:1px solid rgba(37,211,102,.32);box-shadow:0 30px 70px -24px #000,0 0 44px -14px rgba(37,211,102,.42),inset 0 1px 0 rgba(255,255,255,.07);padding:19px 20px 17px;animation:cnIn .4s cubic-bezier(.2,.7,.3,1)}
+.cn::before{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(120% 90% at 100% 0%,rgba(37,211,102,.12),transparent 55%)}
+.cn-x{position:absolute;top:13px;right:14px;width:26px;height:26px;border-radius:8px;border:none;background:rgba(255,255,255,.05);color:var(--muted);font-size:17px;line-height:1;cursor:pointer;z-index:3}
+.cn-x:hover{background:rgba(255,255,255,.1);color:#fff}
+.cn-top{display:flex;align-items:center;gap:9px;position:relative;z-index:2}
+.cn-live{display:inline-flex;align-items:center;gap:7px;font-size:10.5px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:#25d366}
+.cn-pulse{width:9px;height:9px;border-radius:50%;background:#25d366;position:relative;flex:none}
+.cn-pulse::after{content:"";position:absolute;inset:-5px;border-radius:50%;border:2px solid #25d366;animation:cnRing 1.6s ease-out infinite;opacity:0}
+@keyframes cnRing{0%{transform:scale(.5);opacity:.8}100%{transform:scale(1.5);opacity:0}}
+.cn-when{margin-left:auto;margin-right:30px;font-size:11.5px;font-weight:700;color:#25d366;background:rgba(37,211,102,.1);border:1px solid rgba(37,211,102,.26);padding:3px 11px;border-radius:999px;white-space:nowrap}
+.cn-mid{display:flex;align-items:center;gap:13px;margin-top:14px;position:relative;z-index:2}
+.cn-av{width:50px;height:50px;border-radius:14px;flex:none;display:grid;place-items:center;overflow:hidden;background-size:cover;background-position:center;font-weight:900;font-size:20px;color:#fff;box-shadow:0 8px 20px -8px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,255,255,.25)}
+.cn-info{min-width:0}
+.cn-title{font-size:16.5px;font-weight:800;color:#fff;line-height:1.2;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cn-teacher{font-size:12.5px;color:var(--muted);margin-top:3px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cn-cta{display:flex;align-items:center;justify-content:center;gap:9px;margin-top:16px;width:100%;padding:13px;border-radius:13px;border:none;cursor:pointer;position:relative;z-index:2;font-family:inherit;font-size:14px;font-weight:800;color:#fff;text-decoration:none;background:linear-gradient(135deg,#1ebe5a,#25d366 55%,#2ce36f);box-shadow:0 10px 26px -10px rgba(37,211,102,.75),inset 0 1px 0 rgba(255,255,255,.35);transition:transform .15s,box-shadow .15s}
+.cn-cta:hover{transform:translateY(-2px);box-shadow:0 16px 32px -12px rgba(37,211,102,.85),inset 0 1px 0 rgba(255,255,255,.35)}
+.cn-cta svg{width:17px;height:17px}
+.cn-wa-note{display:flex;align-items:center;gap:9px;margin-top:15px;padding:11px 13px;border-radius:12px;background:rgba(37,211,102,.08);border:1px solid rgba(37,211,102,.22);font-size:12.5px;color:#cfeede;z-index:2;position:relative;line-height:1.35}
+.cn-wa-note svg{width:17px;height:17px;color:#25d366;flex:none}
+.cn-bar{position:absolute;left:0;bottom:0;height:3px;width:100%;transform-origin:left;background:linear-gradient(90deg,#25d366,#9ff3bf);animation:cnDrain linear forwards}
+@keyframes cnDrain{to{transform:scaleX(0)}}
+@keyframes cnIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+@media(max-width:600px){.cn-stack{left:16px;right:16px;bottom:16px;max-width:none;align-items:stretch}.cn{width:100%}}
 /* Clase: aviso de WhatsApp visible + avatar grande */
 .cl-wa-banner{display:flex;align-items:center;gap:10px;margin-top:12px;padding:11px 14px;border-radius:12px;background:rgba(37,211,102,.1);border:1px solid rgba(37,211,102,.34);font-size:13px;color:#d9f6e3;line-height:1.35}
 .cl-wa-banner b{color:#36e27e;font-weight:800}
