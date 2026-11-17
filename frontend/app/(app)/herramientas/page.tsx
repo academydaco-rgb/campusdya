@@ -22,7 +22,7 @@ function Fav({ img, host, letter, acc, rgb }: { img?: string | null; host: strin
   const [err, setErr] = useState(false);
   if (img) return <span className="tl-fav" style={{ backgroundImage: `url(${img})`, backgroundSize: "cover", backgroundPosition: "center" }} />;
   if (host && !err) return <span className="tl-fav" style={{ background: `rgba(${rgb},.12)` }}><img src={`https://www.google.com/s2/favicons?domain=${host}&sz=128`} alt="" onError={() => setErr(true)} /></span>;
-  return <span className="tl-fav" style={{ background: `rgba(${rgb},.14)` }}><span className="tl-fav-ltr" style={{ color: acc }}>{letter}</span></span>;
+  return <span className="tl-fav"><span className="tl-fav-ltr" style={{ color: acc }}>{letter}</span></span>;
 }
 
 export default function Herramientas() {
@@ -56,32 +56,34 @@ export default function Herramientas() {
       {groups.map(([cat, tools], gi) => {
         const c = CATS[gi % CATS.length];
         return (
-          <section className="tl-sec" key={cat}>
+          <section className="tl-sec" key={cat} style={{ ["--acc" as string]: c.acc }}>
             {!onlyGeneral && (
               <div className="tl-sec-head">
-                <span className="tl-sec-bar" style={{ background: c.acc }} />
+                <span className="tl-sec-dot" />
                 <h2 className="tl-sec-title">{cat}</h2>
-                <span className="tl-sec-count" style={{ color: c.acc, background: `rgba(${c.rgb},.12)`, borderColor: `rgba(${c.rgb},.3)` }}>{tools.length}</span>
+                <span className="tl-sec-count">{tools.length}</span>
+                <span className="tl-sec-line" />
               </div>
             )}
             <div className="tl-grid">
               {tools.map((t) => {
                 const host = hostOf(t.link_url);
-                const vars = { ["--acc" as string]: c.acc, ["--accrgb" as string]: c.rgb } as React.CSSProperties;
                 const inner = (
                   <>
-                    <Fav img={t.image_url} host={host} letter={t.title.charAt(0).toUpperCase()} acc={c.acc} rgb={c.rgb} />
-                    <span className="tl-main">
-                      <span className="tl-name">{t.title}</span>
-                      {host && <span className="tl-host">{host}</span>}
-                    </span>
-                    {t.link_url && <ArrowUpRight size={17} className="tl-arr" />}
+                    <div className="tl-top">
+                      <Fav img={t.image_url} host={host} letter={t.title.charAt(0).toUpperCase()} acc={c.acc} rgb={c.rgb} />
+                    </div>
+                    <div className="tl-name">{t.title}</div>
+                    {host && <div className="tl-host">{host}</div>}
+                    {t.link_url && (
+                      <div className="tl-open">Abrir <ArrowUpRight size={15} /></div>
+                    )}
                   </>
                 );
                 return t.link_url ? (
-                  <a key={t.id} className="tl-card" style={vars} href={t.link_url} target="_blank" rel="noreferrer">{inner}</a>
+                  <a key={t.id} className="tl-card" style={{ ["--acc" as string]: c.acc }} href={t.link_url} target="_blank" rel="noreferrer">{inner}</a>
                 ) : (
-                  <div key={t.id} className="tl-card tl-card-nolink" style={vars}>{inner}</div>
+                  <div key={t.id} className="tl-card tl-card-nolink" style={{ ["--acc" as string]: c.acc }}>{inner}</div>
                 );
               })}
             </div>
