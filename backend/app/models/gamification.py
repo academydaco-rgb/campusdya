@@ -26,3 +26,23 @@ class UserBadge(Base):
     badge_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("badges.id", ondelete="CASCADE"), index=True, nullable=False)
     awarded_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), nullable=False)
     code: Mapped[str | None] = mapped_column(String(24), unique=True, index=True, nullable=True)
+
+
+class UserStats(Base, TimestampMixin):
+    """Resumen de gamificación por alumno: XP total y racha de días activos."""
+    __tablename__ = "user_stats"
+    id: Mapped[uuid.UUID] = uuid_pk()
+    user_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), unique=True, index=True, nullable=False)
+    xp: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    streak_current: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    streak_longest: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    streak_last: Mapped[str | None] = mapped_column(String(10), nullable=True)  # YYYY-MM-DD (hora Colombia)
+
+
+class XpEvent(Base, TimestampMixin):
+    """Historial de XP ganado (para ranking semanal e idempotencia)."""
+    __tablename__ = "xp_events"
+    id: Mapped[uuid.UUID] = uuid_pk()
+    user_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), index=True, nullable=False)
+    amount: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    reason: Mapped[str] = mapped_column(String(80), nullable=False)

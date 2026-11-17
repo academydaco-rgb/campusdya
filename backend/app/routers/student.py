@@ -15,6 +15,7 @@ from app.models.learning import Enrollment, LessonProgress
 from app.models.community import Comment
 from app.models.gamification import Badge, UserBadge
 from app.services.badges import award_diploma_if_complete
+from app.services import gamification as gam
 from app.services.routes import counts as route_counts, norm_route
 from app.services.mailer import send_reply_notice
 from app.core.config import settings as _settings
@@ -200,8 +201,10 @@ async def lesson_detail(lesson_id: uuid.UUID, db: AsyncSession = Depends(get_db)
         now = datetime.now(timezone.utc)
         if prog is None:
             db.add(LessonProgress(user_id=user.id, lesson_id=lesson_id, completed=False))
+            await gam.activity(db, user.id, gam.XP_VIEW_LESSON, f"view:{lesson_id}")
         else:
             prog.updated_at = now
+            await gam.touch_streak(db, user.id)
         await db.commit()
     data = LessonOut.model_validate(lesson).model_dump()
     data["completed"] = bool(prog and prog.completed)
@@ -222,11 +225,14 @@ async def complete_lesson(lesson_id: uuid.UUID, db: AsyncSession = Depends(get_d
     prog = (await db.execute(select(LessonProgress).where(
         LessonProgress.user_id == user.id, LessonProgress.lesson_id == lesson_id))).scalar_one_or_none()
     now = datetime.now(timezone.utc)
+    newly = not (prog and prog.completed)
     if prog:
         prog.completed = True
         prog.completed_at = prog.completed_at or now
     else:
         db.add(LessonProgress(user_id=user.id, lesson_id=lesson_id, completed=True, completed_at=now))
+    if newly and not (user.role in ("admin", "instructor")):
+        await gam.activity(db, user.id, gam.XP_COMPLETE_LESSON, f"complete:{lesson_id}")
     await db.commit()
     badge = await award_diploma_if_complete(db, user.id, module.diploma_id)
     return {"ok": True, "completed": True, "badge": ({"name": badge.name, "icon": badge.icon} if badge else None)}

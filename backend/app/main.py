@@ -18,7 +18,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
 from app.core.config import settings
 from app.core.hardening import SecurityHeadersMiddleware
-from app.routers import auth, admin_content, admin_users, student, admin_catalog, catalog_public, admin_upload, announcements, settings as settings_router, certificates, notifications
+from app.routers import auth, admin_content, admin_users, student, admin_catalog, catalog_public, admin_upload, announcements, settings as settings_router, certificates, notifications, gamification
 
 
 @asynccontextmanager
@@ -82,3 +82,4 @@ app.include_router(announcements.router)
 app.include_router(settings_router.router)
 app.include_router(certificates.router)
 app.include_router(notifications.router)
+app.include_router(gamification.router)
