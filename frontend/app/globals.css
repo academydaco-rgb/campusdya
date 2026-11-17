@@ -843,14 +843,15 @@ p{line-height:1.6}
 .tl-card-nolink{cursor:default}
 .tl-card-nolink:hover{transform:none;box-shadow:0 3px 12px -8px rgba(0,0,0,.55)}
 .tl-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
-.tl-fav{width:60px;height:60px;border-radius:16px;flex:none;display:grid;place-items:center;overflow:hidden;background:color-mix(in srgb,var(--acc,#22e0ff) 12%,rgba(255,255,255,.03));border:1px solid color-mix(in srgb,var(--acc,#22e0ff) 28%,transparent);background-size:cover;background-position:center;box-shadow:inset 0 1px 0 rgba(255,255,255,.08)}
-.tl-fav img{width:34px;height:34px;object-fit:contain}
-.tl-fav-ltr{font-weight:900;font-size:26px;color:var(--acc,#22e0ff)}
+.tl-fav{width:72px;height:72px;border-radius:18px;flex:none;display:grid;place-items:center;overflow:hidden;background:color-mix(in srgb,var(--acc,#22e0ff) 12%,rgba(255,255,255,.03));border:1px solid color-mix(in srgb,var(--acc,#22e0ff) 28%,transparent);background-size:cover;background-position:center;box-shadow:inset 0 1px 0 rgba(255,255,255,.08)}
+.tl-fav img{width:40px;height:40px;object-fit:contain}
+.tl-fav-ltr{font-weight:900;font-size:30px;color:var(--acc,#22e0ff)}
 .tl-name{font-size:15px;font-weight:800;color:#fff;line-height:1.25;overflow-wrap:anywhere}
 .tl-host{font-size:12px;color:var(--muted-soft);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.tl-open{margin-top:auto;display:flex;align-items:center;justify-content:space-between;padding-top:12px;border-top:1px solid var(--line);font-size:12.5px;font-weight:800;color:var(--acc,#22e0ff)}
+.tl-open{margin-top:auto;align-self:flex-start;display:inline-flex;align-items:center;gap:7px;padding:9px 15px;border-radius:12px;font-size:12.5px;font-weight:800;color:#05070d;background:var(--acc,#22e0ff);box-shadow:0 8px 20px -10px var(--acc,#22e0ff),inset 0 1px 0 rgba(255,255,255,.4);transition:transform .16s,box-shadow .16s,filter .16s}
+.tl-card:hover .tl-open{transform:translateY(-2px);box-shadow:0 15px 30px -10px var(--acc,#22e0ff),inset 0 1px 0 rgba(255,255,255,.4);filter:brightness(1.06)}
 .tl-open svg{transition:transform .18s}
-.tl-card:hover .tl-open svg{transform:translate(3px,-3px)}
+.tl-card:hover .tl-open svg{transform:translate(2px,-2px)}
 @media(max-width:600px){.tl-grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}}
 
 /* ========== Diplomados (explorar) — tarjetas premium ========== */
@@ -913,3 +914,22 @@ p{line-height:1.6}
 .cl-item.side .cl-title{font-size:16px}
 .cl-item.side .cl-hm{font-size:12.5px;color:var(--cyan);font-weight:800;margin-top:4px}
 .cl-item.side .cl-bell{align-self:flex-start}
+
+
+/* ====== Insignia de fase 3D animada ====== */
+.phase-head{perspective:640px}
+.phase-num{animation:phaseFloat 5.5s ease-in-out infinite;transform-style:preserve-3d;will-change:transform}
+.phase-num::after{content:"";position:absolute;left:16%;top:9%;width:44%;height:30%;border-radius:50%;background:linear-gradient(180deg,rgba(255,255,255,.45),transparent);opacity:.55;pointer-events:none;z-index:2}
+@keyframes phaseFloat{0%,100%{transform:translateY(0) rotateX(0deg) rotateY(0deg)}25%{transform:translateY(-3px) rotateY(12deg)}50%{transform:translateY(1px) rotateX(9deg) rotateY(0deg)}75%{transform:translateY(-2px) rotateY(-12deg)}}
+
+/* ====== Classroom: panel más angosto + celdas compactas + estado de clase ====== */
+.cl-split.has-panel{grid-template-columns:minmax(0,2.3fr) minmax(0,0.82fr)}
+@media(max-width:860px){.cl-split.has-panel{grid-template-columns:1fr}}
+.cl-side{max-width:380px}
+@media(max-width:860px){.cl-side{max-width:none}}
+.cl-split.has-panel .cal-cell{min-height:94px}
+.cl-split.has-panel .cal-ev-teacher{display:none}
+.cl-split.has-panel .cal-ev{padding:3px 5px}
+.cl-status{display:inline-flex;align-items:center;gap:5px;font-size:10.5px;font-weight:800;letter-spacing:.02em;padding:3px 10px;border-radius:999px;margin-top:7px}
+.cl-status.ended{color:var(--muted);background:rgba(255,255,255,.05);border:1px solid var(--line)}
+.cl-status.live{color:#04121a;background:var(--grad-cm);box-shadow:0 6px 16px -8px rgba(34,224,255,.6)}

@@ -185,7 +185,10 @@ export default function Classroom() {
             {selEvents.map((e) => {
               const t = e.teacher_id ? teachers[e.teacher_id] : undefined;
               const { hm, ap } = fmtHora(new Date(e.starts_at));
-              const future = +new Date(e.starts_at) > Date.now();
+              const startMs = +new Date(e.starts_at);
+              const future = startMs > Date.now();
+              const ended = startMs + TWO_H < Date.now();
+              const live = !ended && startMs <= Date.now();
               const on = remOn.has(e.id);
               return (
                 <div key={e.id} className="cl-item side">
@@ -197,6 +200,7 @@ export default function Classroom() {
                       <div className="cl-title">{e.title}</div>
                       {t && <div className="cl-teacher">con {t.name}</div>}
                       <div className="cl-hm">{hm} {ap}</div>
+                      {ended ? <span className="cl-status ended">Ya terminó</span> : live ? <span className="cl-status live">En vivo ahora</span> : null}
                     </div>
                   </div>
                   {e.description && <p className="cl-desc">{e.description}</p>}
