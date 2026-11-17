@@ -9,7 +9,7 @@ import TopBar from "@/components/TopBar";
 import OnlineBar from "@/components/OnlineBar";
 import ClassReminders from "@/components/ClassReminders";
 import { Home, GraduationCap, CalendarDays, Video, Package, Award, Users, MessagesSquare,
-  BookOpen, UserCog, KeyRound, Megaphone, ShieldCheck, Rocket, Trophy, Wrench, ExternalLink, Bell, Flame, Star, BarChart3, type LucideIcon } from "lucide-react";
+  BookOpen, UserCog, KeyRound, Megaphone, ShieldCheck, Rocket, Trophy, Wrench, ExternalLink, Bell, Flame, BarChart3, type LucideIcon } from "lucide-react";
 
 const APRENDER: NavItem[] = [
   { href: "/dashboard", label: "Inicio", Icon: Home },
@@ -20,7 +20,6 @@ const APRENDER: NavItem[] = [
   { href: "/proveedores", label: "Proveedores", Icon: Package },
   { href: "/profesores", label: "Profesores", Icon: Users },
   { href: "/comunidad", label: "Comunidad", Icon: MessagesSquare },
-  { href: "/feedback", label: "Testimonios", Icon: Star },
   { href: "/insignias", label: "Insignias", Icon: Award },
   { href: "/ranking", label: "Ranking", Icon: Flame },
   { href: "/casos-exito", label: "Casos de éxito", Icon: Trophy },
