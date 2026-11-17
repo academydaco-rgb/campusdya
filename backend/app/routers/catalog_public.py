@@ -32,13 +32,14 @@ async def universe(db: AsyncSession = Depends(get_db), user: User = Depends(get_
 
     # progreso por diplomado (solo para alumnos reales matriculados)
     prog_map: dict[str, int] = {}
+    total_by: dict = {}
+    comp_by: dict = {}
     if enrolled:
         rows = (await db.execute(
             select(Module.diploma_id, Lesson.id)
             .join(Lesson, Lesson.module_id == Module.id)
             .where(Module.diploma_id.in_(list(enrolled)))
         )).all()
-        total_by: dict = {}
         lesson_to_dip: dict = {}
         for dip_id, lid in rows:
             total_by[dip_id] = total_by.get(dip_id, 0) + 1
@@ -52,7 +53,6 @@ async def universe(db: AsyncSession = Depends(get_db), user: User = Depends(get_
                     LessonProgress.lesson_id.in_(list(lesson_to_dip.keys())),
                 )
             )).scalars().all())
-        comp_by: dict = {}
         for lid in done_ids:
             dip_id = lesson_to_dip.get(lid)
             if dip_id:
@@ -66,6 +66,8 @@ async def universe(db: AsyncSession = Depends(get_db), user: User = Depends(get_
              "order": d.order, "enrolled": d.id in enrolled}
         if d.id in enrolled:
             j["progress"] = prog_map.get(str(d.id), 0)
+            j["total_lessons"] = total_by.get(d.id, 0)
+            j["completed_lessons"] = comp_by.get(d.id, 0)
         return j
 
     by_phase: dict = {}

@@ -850,3 +850,39 @@ p{line-height:1.6}
 .tl-host{font-size:12px;color:var(--muted-soft);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .tl-arr{flex-shrink:0;color:var(--muted-soft);opacity:.6;transition:opacity .16s,transform .16s,color .16s;align-self:flex-start}
 .tl-card:hover .tl-arr{opacity:1;color:var(--acc,#22e0ff);transform:translate(2px,-2px)}
+
+/* ========== Diplomados (explorar) — tarjetas premium ========== */
+.phase-block{position:relative;background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);padding:22px;overflow:hidden}
+.phase-bar{position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--acc)}
+.phase-glow{position:absolute;right:-50px;top:-50px;width:200px;height:200px;background:radial-gradient(circle,var(--acc),transparent 70%);opacity:.16;pointer-events:none}
+.phase-head{display:flex;align-items:flex-start;gap:14px;position:relative}
+.phase-num{width:46px;height:46px;border-radius:13px;display:grid;place-items:center;font-weight:800;font-size:19px;color:#05070d;background:var(--acc);box-shadow:0 8px 24px -6px var(--acc);flex:none}
+.phase-title{font-size:18px;font-weight:800;margin:0;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.phase-count{font-size:11px;font-weight:700;color:var(--acc);background:color-mix(in srgb,var(--acc) 16%,transparent);border:1px solid color-mix(in srgb,var(--acc) 35%,transparent);padding:2px 9px;border-radius:999px}
+.phase-desc{color:var(--muted);font-size:13px;margin:3px 0 0;max-width:72ch}
+.dip-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(248px,1fr));gap:16px;margin-top:18px}
+
+.dcard{position:relative;background:var(--card);border:1px solid var(--line);border-radius:18px;overflow:hidden;cursor:pointer;display:flex;flex-direction:column;height:100%;transition:transform .2s cubic-bezier(.2,.7,.3,1),border-color .2s,box-shadow .2s}
+.dcard:hover{transform:translateY(-6px);border-color:color-mix(in srgb,var(--acc) 45%,transparent);box-shadow:0 30px 64px -26px #000,0 0 0 1px color-mix(in srgb,var(--acc) 45%,transparent),0 0 46px -6px color-mix(in srgb,var(--acc) 40%,transparent)}
+.dcover{position:relative;aspect-ratio:16/11;overflow:hidden}
+.dcover::after{content:"";position:absolute;inset:0;background:linear-gradient(to top,rgba(5,6,13,.85) 2%,rgba(5,6,13,.12) 40%,transparent 64%);pointer-events:none}
+.dcover .img{position:absolute;inset:0;transition:transform .45s ease}
+.dcard:hover .dcover .img{transform:scale(1.07)}
+.dtag{position:absolute;top:10px;left:10px;z-index:2;font-size:10.5px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:#05070d;background:var(--acc);padding:3px 9px;border-radius:999px;box-shadow:0 6px 16px -6px var(--acc)}
+.dring{position:absolute;top:9px;right:9px;z-index:2;width:46px;height:46px;border-radius:50%;background:rgba(5,8,14,.55);backdrop-filter:blur(3px);display:grid;place-items:center}
+.dring svg{transform:rotate(-90deg)}
+.dring .pct{position:absolute;inset:0;display:grid;place-items:center;font-size:11px;font-weight:800}
+.done-badge{position:absolute;top:10px;right:10px;z-index:2;width:30px;height:30px;border-radius:50%;background:#34d399;display:grid;place-items:center;color:#04120c;box-shadow:0 6px 16px -4px #34d399}
+.lockico{position:absolute;inset:0;z-index:2;display:grid;place-items:center;color:#cbd2e8}
+.dbody{padding:13px 14px 15px;display:flex;flex-direction:column;gap:11px;flex:1}
+.dtitle{font-weight:800;font-size:15px;line-height:1.25;margin:0}
+.dmeta{color:var(--muted);font-size:11.5px;font-weight:600;margin-top:-4px}
+.dbar{height:6px;border-radius:6px;background:rgba(255,255,255,.07);overflow:hidden}
+.dbar i{display:block;height:100%;border-radius:6px;background:linear-gradient(90deg,var(--acc),color-mix(in srgb,var(--acc) 50%,#fff));transition:width .5s ease}
+.dcta{margin-top:auto;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:9px 14px;border-radius:11px;font-weight:800;font-size:13px;border:1px solid color-mix(in srgb,var(--acc) 45%,transparent);color:var(--acc);background:color-mix(in srgb,var(--acc) 10%,transparent);transition:background .15s}
+.dcard:hover .dcta{background:color-mix(in srgb,var(--acc) 20%,transparent)}
+.dcard.lock{cursor:not-allowed}
+.dcard.lock:hover{transform:none;border-color:var(--line);box-shadow:var(--shadow)}
+.dcard.lock .dcover .img{filter:grayscale(.6) brightness(.5)}
+.dcard.lock .dcta{border-color:var(--line);color:var(--muted);background:rgba(255,255,255,.03)}
+@media(max-width:600px){.dip-grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}.phase-block{padding:16px}}
