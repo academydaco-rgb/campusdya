@@ -3,7 +3,7 @@ from app.models.catalog import Phase, Teacher, LiveClass, CasoExito, Tool
 from app.models.content import Diploma, Module, Lesson
 from app.models.learning import Enrollment, LessonProgress
 from app.models.gamification import Badge, UserBadge, UserStats, XpEvent
-from app.models.community import Comment
+from app.models.community import Comment, Post, PostLike, PostComment
 from app.models.feedback import Feedback
 from app.models.announcement import Announcement
 from app.models.schedule import ScheduleEvent
@@ -19,7 +19,7 @@ __all__ = [
     "Diploma", "Module", "Lesson",
     "Enrollment", "LessonProgress",
     "Badge", "UserBadge", "UserStats", "XpEvent",
-    "Comment",
+    "Comment", "Post", "PostLike", "PostComment",
     "Feedback",
     "Announcement",
     "ScheduleEvent",
