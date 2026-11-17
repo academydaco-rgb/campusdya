@@ -88,7 +88,7 @@ export default function Explorar() {
               <div className="phase-bar" />
               <div className="phase-glow" />
               <div className="phase-head">
-                <div className="phase-num">{i + 1}</div>
+                <div className="phase-num"><span>{p.icon || i + 1}</span></div>
                 <div style={{ minWidth: 0 }}>
                   <h2 className="phase-title">
                     {p.name}

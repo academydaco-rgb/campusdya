@@ -26,6 +26,12 @@ async def _seed_admin(db):
 
 
 async def _seed_phases(db):
+    # Si ya existen fases (instalación en producción), NO sembrar: evita crear
+    # duplicados en cada deploy cuando el nombre/slug no coincide con el seed.
+    ya = (await db.execute(select(Phase.id))).first()
+    if ya:
+        print("[seed] Fases ya existen; se omite el sembrado.")
+        return
     fases = [
         ("Preparación y logística", "Alista tu operación: cuentas, proveedores y bases.", "🚀", "#22d3ee", 1),
         ("Creación", "Produce tus anuncios ganadores: imágenes y videos publicitarios, y campañas en Meta Ads y TikTok Ads.", "🪐", "#a855f7", 2),
