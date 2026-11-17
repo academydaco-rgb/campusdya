@@ -74,6 +74,7 @@ export default function Herramientas() {
                       <Fav img={t.image_url} host={host} letter={t.title.charAt(0).toUpperCase()} acc={c.acc} rgb={c.rgb} />
                     </div>
                     <div className="tl-name">{t.title}</div>
+                    {host && <div className="tl-host">{host}</div>}
                     {t.link_url && (
                       <div className="tl-open">Abrir <ArrowUpRight size={15} /></div>
                     )}
