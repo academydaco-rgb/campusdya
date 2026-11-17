@@ -995,7 +995,7 @@ p{line-height:1.6}
 @media(max-width:640px){.gm-me{flex-wrap:wrap;gap:16px}.gm-ring{margin:0 auto}.gm-streak{width:100%;order:3}}
 
 /* ─────────── Comunidad (feed) ─────────── */
-.cf-wrap{max-width:760px;margin:0 auto}
+.cf-wrap{max-width:none}
 .cf-comp{display:flex;align-items:center;gap:13px;border:1px solid var(--line);border-radius:18px;background:linear-gradient(162deg,rgba(24,21,44,.72),rgba(11,10,22,.8));padding:14px 16px;margin-bottom:16px;cursor:pointer;transition:border-color .16s}
 .cf-comp:hover{border-color:rgba(34,224,255,.32)}
 .cf-cav{width:44px;height:44px;border-radius:12px;flex:none;display:grid;place-items:center;font-weight:800;color:#fff;background-size:cover;background-position:center}
