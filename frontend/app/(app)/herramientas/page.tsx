@@ -18,11 +18,11 @@ function hostOf(u?: string | null) {
   try { return new URL(u).host.replace(/^www\./, ""); } catch { return ""; }
 }
 
-function Fav({ img, host, letter, acc, rgb }: { img?: string | null; host: string; letter: string; acc: string; rgb: string }) {
+function Ic({ img, host, letter, rgb }: { img?: string | null; host: string; letter: string; rgb: string }) {
   const [err, setErr] = useState(false);
-  if (img) return <span className="tl-fav" style={{ backgroundImage: `url(${img})`, backgroundSize: "cover", backgroundPosition: "center" }} />;
-  if (host && !err) return <span className="tl-fav" style={{ background: `rgba(${rgb},.12)` }}><img src={`https://www.google.com/s2/favicons?domain=${host}&sz=128`} alt="" onError={() => setErr(true)} /></span>;
-  return <span className="tl-fav"><span className="tl-fav-ltr" style={{ color: acc }}>{letter}</span></span>;
+  if (img) return <span className="th-ic" style={{ backgroundImage: `url(${img})`, backgroundSize: "cover", backgroundPosition: "center" }} />;
+  if (host && !err) return <span className="th-ic" style={{ background: `rgba(${rgb},.12)` }}><img src={`https://www.google.com/s2/favicons?domain=${host}&sz=128`} alt="" onError={() => setErr(true)} /></span>;
+  return <span className="th-ic"><span className="th-ltr">{letter}</span></span>;
 }
 
 export default function Herramientas() {
@@ -47,7 +47,7 @@ export default function Herramientas() {
         icon={<Wrench size={14} />}
         badge="Tu arsenal"
         title="Herramientas"
-        subtitle="Todas las plataformas y recursos de la academia, organizados por categoría. Toca una tarjeta para abrirla."
+        subtitle="Todas las plataformas y recursos de la academia, organizados por categoría. Toca una para abrirla."
         stats={[{ b: items.length, s: "herramientas" }, { b: onlyGeneral ? 1 : groups.length, s: "categorías" }]}
       />
 
@@ -56,34 +56,29 @@ export default function Herramientas() {
       {groups.map(([cat, tools], gi) => {
         const c = CATS[gi % CATS.length];
         return (
-          <section className="tl-sec" key={cat} style={{ ["--acc" as string]: c.acc }}>
+          <section className="th-sec" key={cat} style={{ ["--acc" as string]: c.acc }}>
             {!onlyGeneral && (
-              <div className="tl-sec-head">
-                <span className="tl-sec-dot" />
-                <h2 className="tl-sec-title">{cat}</h2>
-                <span className="tl-sec-count">{tools.length}</span>
-                <span className="tl-sec-line" />
+              <div className="th-head">
+                <span className="th-dot" />
+                <h2 className="th-title">{cat}</h2>
+                <span className="th-count">{tools.length}</span>
+                <span className="th-line" />
               </div>
             )}
-            <div className="tl-grid">
+            <div className="th-grid">
               {tools.map((t) => {
                 const host = hostOf(t.link_url);
                 const inner = (
                   <>
-                    <div className="tl-top">
-                      <Fav img={t.image_url} host={host} letter={t.title.charAt(0).toUpperCase()} acc={c.acc} rgb={c.rgb} />
-                    </div>
-                    <div className="tl-name">{t.title}</div>
-                    {host && <div className="tl-host">{host}</div>}
-                    {t.link_url && (
-                      <div className="tl-open">Abrir <ArrowUpRight size={15} /></div>
-                    )}
+                    <Ic img={t.image_url} host={host} letter={t.title.charAt(0).toUpperCase()} rgb={c.rgb} />
+                    <span className="th-name">{t.title}</span>
+                    {t.link_url && <ArrowUpRight size={18} className="th-arr" />}
                   </>
                 );
                 return t.link_url ? (
-                  <a key={t.id} className="tl-card" style={{ ["--acc" as string]: c.acc }} href={t.link_url} target="_blank" rel="noreferrer">{inner}</a>
+                  <a key={t.id} className="th-row" style={{ ["--acc" as string]: c.acc }} href={t.link_url} target="_blank" rel="noreferrer">{inner}</a>
                 ) : (
-                  <div key={t.id} className="tl-card tl-card-nolink" style={{ ["--acc" as string]: c.acc }}>{inner}</div>
+                  <div key={t.id} className="th-row th-row-nolink" style={{ ["--acc" as string]: c.acc }}>{inner}</div>
                 );
               })}
             </div>
