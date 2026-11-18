@@ -138,7 +138,14 @@ async def search(q: str = "", db: AsyncSession = Depends(get_db), user: User = D
     for t in teachers:
         out.append({"type": "Profesor", "title": t.name, "url": "/profesores", "subtitle": None})
 
-    return out[:10]
+    # Herramientas
+    tools = (await db.execute(
+        select(Tool).where(Tool.status == "published", Tool.title.ilike(like)).limit(4)
+    )).scalars().all()
+    for t in tools:
+        out.append({"type": "Herramienta", "title": t.title, "url": "/herramientas", "subtitle": None})
+
+    return out[:12]
 
 
 @router.get("/teachers", response_model=list[TeacherOut])

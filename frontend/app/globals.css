@@ -1088,3 +1088,11 @@ p{line-height:1.6}
 .stile .bar i::after,.dcard .bar i::after,.dbar i::after,.gm-xpbar i::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.5),transparent);transform:translateX(-120%);animation:barSheen 2.8s ease-in-out infinite}
 @keyframes barSheen{0%{transform:translateX(-120%)}55%,100%{transform:translateX(240%)}}
 @media (prefers-reduced-motion:reduce){.stile .bar i::after,.dcard .bar i::after,.dbar i::after,.gm-xpbar i::after{animation:none;display:none}}
+
+/* ─────────── Próxima clase: estados ─────────── */
+.livepill{display:inline-block;font-size:10px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);background:rgba(255,255,255,.05);border:1px solid var(--line);padding:3px 9px;border-radius:999px}
+.livepill.live{color:#fb7185;background:rgba(251,113,133,.12);border-color:rgba(251,113,133,.35);animation:livePulse 1.5s ease-in-out infinite}
+.livepill.soon{color:#22e0ff;background:rgba(34,224,255,.1);border-color:rgba(34,224,255,.3)}
+@keyframes livePulse{0%,100%{opacity:1}50%{opacity:.55}}
+.btn-live{background:linear-gradient(135deg,#1ebe5a,#25d366 60%,#2ce36f);color:#fff;border:none;box-shadow:0 10px 26px -12px rgba(37,211,102,.7),inset 0 1px 0 rgba(255,255,255,.3)}
+.btn-live:hover{transform:translateY(-1px)}

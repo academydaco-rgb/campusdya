@@ -40,6 +40,10 @@ export default function DashboardPage() {
     .sort((a, b) => +new Date(a.starts_at) - +new Date(b.starts_at));
   const nextLive = upcoming[0];
   const nextLiveExpired = nextLive ? now > +new Date(nextLive.starts_at) + 2 * 3600 * 1000 : false;
+  const nlStart = nextLive ? +new Date(nextLive.starts_at) : 0;
+  const nlLive = !!nextLive && now >= nlStart && now <= nlStart + 2 * 3600 * 1000;
+  const nlMins = nextLive ? Math.round((nlStart - now) / 60000) : 0;
+  const nlSoon = !!nextLive && nlMins > 0 && nlMins <= 60;
 
   const totalLessons = mine.reduce((a, d) => a + (d.total_lessons || 0), 0);
   const doneLessons = mine.reduce((a, d) => a + (d.completed_lessons || 0), 0);
@@ -203,14 +207,17 @@ export default function DashboardPage() {
                     <div className="m">{monNum(nextLive.starts_at)}</div>
                   </div>
                   <div style={{ minWidth: 0 }}>
-                    <b style={{ fontSize: 15, color: "#fff", display: "block", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{nextLive.title}</b>
-                    <div className="muted" style={{ fontSize: 12.5, marginTop: 5, display: "flex", gap: 6, alignItems: "center" }}><Clock size={13} /> {htime(nextLive.starts_at)}</div>
+                    {nlLive ? <span className="livepill live">● En vivo ahora</span>
+                      : nlSoon ? <span className="livepill soon">Empieza en {nlMins} min</span>
+                      : <span className="livepill">Programada</span>}
+                    <b style={{ fontSize: 15, color: "#fff", display: "block", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", marginTop: 7 }}>{nextLive.title}</b>
+                    <div className="muted" style={{ fontSize: 12.5, marginTop: 4, display: "flex", gap: 6, alignItems: "center" }}><Clock size={13} /> {htime(nextLive.starts_at)}</div>
                   </div>
                 </div>
                 {nextLive.live_url && !nextLiveExpired && (
-                  <div style={{ textAlign: "right", marginTop: 14 }}>
-                    <a className="btn btn-primary" href={nextLive.live_url} target="_blank" rel="noreferrer">Ingresar a la clase <ArrowRight size={15} /></a>
-                  </div>
+                  <a className={`btn ${nlLive ? "btn-live" : "btn-primary"}`} href={nextLive.live_url} target="_blank" rel="noreferrer" style={{ width: "100%", justifyContent: "center", marginTop: 14 }}>
+                    {nlLive ? "Entrar ahora" : "Ingresar a la clase"} <ArrowRight size={15} />
+                  </a>
                 )}
               </>
             )}
@@ -220,7 +227,7 @@ export default function DashboardPage() {
           <div className="card" style={{ padding: 18 }}>
             <div className="sec-h"><span className="ic"><MessagesSquare /></span><h2>Comunidad</h2></div>
             <p className="muted" style={{ fontSize: 13, margin: "2px 0 14px", lineHeight: 1.5 }}>Comparte tus resultados y aprende de otros estudiantes de la academia.</p>
-            <Link className="btn btn-primary" href="/feedback" style={{ width: "100%", justifyContent: "center" }}>Ir a la comunidad <ArrowRight size={15} /></Link>
+            <Link className="btn btn-primary" href="/comunidad" style={{ width: "100%", justifyContent: "center" }}>Ir a la comunidad <ArrowRight size={15} /></Link>
           </div>
         </div>
       </div>
