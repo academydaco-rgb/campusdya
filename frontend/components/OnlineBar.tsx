@@ -4,7 +4,9 @@ import { api, OnlineUserT } from "@/lib/api";
 
 export default function OnlineBar() {
   const [users, setUsers] = useState<OnlineUserT[]>([]);
-  const [open, setOpen] = useState(true);
+  const [open, setOpenState] = useState(false);
+  useEffect(() => { try { setOpenState(localStorage.getItem("onlinebar_open") === "1"); } catch {} }, []);
+  const setOpen = (v: boolean) => { setOpenState(v); try { localStorage.setItem("onlinebar_open", v ? "1" : "0"); } catch {} };
 
   useEffect(() => {
     let alive = true;
