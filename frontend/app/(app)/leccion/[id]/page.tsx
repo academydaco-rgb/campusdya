@@ -85,6 +85,17 @@ export default function LessonPage() {
   const idx = flat.findIndex((x) => x.id === id);
   const prev = idx > 0 ? flat[idx - 1] : null;
   const next = idx >= 0 && idx < flat.length - 1 ? flat[idx + 1] : null;
+  const fileMeta = (name?: string | null, url?: string | null): [string, string] => {
+    const ext = ((name || url || "").split("?")[0].split(".").pop() || "").toLowerCase();
+    const map: Record<string, [string, string]> = {
+      pdf: ["PDF", "#fb7185"], doc: ["DOC", "#22e0ff"], docx: ["DOC", "#22e0ff"], txt: ["TXT", "#9aa0b8"],
+      xls: ["XLS", "#22e67a"], xlsx: ["XLS", "#22e67a"], csv: ["CSV", "#22e67a"],
+      ppt: ["PPT", "#f6c453"], pptx: ["PPT", "#f6c453"], zip: ["ZIP", "#a78bfa"], rar: ["ZIP", "#a78bfa"],
+      png: ["IMG", "#d946ef"], jpg: ["IMG", "#d946ef"], jpeg: ["IMG", "#d946ef"], webp: ["IMG", "#d946ef"], gif: ["IMG", "#d946ef"],
+      mp4: ["VID", "#8b5cf6"], mov: ["VID", "#8b5cf6"], mp3: ["AUD", "#06b6d4"],
+    };
+    return map[ext] || ["FILE", "#9aa0b8"];
+  };
 
   if (error) return <div className="card" style={{ padding: 24, color: "var(--danger)" }}>{error}</div>;
   if (!l) return (
@@ -117,12 +128,17 @@ export default function LessonPage() {
         {Array.isArray(l.materials) && l.materials.length > 0 && (
           <div className="card" style={{ padding: 18 }}>
             <div className="eyebrow" style={{ marginBottom: 12 }}>📎 Archivos de la clase</div>
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
-              {l.materials.map((m, i) => (
-                <a key={i} className="btn btn-primary" style={{ padding: "9px 16px", fontSize: 13 }} href={m.url} target="_blank" rel="noreferrer" download>
-                  ⬇ {m.nombre || "Descargar"}
-                </a>
-              ))}
+            <div className="mat-grid">
+              {l.materials.map((m, i) => {
+                const [tag, color] = fileMeta(m.nombre, m.url);
+                return (
+                  <a key={i} className="mat-chip" style={{ ["--mc" as string]: color }} href={m.url} target="_blank" rel="noreferrer" download>
+                    <span className="mat-ic">{tag}</span>
+                    <span className="mat-name">{m.nombre || "Archivo"}</span>
+                    <span className="mat-dl">⬇</span>
+                  </a>
+                );
+              })}
             </div>
           </div>
         )}

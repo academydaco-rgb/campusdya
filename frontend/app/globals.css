@@ -1096,3 +1096,12 @@ p{line-height:1.6}
 @keyframes livePulse{0%,100%{opacity:1}50%{opacity:.55}}
 .btn-live{background:linear-gradient(135deg,#1ebe5a,#25d366 60%,#2ce36f);color:#fff;border:none;box-shadow:0 10px 26px -12px rgba(37,211,102,.7),inset 0 1px 0 rgba(255,255,255,.3)}
 .btn-live:hover{transform:translateY(-1px)}
+
+/* ─────────── Archivos de la clase (fichas) ─────────── */
+.mat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px}
+.mat-chip{display:flex;align-items:center;gap:12px;padding:11px 13px;border-radius:13px;border:1px solid var(--line);background:rgba(255,255,255,.015);text-decoration:none;color:var(--text);transition:border-color .16s,background .16s,transform .14s}
+.mat-chip:hover{border-color:color-mix(in srgb,var(--mc,#9aa0b8) 45%,transparent);background:color-mix(in srgb,var(--mc,#9aa0b8) 7%,rgba(255,255,255,.02));transform:translateY(-2px)}
+.mat-ic{width:40px;height:40px;border-radius:10px;flex:none;display:grid;place-items:center;font-size:11px;font-weight:900;letter-spacing:.02em;color:var(--mc,#9aa0b8);background:color-mix(in srgb,var(--mc,#9aa0b8) 15%,transparent);border:1px solid color-mix(in srgb,var(--mc,#9aa0b8) 32%,transparent)}
+.mat-name{flex:1;min-width:0;font-size:13.5px;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mat-dl{flex:none;color:var(--muted-soft);font-size:15px}
+.mat-chip:hover .mat-dl{color:var(--mc,#9aa0b8)}
