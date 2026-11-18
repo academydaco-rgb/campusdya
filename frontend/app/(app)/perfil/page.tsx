@@ -45,8 +45,12 @@ export default function Perfil() {
     } catch (ex) { setPmsg(ex instanceof Error ? ex.message : "Error"); }
   }
 
+  const isTeam = user?.role === "admin" || user?.role === "instructor";
+  const ptypeLabel = ptype === "dropshipper" ? "Dropshipper" : ptype === "proveedor" ? "Proveedor" : ptype === "bodega" ? "Bodega" : "";
+
   return (
-    <div className="grid" style={{ gap: 22, maxWidth: 680 }}>
+    <div className="pf-layout">
+      <div className="pf-main grid" style={{ gap: 22 }}>
       <div>
         <h1 style={{ fontSize: 28, fontWeight: 800 }}>Mi perfil ◍</h1>
         <p className="muted" style={{ marginTop: 6 }}>Personaliza tu avatar y tu descripción, y gestiona tu contraseña.</p>
@@ -97,6 +101,23 @@ export default function Perfil() {
           {pmsg && <span className="muted" style={{ fontSize: 13 }}>{pmsg}</span>}
         </div>
       </form>
+      </div>
+      <aside className="pf-side">
+        <div className="card pf-preview">
+          <div className="pf-pvlabel">Así te ven en la Comunidad</div>
+          <div className="pf-pc">
+            <div className="pf-pcav" style={{ background: avatar ? `center/cover url(${avatar})` : "var(--grad)", color: "#04141c" }}>
+              {!avatar && (name || "U").charAt(0).toUpperCase()}
+            </div>
+            <div style={{ minWidth: 0 }}>
+              <div className="pf-pcname">{name || "Tu nombre"}{isTeam && <span className="cf-role">Equipo</span>}</div>
+              {ptypeLabel && <div className="pf-pctype">{ptypeLabel}</div>}
+            </div>
+          </div>
+          <div className={`pf-pcbio${bio ? "" : " pf-muted"}`}>{bio || "Agrega una descripción para que tus compañeros te conozcan."}</div>
+          <div className="pf-pvnote">Así aparece tu tarjeta en los posts y comentarios de la Comunidad.</div>
+        </div>
+      </aside>
     </div>
   );
 }
