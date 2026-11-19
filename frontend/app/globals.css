@@ -1110,7 +1110,7 @@ p{line-height:1.6}
 .mat-body{flex:1;min-width:0;display:flex;flex-direction:column}
 .mat-name{font-size:14px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .mat-sub{font-size:11px;color:var(--muted-soft);font-weight:600;margin-top:2px}
-.mat-dl{flex:none;display:inline-flex;align-items:center;gap:7px;font-size:12.5px;font-weight:800;color:#06060e;background:linear-gradient(135deg,#22e0ff,#4df0ff 55%,#22e0ff);padding:9px 14px;border-radius:11px;box-shadow:0 8px 20px -8px rgba(34,224,255,.6),inset 0 1px 0 rgba(255,255,255,.4)}
+.mat-dl{flex:none;display:inline-flex;align-items:center;gap:7px;font-size:12.5px;font-weight:800;color:#06060e;background:#00ffff;padding:9px 14px;border-radius:11px;box-shadow:0 8px 22px -8px rgba(0,255,255,.75),inset 0 1px 0 rgba(255,255,255,.55)}
 .mat-dl svg{width:15px;height:15px}
 .mat-chip:hover .mat-dl{filter:brightness(1.07)}
 @media(max-width:520px){.mat-grid{grid-template-columns:1fr}.mat-dl{padding:9px 12px}}
