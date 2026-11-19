@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
-import { api, DiplomaDetailT, DiplomaTeacherT } from "@/lib/api";
+import { api, DiplomaDetailT, DiplomaTeacherT, LessonLiteT } from "@/lib/api";
 import ProtectedVideo, { toEmbed } from "@/components/ProtectedVideo";
 import { buildSegments, LabeledModule } from "@/lib/routes";
 
@@ -34,6 +34,14 @@ export default function DiplomaPage() {
   const bg = d.hero_image_url || d.cover_url;
   const wa = (d.contact_whatsapp || t?.whatsapp || "").replace(/[^0-9]/g, "");
   const profes = [d.teacher, d.teacher2].filter(Boolean) as DiplomaTeacherT[];
+  const relMods = (d.has_routes && d.chosen_route) ? d.modules.filter((m) => !m.route || m.route === d.chosen_route) : d.modules;
+  const flatL: { l: LessonLiteT; mod: string }[] = [];
+  relMods.forEach((m) => (m.lessons || []).forEach((l) => flatL.push({ l, mod: m.title })));
+  const nextL = flatL.find((x) => !x.l.completed) || null;
+  const startedD = d.completed_lessons > 0;
+  const firstL = flatL[0] || null;
+  const PlayIco = <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden><path d="M8 5.5v13a1 1 0 0 0 1.5.86l10.5-6.5a1 1 0 0 0 0-1.72L9.5 4.64A1 1 0 0 0 8 5.5z"/></svg>;
+  const ArrowIco = <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.4} strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M5 12h14M13 6l6 6-6 6"/></svg>;
 
   return (
     <div className="grid" style={{ gap: 22 }}>
@@ -91,6 +99,28 @@ export default function DiplomaPage() {
         </div>
         <div className="nf-bar"><div className="nf-bar-fill" style={{ width: `${d.progress}%` }} /></div>
       </div>
+
+      {flatL.length > 0 && (nextL ? (
+        <Link href={`/leccion/${nextL.l.id}`} className="cont-card">
+          <span className="cont-play">{PlayIco}</span>
+          <div className="cont-info">
+            <div className="cont-lbl">{startedD ? "Continúa donde quedaste" : "Empieza tu formación"}</div>
+            <div className="cont-title">{nextL.l.title}</div>
+            <div className="cont-mod">{nextL.mod}</div>
+          </div>
+          <span className="cont-btn">{startedD ? "Continuar" : "Empezar"} {ArrowIco}</span>
+        </Link>
+      ) : firstL ? (
+        <Link href={`/leccion/${firstL.l.id}`} className="cont-card done">
+          <span className="cont-play"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M20 6 9 17l-5-5"/></svg></span>
+          <div className="cont-info">
+            <div className="cont-lbl">¡Diplomado completado!</div>
+            <div className="cont-title">Terminaste todas las clases 🎉</div>
+            <div className="cont-mod">Puedes repasar cuando quieras</div>
+          </div>
+          <span className="cont-btn">Repasar {ArrowIco}</span>
+        </Link>
+      ) : null)}
 
       {segments.map((seg) => seg.kind === "common" ? (
         <ModuleCard key={seg.item.module.id} item={seg.item} open={!!open[seg.item.module.id]} onToggle={toggle} />
