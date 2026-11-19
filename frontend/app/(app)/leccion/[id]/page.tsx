@@ -156,7 +156,7 @@ export default function LessonPage() {
           <form onSubmit={enviar} className="card" style={{ padding: 16, display: "grid", gap: 10 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 10 }}><span className="muted" style={{ fontSize: 13 }}>Tu calificación:</span><Stars value={rating} onPick={setRating} /></div>
             <textarea className="input" value={text} onChange={(e) => setText(e.target.value)} placeholder="Escribe tu comentario…" rows={2} style={{ resize: "vertical" }} />
-            {img && <div style={{ position: "relative", width: 160 }}><img src={img} alt="" style={{ width: 160, borderRadius: 10, display: "block" }} /><button type="button" onClick={() => setImg(null)} className="btn btn-ghost" style={{ position: "absolute", top: 6, right: 6, padding: "2px 8px", fontSize: 12 }}>✕</button></div>}
+            {img && <div style={{ position: "relative", width: 160 }}><img loading="lazy" decoding="async" src={img} alt="" style={{ width: 160, borderRadius: 10, display: "block" }} /><button type="button" onClick={() => setImg(null)} className="btn btn-ghost" style={{ position: "absolute", top: 6, right: 6, padding: "2px 8px", fontSize: 12 }}>✕</button></div>}
             <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
               <ImgPick onPick={setImg} />
               <span style={{ flex: 1 }} />
@@ -242,7 +242,7 @@ function CommentCard({ comment, replies, lessonId, onChange }: { comment: Commen
         {comment.rating ? <Stars value={comment.rating} /> : null}
       </div>
       <div style={{ fontSize: 14, marginTop: 7, whiteSpace: "pre-wrap", overflowWrap: "anywhere", wordBreak: "break-word" }}>{comment.body}</div>
-      {comment.image_url && <img src={comment.image_url} alt="" style={{ marginTop: 10, maxWidth: "100%", borderRadius: 10, display: "block" }} />}
+      {comment.image_url && <img loading="lazy" decoding="async" src={comment.image_url} alt="" style={{ marginTop: 10, maxWidth: "100%", borderRadius: 10, display: "block" }} />}
       <div style={{ marginTop: 8 }}>
         <button className="btn btn-ghost" style={{ padding: "4px 10px", fontSize: 12 }} onClick={() => setOpen((o) => !o)}>↳ Responder</button>
       </div>
@@ -250,7 +250,7 @@ function CommentCard({ comment, replies, lessonId, onChange }: { comment: Commen
       {open && (
         <form onSubmit={responder} style={{ display: "grid", gap: 8, marginTop: 10, paddingLeft: 12, borderLeft: "2px solid var(--line-2)" }}>
           <textarea className="input" value={text} onChange={(e) => setText(e.target.value)} placeholder="Escribe una respuesta…" rows={2} style={{ resize: "vertical" }} />
-          {img && <img src={img} alt="" style={{ width: 140, borderRadius: 10 }} />}
+          {img && <img loading="lazy" decoding="async" src={img} alt="" style={{ width: 140, borderRadius: 10 }} />}
           <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
             <ImgPick onPick={setImg} />
             <span style={{ flex: 1 }} />
@@ -268,7 +268,7 @@ function CommentCard({ comment, replies, lessonId, onChange }: { comment: Commen
                 <span style={{ fontWeight: 700, fontSize: 12.5 }}>{r.author_name || "Alumno"}</span>
               </div>
               <div style={{ fontSize: 13.5, marginTop: 5, whiteSpace: "pre-wrap" }}>{r.body}</div>
-              {r.image_url && <img src={r.image_url} alt="" style={{ marginTop: 8, maxWidth: "100%", borderRadius: 9, display: "block" }} />}
+              {r.image_url && <img loading="lazy" decoding="async" src={r.image_url} alt="" style={{ marginTop: 8, maxWidth: "100%", borderRadius: 9, display: "block" }} />}
             </div>
           ))}
         </div>

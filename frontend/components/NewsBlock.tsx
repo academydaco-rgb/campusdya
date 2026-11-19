@@ -48,7 +48,7 @@ export default function NewsBlock({ news }: { news: AnnouncementT[] }) {
       {open && (
         <div onClick={() => setOpen(null)} style={{ position: "fixed", inset: 0, zIndex: 120, background: "rgba(4,4,10,.72)", backdropFilter: "blur(4px)", display: "grid", placeItems: "center", padding: 20 }}>
           <div onClick={(e) => e.stopPropagation()} className="card" style={{ maxWidth: 560, width: "100%", maxHeight: "86vh", overflow: "auto", borderColor: "var(--line-2)" }}>
-            {open.image_url && <img src={open.image_url} alt="" style={{ width: "100%", maxHeight: "60vh", objectFit: "contain", background: "#0b0a14", display: "block" }} />}
+            {open.image_url && <img loading="lazy" decoding="async" src={open.image_url} alt="" style={{ width: "100%", maxHeight: "60vh", objectFit: "contain", background: "#0b0a14", display: "block" }} />}
             <div style={{ padding: 24, position: "relative" }}>
               <button onClick={() => setOpen(null)} aria-label="Cerrar" style={{ position: "absolute", top: 16, right: 16, width: 34, height: 34, borderRadius: 10, border: "1px solid var(--line)", background: "rgba(255,255,255,.05)", color: "#cbb8ff", display: "grid", placeItems: "center" }}><X size={18} /></button>
               <span className="eyebrow" style={{ color: "#c9b7ff" }}>Comunicado</span>

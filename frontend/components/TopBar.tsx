@@ -131,7 +131,7 @@ export default function TopBar() {
       {view && (
         <div className="notifmodal-ov" onClick={() => setView(null)}>
           <div className="notifmodal" onClick={(e) => e.stopPropagation()}>
-            {view.image_url && <img src={view.image_url} alt="" className="notifmodal-img" />}
+            {view.image_url && <img loading="lazy" decoding="async" src={view.image_url} alt="" className="notifmodal-img" />}
             <div className="notifmodal-in">
               <button className="notifmodal-x" onClick={() => setView(null)} aria-label="Cerrar"><X size={18} /></button>
               <span className="eyebrow" style={{ color: "#c9b7ff" }}>Comunicado</span>

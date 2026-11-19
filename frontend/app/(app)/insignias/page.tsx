@@ -189,7 +189,7 @@ export default function Insignias() {
         {items.map((b) => (
           <div key={b.id} className="card" style={{ padding: 24, textAlign: "center" }}>
             {b.image_url
-              ? <img src={b.image_url} alt={b.name} style={{ width: 96, height: 96, objectFit: "contain", margin: "0 auto", display: "block", filter: "drop-shadow(0 8px 20px rgba(217,70,239,.5))" }} />
+              ? <img loading="lazy" decoding="async" src={b.image_url} alt={b.name} style={{ width: 96, height: 96, objectFit: "contain", margin: "0 auto", display: "block", filter: "drop-shadow(0 8px 20px rgba(217,70,239,.5))" }} />
               : <div style={{ fontSize: 60, filter: "drop-shadow(0 0 18px var(--magenta))" }}>{b.icon || "🏅"}</div>}
             <div style={{ fontWeight: 800, marginTop: 12, color: "#fff" }}>{b.diploma_title || b.name}</div>
             <div style={{ marginTop: 16 }}>

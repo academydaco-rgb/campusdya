@@ -16,6 +16,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link rel="preconnect" href={process.env.NEXT_PUBLIC_API_URL || ""} />
+        <link rel="preconnect" href="https://videopress.com" />
+        <link rel="dns-prefetch" href="https://videopress.com" />
+        <link rel="dns-prefetch" href="https://videos.files.wordpress.com" />
         <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap" />
       </head>
       <body><RouteProgress /><CometCursor /><AuthProvider>{children}</AuthProvider></body>

@@ -33,7 +33,7 @@ function Ic({ img, host, letter, acc }: { img?: string | null; host: string; let
   if (host && !err)
     return (
       <span className="hl-ic" style={{ background: `color-mix(in srgb, ${acc} 16%, #0e0a22)` }}>
-        <img src={`https://www.google.com/s2/favicons?domain=${host}&sz=128`} alt="" onError={() => setErr(true)} />
+        <img loading="lazy" decoding="async" src={`https://www.google.com/s2/favicons?domain=${host}&sz=128`} alt="" onError={() => setErr(true)} />
       </span>
     );
   return (

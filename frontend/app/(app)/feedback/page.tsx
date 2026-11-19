@@ -73,7 +73,7 @@ export default function Comunidad() {
         <div><label className="label">Tus resultados (opcional)</label><textarea className="input" rows={2} value={results} onChange={(e) => setResults(e.target.value)} placeholder="Ej: lancé mi primera tienda y vendí…" /></div>
         {image && (
           <div style={{ position: "relative", width: 180 }}>
-            <img src={image} alt="" style={{ width: 180, borderRadius: 10, display: "block" }} />
+            <img loading="lazy" decoding="async" src={image} alt="" style={{ width: 180, borderRadius: 10, display: "block" }} />
             <button type="button" onClick={() => setImage(null)} className="btn btn-ghost" style={{ position: "absolute", top: 6, right: 6, padding: "2px 8px", fontSize: 12 }}>✕</button>
           </div>
         )}
@@ -100,7 +100,7 @@ export default function Comunidad() {
             <div style={{ color: "var(--gold)", fontSize: 14 }}>{"★".repeat(f.rating || 5)}</div>
             <p style={{ fontSize: 14, marginTop: 8 }}>{f.body}</p>
             {f.results && <p className="muted" style={{ fontSize: 13, marginTop: 6 }}>📈 {f.results}</p>}
-            {f.image_url && <img src={f.image_url} alt="" style={{ marginTop: 10, width: "100%", borderRadius: 10, display: "block" }} />}
+            {f.image_url && <img loading="lazy" decoding="async" src={f.image_url} alt="" style={{ marginTop: 10, width: "100%", borderRadius: 10, display: "block" }} />}
             <button onClick={() => abrirPerfil(f)} style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 12, background: "transparent", border: 0, cursor: "pointer", padding: 0, color: "var(--text)" }}>
               <span style={{ width: 26, height: 26, borderRadius: 999, flexShrink: 0, display: "grid", placeItems: "center", fontSize: 12, fontWeight: 800, color: "#04141c", background: f.author_avatar ? `center/cover url(${f.author_avatar})` : "var(--grad)" }}>{!f.author_avatar && (f.author_name || "A").charAt(0).toUpperCase()}</span>
               <span style={{ fontSize: 12.5, fontWeight: 700 }}>{f.author_name || "Alumno"}</span>
@@ -140,7 +140,7 @@ export default function Comunidad() {
                   {badges.map((b) => (
                     <span key={b.id} className="badge-tip" data-tip={b.diploma_title ? `Diplomado: ${b.diploma_title}` : b.name}>
                       {b.image_url
-                        ? <img src={b.image_url} alt={b.diploma_title || b.name} style={{ width: 46, height: 46, objectFit: "contain", display: "block", filter: "drop-shadow(0 0 10px var(--gold))" }} />
+                        ? <img loading="lazy" decoding="async" src={b.image_url} alt={b.diploma_title || b.name} style={{ width: 46, height: 46, objectFit: "contain", display: "block", filter: "drop-shadow(0 0 10px var(--gold))" }} />
                         : <div style={{ fontSize: 34, filter: "drop-shadow(0 0 10px var(--gold))" }}>{b.icon || "🏅"}</div>}
                     </span>
                   ))}
