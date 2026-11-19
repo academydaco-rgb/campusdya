@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
-import { api, DiplomaDetailT } from "@/lib/api";
+import { api, DiplomaDetailT, DiplomaTeacherT } from "@/lib/api";
 import ProtectedVideo, { toEmbed } from "@/components/ProtectedVideo";
 import { buildSegments, LabeledModule } from "@/lib/routes";
 
@@ -32,7 +32,8 @@ export default function DiplomaPage() {
   const segments = buildSegments(d.modules, !!d.has_routes);
   const video = toEmbed(d.intro_video_url);
   const bg = d.hero_image_url || d.cover_url;
-  const wa = t?.whatsapp ? t.whatsapp.replace(/[^0-9]/g, "") : "";
+  const wa = (d.contact_whatsapp || t?.whatsapp || "").replace(/[^0-9]/g, "");
+  const profes = [d.teacher, d.teacher2].filter(Boolean) as DiplomaTeacherT[];
 
   return (
     <div className="grid" style={{ gap: 22 }}>
@@ -50,12 +51,16 @@ export default function DiplomaPage() {
             )}
             <h1 className="nf-title">{d.title}</h1>
             {d.description && <p className="nf-desc">{d.description}</p>}
-            {t && (
+            {profes.length > 0 && (
               <div className="nf-teacher">
-                <div className="nf-teacher-ph" style={{ background: t.photo_url ? `center/cover url(${t.photo_url})` : "linear-gradient(135deg,var(--cyan),var(--indigo))" }} />
-                <div style={{ minWidth: 0 }}>
-                  <div className="nf-teacher-lbl">Tu profesor</div>
-                  <div className="nf-teacher-name">{t.name}</div>
+                <div className="nf-teacher-stack">
+                  <div className="nf-teacher-lbl">{profes.length > 1 ? "Tus profesores" : "Tu profesor"}</div>
+                  {profes.map((p, i) => (
+                    <div className="nf-teacher-one" key={i}>
+                      <div className="nf-teacher-ph2" style={{ background: p.photo_url ? `center/cover url(${p.photo_url})` : "linear-gradient(135deg,var(--cyan),var(--indigo))" }} />
+                      <div className="nf-teacher-name">{p.name}</div>
+                    </div>
+                  ))}
                 </div>
                 {wa && (
                   <a className="btn btn-wa" style={{ padding: "10px 16px", fontSize: 13.5, flexShrink: 0 }}

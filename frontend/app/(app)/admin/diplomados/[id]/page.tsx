@@ -85,7 +85,7 @@ export default function EditDiploma() {
     if (!dip) return;
     await api.put(`/api/admin/diplomas/${id}`, {
       title: dip.title, description: dip.description, cover_url: dip.cover_url,
-      status: dip.status, order: dip.order, phase_id: dip.phase_id || null, teacher_id: dip.teacher_id || null, badge_image_url: dip.badge_image_url || null,
+      status: dip.status, order: dip.order, phase_id: dip.phase_id || null, teacher_id: dip.teacher_id || null, teacher2_id: dip.teacher2_id || null, contact_whatsapp: (dip.contact_whatsapp || "").trim() || null, badge_image_url: dip.badge_image_url || null,
       hero_image_url: dip.hero_image_url || null, intro_video_url: toEmbed(dip.intro_video_url) || null,
       has_routes: !!dip.has_routes, route_a_name: (dip.route_a_name || "").trim() || null, route_b_name: (dip.route_b_name || "").trim() || null,
     });
@@ -100,7 +100,7 @@ export default function EditDiploma() {
     try {
       await api.put(`/api/admin/diplomas/${id}`, {
         title: next.title, description: next.description, cover_url: next.cover_url,
-        status: next.status, order: next.order, phase_id: next.phase_id || null, teacher_id: next.teacher_id || null, badge_image_url: next.badge_image_url || null,
+        status: next.status, order: next.order, phase_id: next.phase_id || null, teacher_id: next.teacher_id || null, teacher2_id: next.teacher2_id || null, contact_whatsapp: (next.contact_whatsapp || "").trim() || null, badge_image_url: next.badge_image_url || null,
         hero_image_url: next.hero_image_url || null, intro_video_url: toEmbed(next.intro_video_url) || null,
         has_routes: !!next.has_routes, route_a_name: (next.route_a_name || "").trim() || null, route_b_name: (next.route_b_name || "").trim() || null,
       });
@@ -140,6 +140,17 @@ export default function EditDiploma() {
             <select className="input" value={dip.status} onChange={(e) => setDip({ ...dip, status: e.target.value })}>
               <option value="draft">Borrador</option><option value="published">Publicado</option>
             </select>
+          </div>
+        </div>
+        <div style={{ display: "grid", gap: 14, gridTemplateColumns: "1fr 1fr" }}>
+          <div><label className="label">2º profesor (opcional)</label>
+            <select className="input" value={dip.teacher2_id || ""} onChange={(e) => setDip({ ...dip, teacher2_id: e.target.value || null })}>
+              <option value="">— sin segundo profesor —</option>
+              {teachers.map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}
+            </select>
+          </div>
+          <div><label className="label">WhatsApp del diplomado (compartido)</label>
+            <input className="input" value={dip.contact_whatsapp || ""} onChange={(e) => setDip({ ...dip, contact_whatsapp: e.target.value })} placeholder="57300… (vacío = usa el del profesor)" />
           </div>
         </div>
         <div>

@@ -169,14 +169,16 @@ async def diploma_detail(slug: str, db: AsyncSession = Depends(get_db), user: Us
                          "route": norm_route(m.route) if dip.has_routes else None, "lessons": out_lessons})
     total, completadas, chosen = route_counts(
         [(m["route"], [uuid.UUID(l["id"]) for l in m["lessons"]]) for m in out_mods], done, bool(dip.has_routes))
-    teacher = None
-    if dip.teacher_id:
-        t = (await db.execute(select(Teacher).where(Teacher.id == dip.teacher_id))).scalar_one_or_none()
-        if t:
-            teacher = {"id": str(t.id), "name": t.name, "photo_url": t.photo_url, "bio": t.bio, "whatsapp": t.whatsapp}
+    async def _teacher(tid):
+        if not tid:
+            return None
+        t = (await db.execute(select(Teacher).where(Teacher.id == tid))).scalar_one_or_none()
+        return {"id": str(t.id), "name": t.name, "photo_url": t.photo_url, "bio": t.bio, "whatsapp": t.whatsapp} if t else None
+    teacher = await _teacher(dip.teacher_id)
+    teacher2 = await _teacher(dip.teacher2_id)
     return {
         "id": str(dip.id), "title": dip.title, "slug": dip.slug,
-        "description": dip.description, "cover_url": dip.cover_url, "teacher": teacher,
+        "description": dip.description, "cover_url": dip.cover_url, "teacher": teacher, "teacher2": teacher2, "contact_whatsapp": dip.contact_whatsapp,
         "hero_image_url": dip.hero_image_url, "intro_video_url": dip.intro_video_url,
         "badge_image_url": dip.badge_image_url,
         "has_routes": bool(dip.has_routes), "chosen_route": chosen,

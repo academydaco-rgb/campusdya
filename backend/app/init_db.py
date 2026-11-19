@@ -30,6 +30,8 @@ _MIGRATIONS = [
     "ALTER TABLE diplomas ADD COLUMN IF NOT EXISTS route_a_name VARCHAR(120)",
     "ALTER TABLE diplomas ADD COLUMN IF NOT EXISTS route_b_name VARCHAR(120)",
     "ALTER TABLE modules ADD COLUMN IF NOT EXISTS route VARCHAR(1)",
+    "ALTER TABLE diplomas ADD COLUMN IF NOT EXISTS teacher2_id UUID",
+    "ALTER TABLE diplomas ADD COLUMN IF NOT EXISTS contact_whatsapp VARCHAR(40)",
 ]
 
 
