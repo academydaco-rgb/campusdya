@@ -35,8 +35,8 @@ export default function DiplomaPage() {
   const wa = (d.contact_whatsapp || t?.whatsapp || "").replace(/[^0-9]/g, "");
   const profes = [d.teacher, d.teacher2].filter(Boolean) as DiplomaTeacherT[];
   const relMods = (d.has_routes && d.chosen_route) ? d.modules.filter((m) => !m.route || m.route === d.chosen_route) : d.modules;
-  const flatL: { l: LessonLiteT; mod: string }[] = [];
-  relMods.forEach((m) => (m.lessons || []).forEach((l) => flatL.push({ l, mod: m.title })));
+  const flatL: { l: LessonLiteT; mod: string; modNum: number; lesNum: number }[] = [];
+  relMods.forEach((m, mi) => (m.lessons || []).forEach((l, li) => flatL.push({ l, mod: m.title, modNum: mi + 1, lesNum: li + 1 })));
   const nextL = flatL.find((x) => !x.l.completed) || null;
   const startedD = d.completed_lessons > 0;
   const firstL = flatL[0] || null;
@@ -103,8 +103,8 @@ export default function DiplomaPage() {
           <span className="cont-play">{PlayIco}</span>
           <div className="cont-info">
             <div className="cont-lbl">{startedD ? "Continúa donde quedaste" : "Empieza tu formación"}</div>
-            <div className="cont-title">{nextL.l.title}</div>
-            <div className="cont-mod">{nextL.mod}</div>
+            <div className="cont-title">Lección {nextL.lesNum}: {nextL.l.title}</div>
+            <div className="cont-mod">Módulo {nextL.modNum}: {nextL.mod}</div>
           </div>
           <span className="cont-btn">{startedD ? "Continuar" : "Empezar"} {ArrowIco}</span>
         </Link>
