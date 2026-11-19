@@ -109,7 +109,7 @@ export default function ClassReminders() {
             <span className="cn-when">{t.whenLabel}</span>
           </div>
           <div className="cn-mid">
-            <span className="cn-av" style={t.photo ? { backgroundImage: `url(${t.photo})` } : { background: "linear-gradient(135deg,#6d28d9,#22e0ff)" }}>
+            <span className="cn-av" style={t.photo ? { backgroundImage: `url(${t.photo})` } : { background: "linear-gradient(135deg,#6d28d9,#00ffff)" }}>
               {!t.photo && t.letter}
             </span>
             <div className="cn-info">

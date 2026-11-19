@@ -12,7 +12,7 @@ type Stu = {
   lessons_done: number; enrollments: number; xp: number; streak: number; stalled: boolean; created_at: string | null;
 };
 
-const AVS = ["#6d28d9,#22e0ff", "#0891b2,#06b6d4", "#7c3aed,#d946ef", "#166534,#22e67a", "#be185d,#fb7185", "#334155,#64748b"];
+const AVS = ["#6d28d9,#00ffff", "#0891b2,#06b6d4", "#7c3aed,#d946ef", "#166534,#22e67a", "#be185d,#fb7185", "#334155,#64748b"];
 function grad(seed: string) { let h = 0; for (let i = 0; i < seed.length; i++) h = (h * 31 + seed.charCodeAt(i)) >>> 0; return `linear-gradient(135deg,${AVS[h % AVS.length]})`; }
 const fmt = (n: number) => (n || 0).toLocaleString("es-CO");
 function ago(iso: string | null) {
@@ -57,7 +57,7 @@ export default function Analitica() {
       {ov && (
         <>
           <div className="an-kpis">
-            <K n={ov.total_students} l="Estudiantes" d={ov.new_7d ? `+${ov.new_7d} esta semana` : undefined} dc="#22e67a" k="#22e0ff" />
+            <K n={ov.total_students} l="Estudiantes" d={ov.new_7d ? `+${ov.new_7d} esta semana` : undefined} dc="#22e67a" k="#00ffff" />
             <K n={ov.active_7d} l="Activos (7 días)" d={`${pctActive}% del total`} dc="#22e67a" k="#22e67a" />
             <K n={ov.active_24h} l="Activos hoy" d="últimas 24 h" k="#d946ef" />
             <K n={ov.lessons_done_7d} l="Lecciones completadas" d="últimos 7 días" k="#f6c453" />

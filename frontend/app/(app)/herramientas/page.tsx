@@ -5,7 +5,7 @@ import { Wrench, ArrowUpRight } from "lucide-react";
 import SectionHero from "@/components/SectionHero";
 
 const CATS = [
-  { acc: "#22e0ff" },
+  { acc: "#00ffff" },
   { acc: "#d946ef" },
   { acc: "#fb7185" },
   { acc: "#22e67a" },

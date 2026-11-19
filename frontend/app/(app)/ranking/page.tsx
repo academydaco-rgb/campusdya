@@ -14,7 +14,7 @@ type Row = {
   xp: number; level: number; title: string; is_me: boolean;
 };
 
-const AVS = ["#6d28d9,#22e0ff", "#0891b2,#06b6d4", "#7c3aed,#d946ef", "#166534,#22e67a", "#be185d,#fb7185", "#b45309,#f6c453", "#1d4ed8,#22e0ff", "#4338ca,#8b5cf6"];
+const AVS = ["#6d28d9,#00ffff", "#0891b2,#06b6d4", "#7c3aed,#d946ef", "#166534,#22e67a", "#be185d,#fb7185", "#b45309,#f6c453", "#1d4ed8,#00ffff", "#4338ca,#8b5cf6"];
 function avGrad(seed: string) {
   let h = 0; for (let i = 0; i < seed.length; i++) h = (h * 31 + seed.charCodeAt(i)) >>> 0;
   return `linear-gradient(135deg,${AVS[h % AVS.length]})`;
@@ -51,7 +51,7 @@ export default function Ranking() {
                 strokeDasharray={C} strokeDashoffset={C * (1 - g.pct / 100)} transform="rotate(-90 52 52)" />
               <defs>
                 <linearGradient id="gmg" x1="0" y1="0" x2="1" y2="1">
-                  <stop offset="0" stopColor="#22e0ff" /><stop offset="1" stopColor="#8b5cf6" />
+                  <stop offset="0" stopColor="#00ffff" /><stop offset="1" stopColor="#8b5cf6" />
                 </linearGradient>
               </defs>
             </svg>

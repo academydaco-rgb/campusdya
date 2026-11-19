@@ -68,7 +68,7 @@ async function descargarCertificado(b: MyBadgeT, userName: string) {
     rg.addColorStop(0, col); rg.addColorStop(1, "rgba(0,0,0,0)");
     ctx.fillStyle = rg; ctx.fillRect(0, 0, W, H);
   };
-  neb(120, 90, 720, "rgba(34,224,255,.16)");
+  neb(120, 90, 720, "rgba(0,255,255,.16)");
   neb(1520, 120, 760, "rgba(217,70,239,.20)");
   neb(1500, 1080, 760, "rgba(139,92,246,.20)");
   neb(120, 1060, 640, "rgba(124,58,237,.14)");
@@ -82,7 +82,7 @@ async function descargarCertificado(b: MyBadgeT, userName: string) {
 
   // ── Marco con degradado ──
   const fg = ctx.createLinearGradient(40, 40, W - 40, H - 40);
-  fg.addColorStop(0, "#22e0ff"); fg.addColorStop(0.5, "#d946ef"); fg.addColorStop(1, "#8b5cf6");
+  fg.addColorStop(0, "#00ffff"); fg.addColorStop(0.5, "#d946ef"); fg.addColorStop(1, "#8b5cf6");
   ctx.strokeStyle = fg; ctx.lineWidth = 3; rr(ctx, 44, 44, W - 88, H - 88, 28); ctx.stroke();
   ctx.strokeStyle = "rgba(217,70,239,.3)"; ctx.lineWidth = 1.4; rr(ctx, 64, 64, W - 128, H - 128, 20); ctx.stroke();
 
@@ -129,7 +129,7 @@ async function descargarCertificado(b: MyBadgeT, userName: string) {
   ctx.fillStyle = "#ffffff"; ctx.font = "800 68px Montserrat, Georgia";
   ctx.fillText(userName, cx, 672);
   const ug = ctx.createLinearGradient(cx - 300, 0, cx + 300, 0);
-  ug.addColorStop(0, "rgba(34,224,255,0)"); ug.addColorStop(0.5, "#22e0ff"); ug.addColorStop(1, "rgba(217,70,239,0)");
+  ug.addColorStop(0, "rgba(0,255,255,0)"); ug.addColorStop(0.5, "#00ffff"); ug.addColorStop(1, "rgba(217,70,239,0)");
   ctx.strokeStyle = ug; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.moveTo(cx - 320, 700); ctx.lineTo(cx + 320, 700); ctx.stroke();
 
   ctx.fillStyle = "#9aa0b8"; ctx.font = "400 24px Montserrat, Arial";
@@ -154,7 +154,7 @@ async function descargarCertificado(b: MyBadgeT, userName: string) {
       let dw = 380, dh = dw * ratio;          // ancho casi igual a la línea
       const MAXH = 118;
       if (dh > MAXH) { dh = MAXH; dw = dh / ratio; }
-      ctx.save(); ctx.shadowColor = "rgba(34,224,255,.35)"; ctx.shadowBlur = 10;
+      ctx.save(); ctx.shadowColor = "rgba(0,255,255,.35)"; ctx.shadowBlur = 10;
       ctx.drawImage(ink, x - dw / 2, LINE_Y - dh - 6, dw, dh);   // apoyada sobre la línea
       ctx.restore();
     } catch { /* sin firma aún */ }

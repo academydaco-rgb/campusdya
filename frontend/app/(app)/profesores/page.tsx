@@ -78,7 +78,7 @@ export default function Profesores() {
                       <div className="prof-back-dips-list">
                         {t.diplomas.map((d) => (
                           <div key={d.slug} className="prof-back-dip">
-                            <span className="prof-back-dip-img" style={{ background: d.cover_url ? `center/cover url(${d.cover_url})` : "linear-gradient(135deg,#22e0ff,#7c3aed)" }} />
+                            <span className="prof-back-dip-img" style={{ background: d.cover_url ? `center/cover url(${d.cover_url})` : "linear-gradient(135deg,#00ffff,#7c3aed)" }} />
                             <span className="prof-back-dip-t">{d.title}</span>
                           </div>
                         ))}

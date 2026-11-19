@@ -69,8 +69,8 @@ function NewPhase({ nextOrder, onCreated }: { nextOrder: number; onCreated: () =
   }
 
   return (
-    <div style={{ display: "grid", gap: 10, padding: 14, borderRadius: 12, border: "1px dashed rgba(34,224,255,.45)", background: "rgba(34,224,255,.05)" }}>
-      <strong style={{ fontSize: 13, color: "var(--cyan, #22e0ff)" }}>+ Nueva fase</strong>
+    <div style={{ display: "grid", gap: 10, padding: 14, borderRadius: 12, border: "1px dashed rgba(0,255,255,.45)", background: "rgba(0,255,255,.05)" }}>
+      <strong style={{ fontSize: 13, color: "var(--cyan, #00ffff)" }}>+ Nueva fase</strong>
       <div style={{ display: "grid", gridTemplateColumns: "56px 1fr 86px", gap: 10, alignItems: "end" }}>
         <div><label className="label">Icono</label><input className="input" value={icon} onChange={(e) => setIcon(e.target.value)} placeholder="⭐" style={{ textAlign: "center", fontSize: 18 }} /></div>
         <div><label className="label">Nombre</label><input className="input" value={name} onChange={(e) => setName(e.target.value)} placeholder="Nombre de la fase" /></div>
@@ -149,7 +149,7 @@ export default function AdminDiplomas() {
       <div className="card" style={{ padding: 18, display: "grid", gap: 14 }}>
         <button type="button" onClick={() => setShowPhases((v) => !v)} style={{ all: "unset", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10 }}>
           <span style={{ display: "flex", alignItems: "center", gap: 10 }}>
-            <span style={{ width: 6, height: 20, borderRadius: 3, background: "linear-gradient(180deg,#22e0ff,#8b5cf6)" }} />
+            <span style={{ width: 6, height: 20, borderRadius: 3, background: "linear-gradient(180deg,#00ffff,#8b5cf6)" }} />
             <strong style={{ fontSize: 15 }}>Fases del programa</strong>
             <span className="badge-pill" style={{ fontSize: 11 }}>{phases.length}</span>
           </span>

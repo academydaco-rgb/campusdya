@@ -88,7 +88,7 @@ export default function LessonPage() {
   const fileMeta = (name?: string | null, url?: string | null): [string, string] => {
     const ext = ((name || url || "").split("?")[0].split(".").pop() || "").toLowerCase();
     const map: Record<string, [string, string]> = {
-      pdf: ["PDF", "#fb7185"], doc: ["DOC", "#22e0ff"], docx: ["DOC", "#22e0ff"], txt: ["TXT", "#9aa0b8"],
+      pdf: ["PDF", "#fb7185"], doc: ["DOC", "#00ffff"], docx: ["DOC", "#00ffff"], txt: ["TXT", "#9aa0b8"],
       xls: ["XLS", "#22e67a"], xlsx: ["XLS", "#22e67a"], csv: ["CSV", "#22e67a"],
       ppt: ["PPT", "#f6c453"], pptx: ["PPT", "#f6c453"], zip: ["ZIP", "#a78bfa"], rar: ["ZIP", "#a78bfa"],
       png: ["IMG", "#d946ef"], jpg: ["IMG", "#d946ef"], jpeg: ["IMG", "#d946ef"], webp: ["IMG", "#d946ef"], gif: ["IMG", "#d946ef"],

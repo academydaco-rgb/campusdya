@@ -13,7 +13,7 @@ type Post = {
 type Cmt = { id: string; body: string; created_at: string; author: Author };
 
 const CATS = ["General", "Mis ventas", "Preguntas", "Recursos", "Preséntate", "Logros"];
-const AVS = ["#6d28d9,#22e0ff", "#0891b2,#06b6d4", "#7c3aed,#d946ef", "#166534,#22e67a", "#be185d,#fb7185", "#b45309,#f6c453"];
+const AVS = ["#6d28d9,#00ffff", "#0891b2,#06b6d4", "#7c3aed,#d946ef", "#166534,#22e67a", "#be185d,#fb7185", "#b45309,#f6c453"];
 function grad(seed: string) { let h = 0; for (let i = 0; i < seed.length; i++) h = (h * 31 + seed.charCodeAt(i)) >>> 0; return `linear-gradient(135deg,${AVS[h % AVS.length]})`; }
 function ago(iso: string) {
   const s = Math.max(1, (Date.now() - new Date(iso).getTime()) / 1000);

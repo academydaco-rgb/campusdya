@@ -157,7 +157,7 @@ export default function EditDiploma() {
           <label className="label">Portada del diplomado</label>
           <ImageUpload value={dip.cover_url} onChange={(url) => saveImage({ cover_url: url })} ratio="square" hint="Cuadrada · 1080 × 1080 px (PNG o JPG)" />
         </div>
-        <div style={{ display: "grid", gap: 12, padding: 16, borderRadius: 14, border: "1px dashed var(--line-2)", background: "rgba(34,224,255,.04)" }}>
+        <div style={{ display: "grid", gap: 12, padding: 16, borderRadius: 14, border: "1px dashed var(--line-2)", background: "rgba(0,255,255,.04)" }}>
           <div style={{ fontWeight: 800, color: "#fff", fontSize: 14 }}>🎬 Cabecera del diplomado (estilo Netflix)</div>
           <div>
             <label className="label">Portada de la cabecera (fondo)</label>
@@ -266,7 +266,7 @@ function ModuleBlock({ index, module, lessons, onLessons, onModule, onDelete, ha
           </>
         )}
         {hasRoutes && module.route && (
-          <span className="chip" style={{ fontSize: 11, fontWeight: 800, color: module.route === "A" ? "#05050c" : "#fff", background: module.route === "A" ? "#22e0ff" : "#d946ef" }}>
+          <span className="chip" style={{ fontSize: 11, fontWeight: 800, color: module.route === "A" ? "#05050c" : "#fff", background: module.route === "A" ? "#00ffff" : "#d946ef" }}>
             Ruta {module.route}
           </span>
         )}
