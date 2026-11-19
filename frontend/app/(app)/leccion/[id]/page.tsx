@@ -127,15 +127,24 @@ export default function LessonPage() {
         {l.content && <div className="card" style={{ padding: 20, whiteSpace: "pre-wrap", lineHeight: 1.65 }}>{l.content}</div>}
         {Array.isArray(l.materials) && l.materials.length > 0 && (
           <div className="card" style={{ padding: 18 }}>
-            <div className="eyebrow" style={{ marginBottom: 12 }}>📎 Archivos de la clase</div>
+            <div className="mat-head">
+              <span className="mat-head-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg></span>
+              <div><div className="mat-head-t">Archivos de la clase</div><div className="mat-head-s">Descarga el material para seguir la lección</div></div>
+            </div>
             <div className="mat-grid">
               {l.materials.map((m, i) => {
                 const [tag, color] = fileMeta(m.nombre, m.url);
                 return (
                   <a key={i} className="mat-chip" style={{ ["--mc" as string]: color }} href={m.url} target="_blank" rel="noreferrer" download>
                     <span className="mat-ic">{tag}</span>
-                    <span className="mat-name">{m.nombre || "Archivo"}</span>
-                    <span className="mat-dl">⬇</span>
+                    <span className="mat-body">
+                      <span className="mat-name">{m.nombre || "Archivo"}</span>
+                      <span className="mat-sub">Material de la clase</span>
+                    </span>
+                    <span className="mat-dl">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.4} strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+                      Descargar
+                    </span>
                   </a>
                 );
               })}
