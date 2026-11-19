@@ -98,10 +98,8 @@ export default function DiplomaPage() {
             <span className="muted" style={{ fontSize: 13, marginLeft: 8 }}>{d.completed_lessons}/{d.total_lessons} lecciones</span></div>
         </div>
         <div className="nf-bar"><div className="nf-bar-fill" style={{ width: `${d.progress}%` }} /></div>
-      </div>
-
-      {flatL.length > 0 && (nextL ? (
-        <Link href={`/leccion/${nextL.l.id}`} className="cont-card">
+        {flatL.length > 0 && (nextL ? (
+        <Link href={`/leccion/${nextL.l.id}`} className="nfp-cont">
           <span className="cont-play">{PlayIco}</span>
           <div className="cont-info">
             <div className="cont-lbl">{startedD ? "Continúa donde quedaste" : "Empieza tu formación"}</div>
@@ -111,7 +109,7 @@ export default function DiplomaPage() {
           <span className="cont-btn">{startedD ? "Continuar" : "Empezar"} {ArrowIco}</span>
         </Link>
       ) : firstL ? (
-        <Link href={`/leccion/${firstL.l.id}`} className="cont-card done">
+        <Link href={`/leccion/${firstL.l.id}`} className="nfp-cont done">
           <span className="cont-play"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M20 6 9 17l-5-5"/></svg></span>
           <div className="cont-info">
             <div className="cont-lbl">¡Diplomado completado!</div>
@@ -121,6 +119,7 @@ export default function DiplomaPage() {
           <span className="cont-btn">Repasar {ArrowIco}</span>
         </Link>
       ) : null)}
+      </div>
 
       {segments.map((seg) => seg.kind === "common" ? (
         <ModuleCard key={seg.item.module.id} item={seg.item} open={!!open[seg.item.module.id]} onToggle={toggle} />

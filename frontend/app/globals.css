@@ -1135,19 +1135,19 @@ p{line-height:1.6}
 .nf-teacher-one{display:flex;align-items:center;gap:10px}
 .nf-teacher-ph2{width:40px;height:40px;border-radius:999px;flex-shrink:0;border:2px solid var(--cyan);background-size:cover;background-position:center}
 
-/* ─────────── Diplomado: tarjeta Continuar ─────────── */
-.cont-card{display:flex;align-items:center;gap:16px;padding:16px 18px;border-radius:18px;margin-top:14px;text-decoration:none;color:var(--text);position:relative;overflow:hidden;border:1px solid color-mix(in srgb,var(--cyan) 38%,transparent);background:linear-gradient(135deg,color-mix(in srgb,var(--cyan) 13%,rgba(14,12,30,.72)),color-mix(in srgb,#8b5cf6 10%,rgba(11,10,22,.82)));transition:transform .16s,box-shadow .16s,border-color .16s}
-.cont-card:hover{transform:translateY(-2px);border-color:color-mix(in srgb,var(--cyan) 62%,transparent);box-shadow:0 18px 40px -20px #000,0 0 32px -10px color-mix(in srgb,var(--cyan) 50%,transparent)}
+/* ─────────── Diplomado: Avance + Continuar (un bloque) ─────────── */
+.nfp-cont{display:flex;align-items:center;gap:16px;margin-top:16px;padding-top:16px;border-top:1px solid rgba(150,130,255,.12);text-decoration:none;color:var(--text)}
+.nfp-cont:hover .cont-btn{filter:brightness(1.08)}
+.nfp-cont:hover .cont-title{color:#fff}
 .cont-play{width:54px;height:54px;border-radius:15px;flex:none;display:grid;place-items:center;color:#06060e;background:linear-gradient(135deg,#00ffff,#4dffff 55%,#00ffff);box-shadow:0 8px 22px -8px rgba(0,255,255,.7),inset 0 1px 0 rgba(255,255,255,.4)}
 .cont-play svg{width:24px;height:24px;margin-left:2px}
 .cont-info{flex:1;min-width:0}
 .cont-lbl{font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--cyan)}
-.cont-title{font-size:17px;font-weight:800;color:#fff;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cont-title{font-size:16.5px;font-weight:800;color:#fff;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .cont-mod{font-size:12.5px;color:var(--muted-soft);font-weight:600;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .cont-btn{flex:none;display:inline-flex;align-items:center;gap:8px;font-size:13.5px;font-weight:800;color:#fff;background:var(--grad);padding:11px 18px;border-radius:12px;box-shadow:0 10px 26px -8px rgba(192,38,211,.55),inset 0 1px 0 rgba(255,255,255,.22)}
 .cont-btn svg{width:16px;height:16px}
-.cont-card.done{border-color:color-mix(in srgb,#22e67a 42%,transparent);background:linear-gradient(135deg,color-mix(in srgb,#22e67a 12%,rgba(14,12,30,.72)),rgba(11,10,22,.82))}
-.cont-card.done .cont-play{background:linear-gradient(135deg,#1ebe5a,#22e67a);color:#fff}
-.cont-card.done .cont-lbl{color:#22e67a}
-.cont-card.done .cont-btn{background:linear-gradient(135deg,#1ebe5a,#22e67a);color:#fff}
-@media(max-width:560px){.cont-card{flex-wrap:wrap}.cont-info{order:2;flex:1 1 60%}.cont-btn{width:100%;justify-content:center;order:3}}
+.nfp-cont.done .cont-play{background:linear-gradient(135deg,#1ebe5a,#22e67a);color:#fff}
+.nfp-cont.done .cont-lbl{color:#22e67a}
+.nfp-cont.done .cont-btn{background:linear-gradient(135deg,#1ebe5a,#22e67a);color:#fff}
+@media(max-width:560px){.nfp-cont{flex-wrap:wrap}.cont-info{order:2;flex:1 1 60%}.cont-btn{width:100%;justify-content:center;order:3}}
