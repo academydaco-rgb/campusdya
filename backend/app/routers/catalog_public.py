@@ -19,6 +19,18 @@ from app.schemas.feedback import FeedbackCreate, FeedbackOut
 router = APIRouter(prefix="/api", tags=["catalogo"])
 
 
+@router.get("/public/diploma-covers")
+async def public_diploma_covers(db: AsyncSession = Depends(get_db)):
+    """Portadas de diplomados publicados — endpoint PÚBLICO (sin login) para la animación del login.
+    Solo devuelve título e imagen, nada sensible."""
+    rows = (await db.execute(
+        select(Diploma)
+        .where(Diploma.status == "published", Diploma.cover_url.isnot(None))
+        .order_by(Diploma.order)
+    )).scalars().all()
+    return [{"title": d.title, "cover_url": d.cover_url} for d in rows]
+
+
 @router.get("/phases")
 async def universe(db: AsyncSession = Depends(get_db), user: User = Depends(get_current_user)):
     """El 'universo': fases (planetas) con sus diplomados publicados y si el alumno tiene acceso."""
