@@ -24,7 +24,6 @@ export default function LoginPage() {
     if (!c) return;
     const x = c.getContext("2d");
     if (!x) return;
-    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     let w = 0, h = 0, raf = 0;
     type P = { x: number; y: number; vx: number; vy: number; r: number; a: number };
     let ps: P[] = [];
@@ -44,7 +43,7 @@ export default function LoginPage() {
         }
         x.beginPath(); x.arc(p.x, p.y, p.r, 0, 6.3); x.fillStyle = `rgba(120,200,255,${p.a})`; x.fill();
       }
-      if (!reduce) raf = requestAnimationFrame(draw);
+      raf = requestAnimationFrame(draw);
     };
     draw();
     window.addEventListener("resize", rs);

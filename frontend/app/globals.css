@@ -1225,4 +1225,4 @@ p{line-height:1.6}
   .lgn-mob{display:flex;justify-content:center;margin-bottom:22px}
   .lgn-mob img{width:94px;height:94px;object-fit:contain;filter:drop-shadow(0 0 16px rgba(34,211,238,.4))}
 }
-@media(prefers-reduced-motion:reduce){.lgn-cta{animation:none}.lgn-sg{animation:none}}
+/* movimiento del login siempre activo (solicitado) */
