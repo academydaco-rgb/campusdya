@@ -1155,7 +1155,7 @@ p{line-height:1.6}
 /* ════════════════════════════════════════════════
    LOGIN · portal futurista (namespaced lgn-)
    ════════════════════════════════════════════════ */
-.lgn-auth{position:relative;min-height:100vh;display:grid;grid-template-columns:1.1fr .9fr;overflow:hidden;
+.lgn-auth{position:relative;min-height:100vh;display:grid;grid-template-columns:1.04fr .96fr;overflow:hidden;
   background:linear-gradient(162deg,#0a0a14 0%,#08070f 55%,#050509 100%)}
 .lgn-pz{position:absolute;inset:0;z-index:1;pointer-events:none}
 .lgn-glowl{position:absolute;left:-160px;top:0;bottom:0;width:640px;pointer-events:none;filter:blur(72px);
@@ -1181,7 +1181,7 @@ p{line-height:1.6}
 .lgn-vig{position:absolute;inset:0;pointer-events:none;background:radial-gradient(135% 100% at 30% 26%,transparent 54%,rgba(0,0,0,.5))}
 .lgn-grain{position:fixed;inset:0;z-index:6;pointer-events:none;opacity:.04;mix-blend-mode:overlay;
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='lgnn'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23lgnn)'/%3E%3C/svg%3E");background-size:120px 120px}
-.lgn-brand{position:relative;z-index:3;display:flex;flex-direction:column;justify-content:center;gap:26px;padding:60px 56px 60px 112px;background:radial-gradient(620px 520px at 8% 42%,rgba(34,211,238,.09),transparent 62%)}
+.lgn-brand{position:relative;z-index:3;display:flex;flex-direction:column;justify-content:center;gap:24px;padding:56px 56px 56px 100px;background:radial-gradient(640px 540px at 10% 44%,rgba(34,211,238,.1),transparent 62%)}
 .lgn-logo img{width:168px;height:168px;object-fit:contain;filter:drop-shadow(0 0 30px rgba(34,211,238,.45))}
 .lgn-eyebrow{display:inline-flex;align-items:center;gap:9px;align-self:flex-start;font-size:11.5px;font-weight:800;letter-spacing:.16em;color:#d4d8ea;
   padding:9px 16px;border-radius:999px;background:rgba(124,58,237,.14);border:1px solid rgba(124,58,237,.42)}
@@ -1194,15 +1194,15 @@ p{line-height:1.6}
   background:linear-gradient(145deg,rgba(34,211,238,.18),rgba(124,58,237,.2));border:1px solid rgba(124,58,237,.36);color:#cdebff;box-shadow:0 6px 16px -10px rgba(124,58,237,.6)}
 .lgn-feat .ic svg{width:18px;height:18px}
 .lgn-feat span{font-size:14.5px;font-weight:600;color:#e7e9f4;line-height:1.25}
-.lgn-panel{position:relative;z-index:4;display:grid;place-items:center;padding:48px 92px}
-.lgn-card{position:relative;width:100%;max-width:390px;padding:36px 34px;border-radius:20px;
-  background:linear-gradient(170deg,rgba(17,16,30,.92),rgba(10,9,18,.95));border:1px solid rgba(124,58,237,.26);
-  box-shadow:0 50px 110px -46px #000,0 0 50px -30px rgba(124,58,237,.5)}
-.lgn-card h2{font-size:22px;font-weight:800;color:#fff;letter-spacing:-.01em}
-.lgn-sub{color:#9096ad;font-size:13.5px;margin-top:6px;margin-bottom:26px}
+.lgn-panel{position:relative;z-index:4;display:grid;place-items:center;padding:44px 56px}
+.lgn-card{position:relative;width:100%;max-width:446px;padding:46px 44px;border-radius:22px;
+  background:linear-gradient(170deg,rgba(17,16,30,.94),rgba(10,9,18,.96));border:1px solid rgba(124,58,237,.3);
+  box-shadow:0 60px 130px -46px #000,0 0 60px -28px rgba(124,58,237,.55)}
+.lgn-card h2{font-size:26px;font-weight:800;color:#fff;letter-spacing:-.015em}
+.lgn-sub{color:#9096ad;font-size:14px;margin-top:7px;margin-bottom:30px}
 .lgn-lab{display:block;font-size:12.5px;color:#c4c9dc;margin-bottom:8px;font-weight:700}
-.lgn-field{margin-bottom:17px}
-.lgn-input{width:100%;padding:14px 16px;border-radius:12px;background:rgba(255,255,255,.055);border:1px solid rgba(150,160,255,.32);color:#eef0f8;font-size:14.5px;font-family:inherit;outline:none;transition:border-color .15s,box-shadow .15s,background .15s;box-shadow:inset 0 1px 0 rgba(255,255,255,.05)}
+.lgn-field{margin-bottom:18px}
+.lgn-input{width:100%;padding:15px 16px;border-radius:12px;background:rgba(255,255,255,.055);border:1px solid rgba(150,160,255,.32);color:#eef0f8;font-size:14.5px;font-family:inherit;outline:none;transition:border-color .15s,box-shadow .15s,background .15s;box-shadow:inset 0 1px 0 rgba(255,255,255,.05)}
 .lgn-input::placeholder{color:#737892}
 .lgn-input:focus{border-color:rgba(56,189,248,.9);background:rgba(56,189,248,.06);box-shadow:0 0 0 3px rgba(56,189,248,.18)}
 .lgn-pw{position:relative}
@@ -1210,7 +1210,7 @@ p{line-height:1.6}
 .lgn-row{display:flex;justify-content:flex-end;margin:-2px 0 18px}
 .lgn-row button{color:#9096ad;font-size:12.5px;font-weight:600;background:none;border:0;cursor:pointer}
 .lgn-row button:hover{color:#22d3ee}
-.lgn-cta{width:100%;padding:14.5px;border-radius:12px;border:none;font-weight:800;font-size:15px;color:#fff;cursor:pointer;
+.lgn-cta{width:100%;padding:16px;border-radius:12px;border:none;font-weight:800;font-size:15.5px;color:#fff;cursor:pointer;
   background:linear-gradient(100deg,#0284c7,#22d3ee 25%,#3b82f6 50%,#22d3ee 75%,#0284c7);background-size:220% 100%;
   box-shadow:0 14px 30px -14px rgba(14,165,233,.75);animation:lgnCtaFlow 4.5s linear infinite}
 @keyframes lgnCtaFlow{0%{background-position:0% 50%}100%{background-position:220% 50%}}
