@@ -29,6 +29,12 @@ class Settings(BaseSettings):
     SEED_ADMIN_EMAIL: str = "academydaco@gmail.com"
     SEED_ADMIN_PASSWORD: str = ""
 
+    # LOBO ADS (asistente IA de Meta Ads)
+    GEMINI_API_KEY: str = ""
+    LOBO_GEN_MODEL: str = "gemini-3.5-flash"
+    LOBO_EMBED_MODEL: str = "models/gemini-embedding-001"
+    LOBO_DAILY_LIMIT: int = 40
+
     @property
     def cors_list(self) -> list[str]:
         return [o.strip() for o in self.CORS_ORIGINS.split(",") if o.strip()]

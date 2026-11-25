@@ -11,7 +11,7 @@ from app.models.setting import SiteSetting
 from app.models.provider import Provider
 from app.models.reset import PasswordResetToken
 from app.models.notification import Notification, NotificationRead
-from app.models.announcement import Announcement
+from app.models.lobo import LoboUsage
 
 __all__ = [
     "User",
@@ -27,4 +27,5 @@ __all__ = [
     "Provider",
     "PasswordResetToken",
     "Notification", "NotificationRead",
+    "LoboUsage",
 ]
