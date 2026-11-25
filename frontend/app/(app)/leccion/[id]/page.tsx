@@ -149,7 +149,7 @@ export default function LessonPage() {
 
       {/* Parrilla de contenido (pénsum) */}
       <aside>
-        <div className="wh"><h2>Contenido</h2></div>
+        <div className="wh"><h2 style={{ background: "none", WebkitTextFillColor: "#fff", color: "#fff", textTransform: "uppercase", fontSize: 18, letterSpacing: ".04em" }}>Contenido</h2></div>
         <div className="card" style={{ padding: 10, position: "sticky", top: 20 }}>
           {!diploma ? <div style={{ padding: 12 }} className="muted">…</div> :
             segments.map((seg) => seg.kind === "common" ? (
