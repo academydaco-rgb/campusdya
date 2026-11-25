@@ -118,12 +118,7 @@ async def answer(diploma: str, lesson_id: str, lesson_title: str, history, messa
             "contents": contents,
             "generationConfig": {"temperature": 0.6, "topP": 0.95, "maxOutputTokens": 1200},
         }
-        r = await client.post(
-            f"{base._BASE}/models/{settings.LOBO_GEN_MODEL}:generateContent",
-            headers=base._headers(), json=body,
-        )
-        r.raise_for_status()
-        d = r.json()
+        d = await base._generate(client, body)
         cand = (d.get("candidates") or [{}])[0]
         out = "".join(p.get("text", "") for p in cand.get("content", {}).get("parts", [])).strip()
         return out or "Uy, no pude generar la respuesta ahora. Intenta de nuevo en unos segundos. 🐺"

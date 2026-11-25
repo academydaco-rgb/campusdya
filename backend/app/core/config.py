@@ -31,7 +31,7 @@ class Settings(BaseSettings):
 
     # LOBO ADS (asistente IA de Meta Ads)
     GEMINI_API_KEY: str = ""
-    LOBO_GEN_MODEL: str = "gemini-3.5-flash"
+    LOBO_GEN_MODEL: str = "gemini-3.5-flash-lite"
     LOBO_EMBED_MODEL: str = "models/gemini-embedding-001"
     LOBO_DAILY_LIMIT: int = 40
     LOBO_LESSONS_DIR: str = "/app/static/lobo_lessons"   # índices por lección (volumen persistente)

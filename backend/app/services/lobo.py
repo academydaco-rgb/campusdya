@@ -7,6 +7,7 @@ modo que el modelo responde con los datos reales del diplomado sin tener que
 enviar todo el conocimiento en cada llamada (costo mínimo).
 """
 import json
+import asyncio
 from pathlib import Path
 
 import numpy as np
@@ -48,6 +49,25 @@ def _retrieve(qvec: np.ndarray, k: int = _TOP_K):
     sims = _EMB @ qvec
     idx = np.argsort(-sims)[:k]
     return [_CHUNKS[int(i)] for i in idx]
+
+async def _generate(client: httpx.AsyncClient, body: dict, model: str | None = None) -> dict:
+    """Llama a generateContent con reintentos ante 429/500/503 (saturación pasajera)."""
+    model = model or settings.LOBO_GEN_MODEL
+    url = f"{_BASE}/models/{model}:generateContent"
+    last = None
+    for attempt in range(4):
+        r = await client.post(url, headers=_headers(), json=body)
+        if r.status_code == 200:
+            return r.json()
+        if r.status_code in (429, 500, 503):
+            last = r
+            await asyncio.sleep(1.5 * (attempt + 1))
+            continue
+        r.raise_for_status()
+    if last is not None:
+        last.raise_for_status()
+    raise RuntimeError("generate failed")
+
 
 
 async def answer(history, message, image=None):
@@ -104,13 +124,7 @@ async def answer(history, message, image=None):
             "contents": contents,
             "generationConfig": {"temperature": 0.6, "topP": 0.95, "maxOutputTokens": 1400},
         }
-        r = await client.post(
-            f"{_BASE}/models/{settings.LOBO_GEN_MODEL}:generateContent",
-            headers=_headers(),
-            json=body,
-        )
-        r.raise_for_status()
-        d = r.json()
+        d = await _generate(client, body)
         cand = (d.get("candidates") or [{}])[0]
         out = "".join(p.get("text", "") for p in cand.get("content", {}).get("parts", []))
         out = out.strip()
