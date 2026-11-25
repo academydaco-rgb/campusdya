@@ -153,7 +153,7 @@ export default function LoboPage() {
       {/* ── Barra lateral (mismo lenguaje que el sidebar del campus) ── */}
       <aside className={`lb-side${navOpen ? " open" : ""}`}>
         <div className="lb-brand">
-          <img src="/lobo-ads.png" alt="LOBO ADS" />
+          <span className="lb-mark"><Sparkles size={22} /></span>
           <div>
             <div className="lb-brand-name">LOBO ADS</div>
             <div className="lb-brand-sub">Asistente de Meta Ads</div>
@@ -197,7 +197,7 @@ export default function LoboPage() {
           <div className="lb-thread">
             {msgs.map((m, i) => (
               <div key={i} className={`lb-row ${m.role}`}>
-                {m.role === "model" && <img className="lb-av" src="/lobo-ads.png" alt="" />}
+                {m.role === "model" && <span className="lb-av"><Sparkles size={17} /></span>}
                 <div className={`lb-bubble ${m.role}`}>
                   {m.img && <img className="lb-shot" src={m.img} alt="captura" />}
                   {m.text && <div className="lb-md" dangerouslySetInnerHTML={{ __html: mdToHtml(m.text) }} />}
@@ -206,7 +206,7 @@ export default function LoboPage() {
             ))}
             {busy && (
               <div className="lb-row model">
-                <img className="lb-av" src="/lobo-ads.png" alt="" />
+                <span className="lb-av"><Sparkles size={17} /></span>
                 <div className="lb-bubble model"><div className="lb-typing"><span /><span /><span /></div></div>
               </div>
             )}
@@ -251,7 +251,8 @@ export default function LoboPage() {
           radial-gradient(70% 18% at 90% 26%, rgba(217,70,239,.16), transparent 70%)}
         .lb-side>*{position:relative;z-index:2}
         .lb-brand{display:flex;align-items:center;gap:12px;padding:2px 4px 2px}
-        .lb-brand img{width:46px;height:46px;object-fit:contain;filter:drop-shadow(0 0 12px rgba(217,70,239,.35))}
+        .lb-mark{display:grid;place-items:center;width:46px;height:46px;border-radius:13px;flex:none;color:#fff;
+          background:var(--grad,linear-gradient(100deg,#7c3aed,#c026d3 55%,#db2777));box-shadow:var(--glow,0 10px 30px -8px rgba(192,38,211,.55))}
         .lb-brand-name{font-size:18px;font-weight:900;letter-spacing:.02em;font-family:var(--font-display,'Montserrat')}
         .lb-brand-sub{font-size:11px;color:var(--muted,#9aa0b8);font-weight:600;margin-top:2px}
 
@@ -294,8 +295,8 @@ export default function LoboPage() {
         .lb-thread{max-width:820px;margin:0 auto;padding:0 clamp(16px,2.4vw,30px);display:flex;flex-direction:column;gap:18px}
         .lb-row{display:flex;gap:12px;align-items:flex-start}
         .lb-row.user{flex-direction:row-reverse}
-        .lb-av{width:36px;height:36px;border-radius:11px;object-fit:contain;flex:none;padding:3px;
-          background:rgba(217,70,239,.08);border:1px solid var(--line)}
+        .lb-av{display:grid;place-items:center;width:36px;height:36px;border-radius:11px;flex:none;color:#fff;
+          background:var(--grad,linear-gradient(100deg,#7c3aed,#c026d3 55%,#db2777));box-shadow:0 8px 18px -8px rgba(192,38,211,.6)}
         .lb-bubble{max-width:78%;padding:15px 18px;border-radius:var(--r,18px);font-size:14.5px;line-height:1.62;
           box-shadow:var(--shadow,inset 0 1px 0 rgba(255,255,255,.05),0 2px 5px rgba(0,0,0,.35),0 26px 64px -30px rgba(0,0,0,.95))}
         .lb-bubble.model{background:var(--card,linear-gradient(160deg,rgba(26,22,48,.92),rgba(12,10,24,.94)));
