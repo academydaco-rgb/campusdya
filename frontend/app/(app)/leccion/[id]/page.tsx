@@ -177,7 +177,7 @@ export default function LessonPage() {
       </aside>
 
       <style jsx global>{`
-        .lsn-dash{grid-template-columns:minmax(0,1fr) 300px}
+        .lsn-dash{grid-template-columns:minmax(0,1fr) 340px}
         .lsn-row{display:grid;grid-template-columns:1.5fr 1fr;gap:16px;align-items:start}
         .lsn-tutor{padding:16px;height:470px;display:flex;flex-direction:column}
         .lsn-mats .mat-grid{grid-template-columns:1fr}
