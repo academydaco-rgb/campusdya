@@ -120,11 +120,12 @@ export default function LessonPage() {
   );
 
   return (
+    <>
+    {diploma && <div style={{ marginBottom: 14 }}><Link href={`/diplomado/${diploma.slug}`} className="muted" style={{ fontSize: 13 }}>← {diploma.title}</Link></div>}
     <div className="dash lsn-dash">
       {/* Principal */}
-      <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
-        {diploma && <Link href={`/diplomado/${diploma.slug}`} className="muted" style={{ fontSize: 13 }}>← {diploma.title}</Link>}
-        <h1 style={{ fontSize: 24 }}>{l.title}</h1>
+      <div className="lsn-main">
+        <h1 className="lsn-h1">{l.title}</h1>
 
         <div className="card" style={{ overflow: "hidden" }}>
           {l.videopress_url ? (
@@ -133,7 +134,7 @@ export default function LessonPage() {
         </div>
 
         {/* Navegación, justo debajo del video */}
-        <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
+        <div className="lsn-nav">
           {prev ? <Link href={`/leccion/${prev.id}`} className="btn btn-ghost">← Anterior</Link> : <span />}
           <button className="btn btn-primary" onClick={completar} disabled={l.completed}>{l.completed ? "✓ Completada" : "Marcar como completada"}</button>
           {next ? <Link href={`/leccion/${next.id}`} className="btn btn-ghost" style={{ marginLeft: "auto" }}>Siguiente →</Link> : <span style={{ marginLeft: "auto" }} />}
@@ -148,9 +149,9 @@ export default function LessonPage() {
       </div>
 
       {/* Parrilla de contenido (pénsum) */}
-      <aside>
-        <div className="wh"><h2 style={{ background: "none", WebkitTextFillColor: "#fff", color: "#fff", textTransform: "uppercase", fontSize: 18, letterSpacing: ".04em" }}>Contenido</h2></div>
-        <div className="card" style={{ padding: 10, position: "sticky", top: 20, maxHeight: "calc(100vh - 40px)", overflowY: "auto" }}>
+      <aside className="lsn-aside"><div className="lsn-aside-inner">
+        <div className="lsn-ahead">Contenido</div>
+        <div className="card lsn-pensum">
           {!diploma ? <div style={{ padding: 12 }} className="muted">…</div> :
             segments.map((seg) => seg.kind === "common" ? (
               <SideModule key={seg.item.module.id} item={seg.item} currentId={id} />
@@ -174,16 +175,25 @@ export default function LessonPage() {
               </div>
             ))}
         </div>
-      </aside>
+      </div></aside>
 
       <style jsx global>{`
-        .lsn-dash{grid-template-columns:minmax(0,1fr) 340px}
-        .lsn-row{display:grid;grid-template-columns:1.5fr 1fr;gap:16px;align-items:start}
-        .lsn-tutor{padding:16px;height:470px;display:flex;flex-direction:column}
+        .lsn-dash{grid-template-columns:minmax(0,1fr) 340px;align-items:stretch}
+        .lsn-main{display:flex;flex-direction:column;gap:16px;min-width:0}
+        .lsn-h1{font-size:24px;margin:0;height:34px;display:flex;align-items:center}
+        .lsn-nav{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+        .lsn-row{display:grid;grid-template-columns:1.5fr 1fr;gap:16px;align-items:stretch}
+        .lsn-tutor{padding:16px;height:340px;display:flex;flex-direction:column}
+        .lsn-mats{overflow:auto}
         .lsn-mats .mat-grid{grid-template-columns:1fr}
-        @media(max-width:960px){.lsn-dash{grid-template-columns:1fr}.lsn-row{grid-template-columns:1fr}.lsn-tutor{height:430px}}
+        .lsn-aside{position:relative;min-height:0}
+        .lsn-aside-inner{position:absolute;inset:0;display:flex;flex-direction:column;gap:16px}
+        .lsn-ahead{height:34px;display:flex;align-items:center;font-size:18px;font-weight:800;color:#fff;text-transform:uppercase;letter-spacing:.04em}
+        .lsn-pensum{flex:1;min-height:0;overflow-y:auto;padding:10px;margin:0}
+        @media(max-width:960px){.lsn-dash{grid-template-columns:1fr;align-items:start}.lsn-row{grid-template-columns:1fr}.lsn-tutor{height:360px}.lsn-aside-inner{position:static}.lsn-pensum{max-height:60vh}}
       `}</style>
     </div>
+    </>
   );
 }
 
