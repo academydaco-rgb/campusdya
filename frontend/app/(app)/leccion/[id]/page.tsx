@@ -132,19 +132,19 @@ export default function LessonPage() {
           ) : <div style={{ padding: 40, textAlign: "center" }} className="muted">Esta lección aún no tiene video.</div>}
         </div>
 
-        {/* Tutor IA + materiales, debajo del video */}
-        {hasMats ? (
-          <div className="lsn-row">{tutorCard}{materialsCard}</div>
-        ) : (
-          <>{tutorCard}{materialsCard}</>
-        )}
-
-        {/* Navegación */}
+        {/* Navegación, justo debajo del video */}
         <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
           {prev ? <Link href={`/leccion/${prev.id}`} className="btn btn-ghost">← Anterior</Link> : <span />}
           <button className="btn btn-primary" onClick={completar} disabled={l.completed}>{l.completed ? "✓ Completada" : "Marcar como completada"}</button>
           {next ? <Link href={`/leccion/${next.id}`} className="btn btn-ghost" style={{ marginLeft: "auto" }}>Siguiente →</Link> : <span style={{ marginLeft: "auto" }} />}
         </div>
+
+        {/* Tutor IA + materiales */}
+        {hasMats ? (
+          <div className="lsn-row">{tutorCard}{materialsCard}</div>
+        ) : (
+          <>{tutorCard}{materialsCard}</>
+        )}
       </div>
 
       {/* Parrilla de contenido (pénsum) */}

@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import { api } from "@/lib/api";
-import { Send, ImagePlus, X, Sparkles } from "lucide-react";
+import { Send, ImagePlus, X, Bot } from "lucide-react";
 
 /* Panel de chat del Tutor IA embebido en una lección.
    Aparece en TODAS las lecciones; si la clase aún no tiene transcripción cargada,
@@ -87,20 +87,20 @@ export default function LessonTutor({ lessonId, lessonTitle, diploma }: { lesson
   return (
     <div className="lt-wrap">
       <div className="lt-head">
-        <span className="lt-mk"><Sparkles size={17} /></span>
+        <span className="lt-mk"><Bot size={17} /></span>
         <div><b>Tutor de esta clase</b><small>Resuelve tus dudas con IA</small></div>
       </div>
       <div className="lt-msgs" ref={scrollRef}>
         {msgs.map((m, i) => (
           <div key={i} className={`lt-row ${m.role}`}>
-            {m.role === "model" && <span className="lt-av"><Sparkles size={14} /></span>}
+            {m.role === "model" && <span className="lt-av"><Bot size={14} /></span>}
             <div className={`lt-bub ${m.role}`}>
               {m.img && <img className="lt-shot" src={m.img} alt="captura" />}
               {m.text && <div className="lt-md" dangerouslySetInnerHTML={{ __html: mdToHtml(m.text) }} />}
             </div>
           </div>
         ))}
-        {busy && <div className="lt-row model"><span className="lt-av"><Sparkles size={14} /></span><div className="lt-bub model"><div className="lt-typing"><span /><span /><span /></div></div></div>}
+        {busy && <div className="lt-row model"><span className="lt-av"><Bot size={14} /></span><div className="lt-bub model"><div className="lt-typing"><span /><span /><span /></div></div></div>}
       </div>
       {pending && (
         <div className="lt-preview"><img src={pending.preview} alt="adjunto" /><button onClick={() => setPending(null)} aria-label="Quitar"><X size={13} /></button></div>
