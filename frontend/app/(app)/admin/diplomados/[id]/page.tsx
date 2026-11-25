@@ -3,7 +3,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import { toEmbed } from "@/components/ProtectedVideo";
-import { api, uploadImage, AdminDiplomaT, AdminModuleT, AdminLessonT, PhaseLiteT, TeacherT , uploadFile} from "@/lib/api";
+import { api, uploadImage, AdminDiplomaT, AdminModuleT, AdminLessonT, PhaseLiteT, TeacherT , uploadFile, uploadTranscripts} from "@/lib/api";
 
 function ImageUpload({ value, onChange, hint, ratio }: { value?: string | null; onChange: (url: string) => void; hint: string; ratio: string }) {
   const [busy, setBusy] = useState(false);
@@ -48,6 +48,56 @@ function MoveBtns({ onUp, onDown, first, last, label }: { onUp: () => void; onDo
       <button type="button" className="btn btn-ghost" style={{ padding: "4px 9px", fontSize: 13, opacity: first ? .35 : 1 }} disabled={first} onClick={onUp} title={`Subir ${label}`} aria-label={`Subir ${label}`}>▲</button>
       <button type="button" className="btn btn-ghost" style={{ padding: "4px 9px", fontSize: 13, opacity: last ? .35 : 1 }} disabled={last} onClick={onDown} title={`Bajar ${label}`} aria-label={`Bajar ${label}`}>▼</button>
     </span>
+  );
+}
+
+function Stat({ n, l, ok }: { n: number; l: string; ok?: boolean }) {
+  return <div style={{ display: "flex", flexDirection: "column" }}><b style={{ fontSize: 22, color: ok ? "#34d399" : "#fff", lineHeight: 1 }}>{n}</b><span className="muted" style={{ fontSize: 11.5, marginTop: 4 }}>{l}</span></div>;
+}
+
+function TutorTranscripts({ diplomaId }: { diplomaId: string }) {
+  const [status, setStatus] = useState<{ total: number; con_tutor: number; sin_tutor: number; configurado: boolean } | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [report, setReport] = useState<{ matched: number; total: number; chunks: number; unmatched?: string[] } | null>(null);
+  const [err, setErr] = useState("");
+  function loadStatus() { api.get<{ total: number; con_tutor: number; sin_tutor: number; configurado: boolean }>(`/api/admin/diplomas/${diplomaId}/transcripts/status`).then(setStatus).catch(() => {}); }
+  useEffect(loadStatus, [diplomaId]);
+  async function pick(e: React.ChangeEvent<HTMLInputElement>) {
+    const f = e.target.files?.[0];
+    if (!f) return;
+    setBusy(true); setErr(""); setReport(null);
+    try { const r = await uploadTranscripts(diplomaId, f); setReport(r); loadStatus(); }
+    catch (ex) { setErr(ex instanceof Error ? ex.message : "Error al procesar"); }
+    finally { setBusy(false); e.target.value = ""; }
+  }
+  return (
+    <div className="card" style={{ padding: 20, marginBottom: 22 }}>
+      <h2 style={{ fontSize: 17, marginBottom: 6 }}>Tutor IA · Transcripciones</h2>
+      <p className="muted" style={{ fontSize: 13, lineHeight: 1.6, marginBottom: 14 }}>Sube un archivo (PDF, Word o .txt) con las clases de este diplomado. El sistema lo parte por lección y activa el chat del Tutor IA en cada una. Cada clase se empareja por su título; las que no vengan en el archivo igual responden con el material general del diplomado.</p>
+      {status && (
+        <div style={{ display: "flex", gap: 22, marginBottom: 16, flexWrap: "wrap" }}>
+          <Stat n={status.con_tutor} l="con transcripción" ok />
+          <Stat n={status.sin_tutor} l="sin transcripción" />
+          <Stat n={status.total} l="lecciones" />
+        </div>
+      )}
+      <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
+        <label className="btn btn-primary" style={{ fontSize: 14, cursor: busy ? "default" : "pointer", opacity: busy ? 0.6 : 1 }}>
+          {busy ? "Procesando… (puede tardar ~1 min)" : "Subir transcripciones"}
+          <input type="file" accept=".pdf,.docx,.txt,.md" disabled={busy} onChange={pick} style={{ display: "none" }} />
+        </label>
+        {status && !status.configurado && <span className="muted" style={{ fontSize: 12 }}>Falta configurar la API del Tutor IA en el servidor.</span>}
+      </div>
+      {err && <div style={{ color: "var(--danger)", fontSize: 13, marginTop: 12 }}>{err}</div>}
+      {report && (
+        <div style={{ marginTop: 14, fontSize: 13 }}>
+          <div style={{ color: "#34d399", fontWeight: 700 }}>Listo: {report.matched} de {report.total} lecciones con tutor ({report.chunks} fragmentos indexados).</div>
+          {report.unmatched && report.unmatched.length > 0 && (
+            <div style={{ marginTop: 8, color: "var(--muted)", lineHeight: 1.6 }}>No encontré transcripción para: <b style={{ color: "#fff" }}>{report.unmatched.join(" · ")}</b>. Revisa que el título de esas lecciones aparezca igual en el archivo.</div>
+          )}
+        </div>
+      )}
+    </div>
   );
 }
 
@@ -200,6 +250,8 @@ export default function EditDiploma() {
           {msg && <span className="muted" style={{ fontSize: 13 }}>{msg}</span>}
         </div>
       </form>
+
+      <TutorTranscripts diplomaId={id} />
 
       <div>
         <h2 style={{ fontSize: 17, marginBottom: 12 }}>Módulos y lecciones</h2>

@@ -168,4 +168,21 @@ export async function uploadImageUser(file: File): Promise<string> {
   return uploadWithRetry("/api/upload", file);
 }
 
+export interface TranscriptReportT { ok: boolean; chunks: number; matched: number; total: number; matched_titles?: string[]; unmatched?: string[]; }
+export async function uploadTranscripts(diplomaId: string, file: File): Promise<TranscriptReportT> {
+  const fd = new FormData();
+  fd.append("file", file);
+  let token: string | null = null;
+  try { token = typeof window !== "undefined" ? localStorage.getItem("academia_token") : null; } catch { token = null; }
+  const res = await fetch(`${API_URL}/api/admin/diplomas/${diplomaId}/transcripts`, {
+    method: "POST", headers: token ? { Authorization: `Bearer ${token}` } : {}, body: fd,
+  });
+  if (!res.ok) {
+    let detail = "No se pudo procesar el archivo";
+    try { const j = await res.json(); detail = j.detail || detail; } catch { /* ignore */ }
+    throw new Error(detail);
+  }
+  return res.json();
+}
+
 export interface AnnouncementT { id: string; title: string; body: string; image_url?: string | null; status: string; starts_at: string; expires_at?: string | null; created_at: string; teacher_id?: string | null; teacher_name?: string | null; teacher_photo_url?: string | null; }

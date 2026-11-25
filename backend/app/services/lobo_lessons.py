@@ -16,7 +16,7 @@ import httpx
 from app.core.config import settings
 from app.services import lobo as base
 
-_DIR = Path(__file__).resolve().parent.parent / "lobo_data" / "lessons"
+_DIR = Path(settings.LOBO_LESSONS_DIR)
 _cache: dict[str, tuple[list, "np.ndarray | None"]] = {}
 
 
@@ -42,6 +42,12 @@ def reload_cache():
 def has_lesson_content(diploma: str, lesson_id: str) -> bool:
     chunks, _ = _load(diploma)
     return any(str(c.get("lesson_id")) == str(lesson_id) for c in chunks)
+
+
+def content_lesson_ids(diploma: str) -> set:
+    """IDs de lecciones que ya tienen transcripción cargada en este diplomado."""
+    chunks, _ = _load(diploma)
+    return {str(c.get("lesson_id")) for c in chunks}
 
 
 def _system(lesson_title: str) -> str:
