@@ -178,7 +178,7 @@ export default function LessonPage() {
       </div></aside>
 
       <style jsx global>{`
-        .lsn-dash{grid-template-columns:minmax(0,1fr) 340px;align-items:stretch}
+        .lsn-dash{grid-template-columns:minmax(0,1fr) 380px;align-items:stretch}
         .lsn-main{display:flex;flex-direction:column;gap:16px;min-width:0}
         .lsn-h1{font-size:24px;margin:0;height:34px;display:flex;align-items:center}
         .lsn-nav{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
@@ -207,7 +207,7 @@ function SideModule({ item, currentId }: { item: LabeledModule; currentId: strin
       {item.module.lessons.map((ls) => {
         const cur = ls.id === currentId;
         return (
-          <Link key={ls.id} href={`/leccion/${ls.id}`}
+          <Link key={ls.id} href={`/leccion/${ls.id}`} title={ls.title}
             style={{ display: "flex", alignItems: "center", gap: 9, padding: "9px 10px", borderRadius: 9, fontSize: 13,
               background: cur ? "var(--grad-soft)" : "transparent", color: cur ? "#fff" : "var(--muted)", fontWeight: cur ? 700 : 500 }}>
             <span style={{ width: 18, height: 18, borderRadius: 999, display: "grid", placeItems: "center", fontSize: 10, flexShrink: 0,
