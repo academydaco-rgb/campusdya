@@ -68,7 +68,7 @@ export default function LessonPage() {
 
   if (error) return <div className="card" style={{ padding: 24, color: "var(--danger)" }}>{error}</div>;
   if (!l) return (
-    <div className="dash">
+    <div className="dash lsn-dash">
       <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
         <div className="skeleton" style={{ height: 22, width: 220 }} />
         <div className="skeleton" style={{ width: "100%", aspectRatio: "16/9" }} />
@@ -120,7 +120,7 @@ export default function LessonPage() {
   );
 
   return (
-    <div className="dash">
+    <div className="dash lsn-dash">
       {/* Principal */}
       <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
         {diploma && <Link href={`/diplomado/${diploma.slug}`} className="muted" style={{ fontSize: 13 }}>← {diploma.title}</Link>}
@@ -177,10 +177,11 @@ export default function LessonPage() {
       </aside>
 
       <style jsx global>{`
+        .lsn-dash{grid-template-columns:minmax(0,1fr) 300px}
         .lsn-row{display:grid;grid-template-columns:1.5fr 1fr;gap:16px;align-items:start}
         .lsn-tutor{padding:16px;height:470px;display:flex;flex-direction:column}
         .lsn-mats .mat-grid{grid-template-columns:1fr}
-        @media(max-width:960px){.lsn-row{grid-template-columns:1fr}.lsn-tutor{height:430px}}
+        @media(max-width:960px){.lsn-dash{grid-template-columns:1fr}.lsn-row{grid-template-columns:1fr}.lsn-tutor{height:430px}}
       `}</style>
     </div>
   );
