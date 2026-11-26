@@ -284,14 +284,14 @@ export default function LoboPage() {
         .lb-back:hover{color:#fff}
 
         /* Main / chat */
-        .lb-main{position:relative;z-index:2;display:flex;flex-direction:column;min-width:0;padding:14px 0}
+        .lb-main{position:relative;z-index:2;display:flex;flex-direction:column;min-width:0;min-height:0;padding:14px 0}
         .lb-top{display:flex;align-items:center;gap:12px;padding:0 clamp(16px,2.4vw,30px) 14px;margin-bottom:4px;border-bottom:1px solid var(--line)}
         .lb-top-title{display:flex;align-items:center;gap:8px;font-weight:800;font-size:15px;color:#fff;font-family:var(--font-display)}
         .lb-top-title svg{color:var(--cyan,#00ffff)}
         .lb-left{margin-left:auto;font-size:12px;color:var(--muted);font-weight:600;padding:6px 12px;border:1px solid var(--line);border-radius:999px;background:rgba(18,16,34,.6)}
         .lb-burger{display:none;background:transparent;border:0;color:var(--text);cursor:pointer}
 
-        .lb-scroll{flex:1;overflow-y:auto;padding:22px 0}
+        .lb-scroll{flex:1;min-height:0;overflow-y:auto;padding:22px 0}
         .lb-thread{max-width:820px;margin:0 auto;padding:0 clamp(16px,2.4vw,30px);display:flex;flex-direction:column;gap:18px}
         .lb-row{display:flex;gap:12px;align-items:flex-start}
         .lb-row.user{flex-direction:row-reverse}
