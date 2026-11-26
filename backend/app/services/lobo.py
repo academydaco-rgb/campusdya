@@ -22,7 +22,15 @@ _EMB = np.load(_DIR / "embeddings.npy")  # (N, 768) ya normalizado
 
 _BASE = "https://generativelanguage.googleapis.com/v1beta"
 _DIMS = 768
-_TOP_K = 6
+_TOP_K = 4
+
+_TRIVIAL = {"hola", "holi", "holis", "buenas", "buenos dias", "buenas tardes", "buenas noches",
+            "hey", "hi", "ola", "ok", "oka", "dale", "listo", "gracias", "muchas gracias",
+            "si", "sí", "no", "1", "2", "menu", "menu principal", "empezar", "start"}
+
+
+def _is_trivial(m: str) -> bool:
+    return m.strip().lower().strip("¡!¿?. ") in _TRIVIAL
 
 
 def _headers():
@@ -78,51 +86,41 @@ async def answer(history, message, image=None):
     image:   dict {mime, data(base64)} o None
     """
     async with httpx.AsyncClient(timeout=120) as client:
-        # 1) Recuperar material relevante según el mensaje del alumno
+        # 1) Recuperar material (se omite en saludos/menú para no gastar tokens)
         material = ""
         query = (message or "").strip()
-        if query:
+        if query and not _is_trivial(query):
             try:
                 qvec = await _embed_query(client, query)
                 ctx = _retrieve(qvec)
                 material = "\n\n".join(f"[{c['source']}] {c['text']}" for c in ctx)
             except Exception:
-                material = ""  # si falla el buscador, Gemini responde igual con el prompt
+                material = ""
 
-        sys = _SYS
-        if material:
-            sys += (
-                "\n\n## MATERIAL DE APOYO (fragmentos reales del curso de Academy D&A; "
-                "úsalos para responder con precisión y NO inventes datos que no estén aquí)\n"
-                + material
-            )
-
-        # 2) Construir la conversación
+        # 2) Conversación. El prompt del sistema queda FIJO (se aprovecha el caché de Gemini);
+        #    el material dinámico va en el turno del usuario.
         contents = []
-        for h in (history or [])[-12:]:
+        for h in (history or [])[-6:]:
             role = "model" if h.get("role") == "model" else "user"
             txt = (h.get("text") or "").strip()
             if txt:
                 contents.append({"role": role, "parts": [{"text": txt}]})
 
         parts = []
+        if material:
+            parts.append({"text": "Material de apoyo del curso (úsalo para responder con precisión; no inventes datos que no estén aquí):\n" + material})
         if message:
             parts.append({"text": message})
         if image and image.get("data"):
-            parts.append({
-                "inlineData": {
-                    "mimeType": image.get("mime", "image/png"),
-                    "data": image["data"],
-                }
-            })
+            parts.append({"inlineData": {"mimeType": image.get("mime", "image/png"), "data": image["data"]}})
         if not parts:
             parts = [{"text": "(sin texto)"}]
         contents.append({"role": "user", "parts": parts})
 
         body = {
-            "systemInstruction": {"parts": [{"text": sys}]},
+            "systemInstruction": {"parts": [{"text": _SYS}]},
             "contents": contents,
-            "generationConfig": {"temperature": 0.6, "topP": 0.95, "maxOutputTokens": 1400},
+            "generationConfig": {"temperature": 0.6, "topP": 0.95, "maxOutputTokens": 1024},
         }
         d = await _generate(client, body)
         cand = (d.get("candidates") or [{}])[0]

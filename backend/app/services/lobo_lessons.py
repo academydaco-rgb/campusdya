@@ -67,44 +67,45 @@ async def answer(diploma: str, lesson_id: str, lesson_title: str, history, messa
 
     async with httpx.AsyncClient(timeout=120) as client:
         query = (message or "").strip()
-        if query:
+        if query and not base._is_trivial(query):
             try:
                 qvec = await base._embed_query(client, query)
                 idx_lesson = [i for i, c in enumerate(chunks) if str(c.get("lesson_id")) == str(lesson_id)]
                 picked = []
                 if idx_lesson and emb is not None:
                     sub = emb[idx_lesson]
-                    order = np.argsort(-(sub @ qvec))[:6]
+                    order = np.argsort(-(sub @ qvec))[:4]
                     picked = [chunks[idx_lesson[int(j)]] for j in order]
                 if picked:
                     material = "\n\n".join(f"[{c.get('lesson_title', lesson_title)}] {c['text']}" for c in picked)
                 else:
-                    # Sin transcripción de esta clase -> apóyate en el material general del diplomado
-                    gidx = np.argsort(-(base._EMB @ qvec))[:6]
+                    gidx = np.argsort(-(base._EMB @ qvec))[:4]
                     material = "\n\n".join(
                         f"[{base._CHUNKS[int(i)]['source']}] {base._CHUNKS[int(i)]['text']}" for i in gidx
                     )
                     scope_note = (
-                        "NOTA INTERNA: todavía no está cargada la transcripción específica de esta clase. "
-                        "Responde con el material general del diplomado y, si la duda es muy puntual de esta clase, "
-                        "acláralo con amabilidad (ej.: «de esta clase en concreto aún estoy afinando el detalle»)."
+                        "Nota: aún no está cargada la transcripción específica de esta clase; responde con el material "
+                        "general del diplomado y, si la duda es muy puntual de esta clase, acláralo con amabilidad."
                     )
             except Exception:
                 material = ""
 
-        sys = _system(lesson_title)
-        if scope_note:
-            sys += "\n\n" + scope_note
-        if material:
-            sys += "\n\n## MATERIAL DE APOYO (úsalo para responder con precisión; no inventes)\n" + material
-
+        # Prompt del sistema FIJO (caché de Gemini); lo dinámico va en el turno del usuario.
         contents = []
-        for h in (history or [])[-12:]:
+        for h in (history or [])[-6:]:
             role = "model" if h.get("role") == "model" else "user"
             txt = (h.get("text") or "").strip()
             if txt:
                 contents.append({"role": role, "parts": [{"text": txt}]})
+
+        preamble = ""
+        if scope_note:
+            preamble += scope_note + "\n\n"
+        if material:
+            preamble += "Material de apoyo de esta clase (úsalo para responder con precisión; no inventes):\n" + material
         parts = []
+        if preamble:
+            parts.append({"text": preamble})
         if message:
             parts.append({"text": message})
         if image and image.get("data"):
@@ -114,9 +115,9 @@ async def answer(diploma: str, lesson_id: str, lesson_title: str, history, messa
         contents.append({"role": "user", "parts": parts})
 
         body = {
-            "systemInstruction": {"parts": [{"text": sys}]},
+            "systemInstruction": {"parts": [{"text": _system(lesson_title)}]},
             "contents": contents,
-            "generationConfig": {"temperature": 0.6, "topP": 0.95, "maxOutputTokens": 1200},
+            "generationConfig": {"temperature": 0.6, "topP": 0.95, "maxOutputTokens": 1024},
         }
         d = await base._generate(client, body)
         cand = (d.get("candidates") or [{}])[0]
