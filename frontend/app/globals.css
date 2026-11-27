@@ -1158,9 +1158,9 @@ p{line-height:1.6}
 .lgn-auth{position:relative;min-height:100vh;display:grid;grid-template-columns:1.05fr .95fr;overflow:hidden;background:var(--bg,#06060e)}
 .lgn-pz{position:absolute;inset:0;z-index:1;pointer-events:none}
 .lgn-neb{position:absolute;border-radius:50%;filter:blur(90px);pointer-events:none;z-index:0}
-.lgn-neb.n1{left:-8%;top:-12%;width:620px;height:620px;background:radial-gradient(circle,rgba(0,255,255,.16),transparent 66%)}
-.lgn-neb.n2{right:-10%;top:4%;width:680px;height:680px;background:radial-gradient(circle,rgba(217,70,239,.16),transparent 66%)}
-.lgn-neb.n3{right:14%;bottom:-18%;width:560px;height:560px;background:radial-gradient(circle,rgba(124,58,237,.15),transparent 68%)}
+.lgn-neb.n1{left:-8%;top:-12%;width:660px;height:660px;background:radial-gradient(circle,rgba(0,255,255,.26),transparent 68%)}
+.lgn-neb.n2{right:-10%;top:2%;width:720px;height:720px;background:radial-gradient(circle,rgba(217,70,239,.24),transparent 68%)}
+.lgn-neb.n3{right:12%;bottom:-18%;width:600px;height:600px;background:radial-gradient(circle,rgba(124,58,237,.24),transparent 70%)}
 .lgn-grid2{position:absolute;inset:0;z-index:0;pointer-events:none;opacity:.5;background-image:linear-gradient(rgba(130,120,220,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(130,120,220,.05) 1px,transparent 1px);background-size:54px 54px;-webkit-mask-image:radial-gradient(130% 90% at 50% 40%,#000 30%,transparent 78%);mask-image:radial-gradient(130% 90% at 50% 40%,#000 30%,transparent 78%)}
 .lgn-vig{position:absolute;inset:0;z-index:0;pointer-events:none;background:radial-gradient(130% 120% at 50% 30%,transparent 50%,rgba(3,3,9,.7) 100%)}
 .lgn-grain{position:fixed;inset:0;z-index:6;pointer-events:none;opacity:.04;mix-blend-mode:overlay;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='lgnn'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23lgnn)'/%3E%3C/svg%3E");background-size:120px 120px}

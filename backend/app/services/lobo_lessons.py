@@ -17,21 +17,30 @@ from app.core.config import settings
 from app.services import lobo as base
 
 _DIR = Path(settings.LOBO_LESSONS_DIR)
-_cache: dict[str, tuple[list, "np.ndarray | None"]] = {}
+# Caché por worker revalidado por el mtime del .chunks.json en disco (volumen
+# compartido entre workers). Clave: diploma -> (mtime, chunks, emb). Si el archivo
+# cambió (subida hecha por OTRO worker) o apareció por primera vez, se recarga desde
+# disco. Evita que un worker siga sirviendo un caché vacío tras una subida.
+_cache: dict[str, tuple[float, list, "np.ndarray | None"]] = {}
 
 
 def _load(diploma: str):
-    """Carga (y cachea) el índice por-lección de un diplomado, si existe."""
-    if diploma in _cache:
-        return _cache[diploma]
+    """Carga el índice por-lección de un diplomado, revalidando contra el disco."""
     cj = _DIR / f"{diploma}.chunks.json"
     ce = _DIR / f"{diploma}.npy"
-    if cj.exists() and ce.exists():
+    try:
+        mtime = cj.stat().st_mtime if cj.exists() else 0.0
+    except OSError:
+        mtime = 0.0
+    cached = _cache.get(diploma)
+    if cached is not None and cached[0] == mtime:
+        return cached[1], cached[2]
+    if mtime and ce.exists():
         chunks = json.loads(cj.read_text(encoding="utf-8"))
         emb = np.load(ce)
     else:
         chunks, emb = [], None
-    _cache[diploma] = (chunks, emb)
+    _cache[diploma] = (mtime, chunks, emb)
     return chunks, emb
 
 

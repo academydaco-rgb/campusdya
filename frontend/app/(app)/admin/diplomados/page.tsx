@@ -117,7 +117,35 @@ export default function AdminDiplomas() {
     catch (e) { setMsg(e instanceof Error ? e.message : "No se pudo eliminar"); }
   }
 
-  const phaseName = (id?: string | null) => phases.find((p) => p.id === id)?.name || "— sin fase —";
+  function buildGroups() {
+    const conFase = [...phases].sort((a, b) => a.order - b.order).map((p) => ({
+      phase: p as PhaseLiteT | null,
+      list: items.filter((d) => d.phase_id === p.id).sort((a, b) => (a.order - b.order) || a.title.localeCompare(b.title)),
+    }));
+    const sinFase = items.filter((d) => !d.phase_id || !phases.some((p) => p.id === d.phase_id)).sort((a, b) => (a.order - b.order) || a.title.localeCompare(b.title));
+    return [...conFase, { phase: null as PhaseLiteT | null, list: sinFase }];
+  }
+
+  async function mover(gi: number, idx: number, dir: number) {
+    const groups = buildGroups();
+    const g = groups[gi];
+    const j = idx + dir;
+    if (!g || j < 0 || j >= g.list.length) return;
+    [g.list[idx], g.list[j]] = [g.list[j], g.list[idx]];
+    const flat = groups.flatMap((x) => x.list);
+    try {
+      for (let i = 0; i < flat.length; i++) {
+        if (flat[i].order !== i) await api.put(`/api/admin/diplomas/${flat[i].id}`, { order: i });
+      }
+      await load();
+    } catch (e) { setMsg(e instanceof Error ? e.message : "No se pudo reordenar"); }
+  }
+
+  async function cambiarFase(d: AdminDiplomaT, phase_id: string) {
+    try { await api.put(`/api/admin/diplomas/${d.id}`, { phase_id: phase_id || null, order: items.length }); await load(); }
+    catch (e) { setMsg(e instanceof Error ? e.message : "No se pudo mover de fase"); }
+  }
+
   const nextOrder = phases.length ? Math.max(...phases.map((p) => p.order)) + 1 : 1;
 
   return (
@@ -167,18 +195,32 @@ export default function AdminDiplomas() {
         )}
       </div>
 
-      {/* ───────── Lista de diplomados ───────── */}
-      <div className="grid" style={{ gap: 10 }}>
-        {items.map((d) => (
-          <div key={d.id} className="card" style={{ padding: 16, display: "flex", alignItems: "center", gap: 12 }}>
-            <Link href={`/admin/diplomados/${d.id}`} style={{ flex: 1, display: "flex", alignItems: "center", gap: 12, minWidth: 0, textDecoration: "none", color: "inherit" }}>
-              <span style={{ flex: 1, fontWeight: 700, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{d.title}</span>
-              <span className="badge-pill">{phaseName(d.phase_id)}</span>
-              <span className="badge-pill" style={{ color: d.status === "published" ? "var(--green)" : "var(--amber)" }}>{d.status === "published" ? "Publicado" : "Borrador"}</span>
-            </Link>
-            <button type="button" className="btn btn-ghost" title="Eliminar diplomado" aria-label="Eliminar diplomado"
-              style={{ fontSize: 13, color: "var(--danger, #fca5a5)", borderColor: "rgba(239,68,68,.4)", flexShrink: 0 }}
-              onClick={() => borrarDiploma(d)}>Eliminar</button>
+      {/* ───────── Lista de diplomados (agrupada por fase, reordenable) ───────── */}
+      <div className="grid" style={{ gap: 18 }}>
+        <span className="muted" style={{ fontSize: 12 }}>Organiza los diplomados con ▲▼ dentro de cada fase. Se guarda al instante y así aparecen en la plataforma. Usa el selector para mover uno a otra fase.</span>
+        {buildGroups().map((g, gi) => (
+          <div key={g.phase?.id || "sin-fase"} className="grid" style={{ gap: 8 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 10, marginTop: gi ? 4 : 0 }}>
+              <span style={{ width: 10, height: 10, borderRadius: 3, background: g.phase?.color || "#6b7196", flexShrink: 0 }} />
+              <strong style={{ fontSize: 14 }}>{g.phase?.name || "— Sin fase —"}</strong>
+              <span className="badge-pill" style={{ fontSize: 11 }}>{g.list.length}</span>
+            </div>
+            {g.list.map((d, idx) => (
+              <div key={d.id} className="card" style={{ padding: "12px 14px", display: "flex", alignItems: "center", gap: 10 }}>
+                <div style={{ display: "flex", flexDirection: "column", gap: 3, flexShrink: 0 }}>
+                  <button type="button" className="btn btn-ghost" style={{ padding: "1px 8px", fontSize: 11, lineHeight: 1.2, minWidth: 0 }} disabled={idx === 0} onClick={() => mover(gi, idx, -1)} aria-label="Subir" title="Subir">▲</button>
+                  <button type="button" className="btn btn-ghost" style={{ padding: "1px 8px", fontSize: 11, lineHeight: 1.2, minWidth: 0 }} disabled={idx === g.list.length - 1} onClick={() => mover(gi, idx, 1)} aria-label="Bajar" title="Bajar">▼</button>
+                </div>
+                <Link href={`/admin/diplomados/${d.id}`} style={{ flex: 1, minWidth: 0, textDecoration: "none", color: "inherit", fontWeight: 700, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{d.title}</Link>
+                <span className="badge-pill" style={{ color: d.status === "published" ? "var(--green)" : "var(--amber)", flexShrink: 0 }}>{d.status === "published" ? "Publicado" : "Borrador"}</span>
+                <select className="input" style={{ width: 150, flexShrink: 0, padding: "8px 10px" }} value={d.phase_id || ""} onChange={(e) => cambiarFase(d, e.target.value)} title="Mover a otra fase">
+                  <option value="">— sin fase —</option>
+                  {phases.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
+                </select>
+                <button type="button" className="btn btn-ghost" title="Eliminar diplomado" aria-label="Eliminar diplomado" style={{ fontSize: 13, color: "var(--danger, #fca5a5)", borderColor: "rgba(239,68,68,.4)", flexShrink: 0 }} onClick={() => borrarDiploma(d)}>Eliminar</button>
+              </div>
+            ))}
+            {g.list.length === 0 && <span className="muted" style={{ fontSize: 12, paddingLeft: 20 }}>Sin diplomados en esta fase.</span>}
           </div>
         ))}
         {items.length === 0 && <span className="muted">Aún no hay diplomados. Crea el primero arriba.</span>}
