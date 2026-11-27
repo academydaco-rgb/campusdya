@@ -72,43 +72,60 @@ export default function LoginPage() {
   return (
     <div className="lgn-auth">
       <canvas ref={canvasRef} className="lgn-pz" aria-hidden />
-      <div className="lgn-glowl" aria-hidden /><div className="lgn-glowr" aria-hidden /><div className="lgn-glowt" aria-hidden />
-      <div className="lgn-stars" aria-hidden /><div className="lgn-mesh" aria-hidden />
-      <span className="lgn-sg" style={{ left: "22%", top: "18%" }} aria-hidden />
-      <span className="lgn-sg s2" style={{ left: "40%", top: "70%" }} aria-hidden />
-      <span className="lgn-sg s3" style={{ left: "12%", top: "52%" }} aria-hidden />
-      <span className="lgn-sg s2" style={{ left: "62%", top: "30%" }} aria-hidden />
-      <div className="lgn-vig" aria-hidden />
+      <div className="lgn-neb n1" aria-hidden /><div className="lgn-neb n2" aria-hidden /><div className="lgn-neb n3" aria-hidden />
+      <div className="lgn-grid2" aria-hidden /><div className="lgn-vig" aria-hidden />
 
       {/* Izquierda · marca */}
       <section className="lgn-brand">
+        <div className="lgn-emblem" aria-hidden>
+          <div className="lgn-ring r1" /><div className="lgn-ring r2" /><div className="lgn-ring r3" />
+          <div className="lgn-orb" /><div className="lgn-orb o2" />
+          <div className="lgn-core"><img src="/logo.png" alt="" /></div>
+        </div>
+
         <div className="lgn-logo"><img src="/logo.png" alt="Academy D&amp;A" /></div>
+
         <span className="lgn-eyebrow"><span className="d" />FORMACIÓN EN E-COMMERCE Y DROPSHIPPING</span>
-        <h1>Tu negocio online, al siguiente nivel.</h1>
+
+        <h1>Tu negocio online, al siguiente nivel.<span className="lgn-u" /></h1>
+
         <p className="lgn-lead">Diplomados, clases en vivo y acompañamiento 1 a 1. Todo en una sola plataforma hecha para que vendas más.</p>
+
+        <div className="lgn-stats">
+          <div className="lgn-stat"><div className="n">1.700</div><div className="l">Estudiantes activos</div></div>
+          <div className="lgn-stat"><div className="n">80%</div><div className="l">Casos de éxito</div></div>
+          <div className="lgn-stat"><div className="n"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 3l1.9 4.6L18.5 9l-4.6 1.9L12 15l-1.9-4.1L5.5 9l4.6-1.4z" /><path d="M19 15l.8 2 2 .8-2 .8-.8 2-.8-2-2-.8 2-.8z" /></svg></div><div className="l">Herramientas IA</div></div>
+          <div className="lgn-stat"><div className="n">18</div><div className="l">Países aliados</div></div>
+        </div>
+
         <div className="lgn-feats">
-          <div className="lgn-feat"><span className="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 3l1.9 4.6L18.5 9l-4.6 1.9L12 15l-1.9-4.1L5.5 9l4.6-1.4z" /><path d="M19 15l.8 2 2 .8-2 .8-.8 2-.8-2-2-.8 2-.8z" /></svg></span><span>Herramientas IA</span></div>
-          <div className="lgn-feat"><span className="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="13" rx="2" /><path d="M8 21h8M12 17v4" /></svg></span><span>Plataforma de estudio inteligente</span></div>
-          <div className="lgn-feat"><span className="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 12l2 2 4-4" /><circle cx="12" cy="12" r="9" /></svg></span><span>Diplomados 100% actualizados</span></div>
-          <div className="lgn-feat"><span className="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="9" cy="8" r="3.2" /><path d="M15 11a3 3 0 1 0-1.5-5.6M3.5 19a5.5 5.5 0 0 1 11 0M15 14.5a5.5 5.5 0 0 1 5.5 4.5" /></svg></span><span>Comunidad interactiva de estudiantes</span></div>
+          <div className="lgn-feat"><span className="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="8" r="5" /><path d="M8.5 12.5 7 21l5-3 5 3-1.5-8.5" /></svg></span><span>Certificación en e-commerce</span></div>
+          <div className="lgn-feat"><span className="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="13" rx="2" /><path d="M8 21h8M12 17v4" /></svg></span><span>Plataforma inteligente</span></div>
+          <div className="lgn-feat"><span className="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 12l2 2 4-4" /><circle cx="12" cy="12" r="9" /></svg></span><span>Diplomados actualizados</span></div>
+          <div className="lgn-feat"><span className="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="9" cy="8" r="3.2" /><path d="M15 11a3 3 0 1 0-1.5-5.6M3.5 19a5.5 5.5 0 0 1 11 0M15 14.5a5.5 5.5 0 0 1 5.5 4.5" /></svg></span><span>Comunidad 1 a 1</span></div>
         </div>
       </section>
 
       {/* Derecha · formulario */}
       <section className="lgn-panel">
-        <div className="lgn-card">
+        <div className="lgn-card" onMouseMove={(e) => { const r = e.currentTarget.getBoundingClientRect(); e.currentTarget.style.setProperty("--sx", ((e.clientX - r.left) / r.width * 100) + "%"); e.currentTarget.style.setProperty("--sy", ((e.clientY - r.top) / r.height * 100) + "%"); }}>
+          <div className="lgn-cap" />
           <div className="lgn-mob"><img src="/logo.png" alt="Academy D&amp;A" /></div>
           <h2>Inicia sesión</h2>
           <div className="lgn-sub">Bienvenido de nuevo. Continúa tu formación.</div>
           <form onSubmit={onSubmit}>
             <div className="lgn-field">
               <label className="lgn-lab">Correo</label>
-              <input className="lgn-input" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="tucorreo@gmail.com" required />
+              <div className="lgn-ipwrap">
+                <svg className="lgn-lead-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="5" width="18" height="14" rx="2" /><path d="m3 7 9 6 9-6" /></svg>
+                <input className="lgn-input" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="tucorreo@gmail.com" required />
+              </div>
             </div>
             <div className="lgn-field">
               <label className="lgn-lab">Contraseña</label>
-              <div className="lgn-pw">
-                <input className="lgn-input" type={showPw ? "text" : "password"} value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Tu contraseña" required style={{ paddingRight: 44 }} />
+              <div className="lgn-ipwrap">
+                <svg className="lgn-lead-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="4" y="11" width="16" height="9" rx="2" /><path d="M8 11V8a4 4 0 0 1 8 0v3" /></svg>
+                <input className="lgn-input" type={showPw ? "text" : "password"} value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Tu contraseña" required />
                 <button type="button" className="lgn-eye" onClick={() => setShowPw((v) => !v)} aria-label={showPw ? "Ocultar contraseña" : "Mostrar contraseña"} title={showPw ? "Ocultar contraseña" : "Mostrar contraseña"}>
                   {showPw ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
@@ -117,16 +134,23 @@ export default function LoginPage() {
             <div className="lgn-row">
               <button type="button" onClick={() => { setForgot((v) => !v); setFmsg(""); }}>¿Olvidaste tu contraseña?</button>
             </div>
-            {error && <div style={{ color: "var(--danger)", fontSize: 13, marginBottom: 14 }}>{error}</div>}
-            <button className="lgn-cta" disabled={loading}>{loading ? "Entrando…" : "Entrar al campus"}</button>
+            {error && <div className="lgn-err">{error}</div>}
+            <button className="lgn-cta" disabled={loading}>
+              {loading ? "Entrando…" : "Entrar al campus"}
+              {!loading && <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M13 6l6 6-6 6" /></svg>}
+            </button>
           </form>
           {forgot && (
             <form onSubmit={enviarReset} style={{ marginTop: 14, display: "grid", gap: 10 }}>
-              <input className="lgn-input" type="email" value={fmail} onChange={(e) => setFmail(e.target.value)} placeholder="Tu correo registrado" required />
-              <button className="lgn-cta" style={{ animation: "none", background: "transparent", color: "#fff", border: "1px solid rgba(255,255,255,.18)", boxShadow: "none" }}>Enviar enlace de recuperación</button>
+              <input className="lgn-input" style={{ paddingLeft: 14 }} type="email" value={fmail} onChange={(e) => setFmail(e.target.value)} placeholder="Tu correo registrado" required />
+              <button className="lgn-cta" style={{ background: "transparent", boxShadow: "none", border: "1px solid rgba(255,255,255,.18)" }}>Enviar enlace de recuperación</button>
               {fmsg && <div className="lgn-sub" style={{ fontSize: 12.5, textAlign: "center", margin: 0 }}>{fmsg}</div>}
             </form>
           )}
+          <div className="lgn-trust">
+            <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="4" y="11" width="16" height="9" rx="2" /><path d="M8 11V8a4 4 0 0 1 8 0v3" /></svg>Acceso seguro</span>
+            <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2Z" /></svg>Soporte 1 a 1</span>
+          </div>
           <div className="lgn-foot">Academy D&amp;A · campusdya.com</div>
         </div>
       </section>
