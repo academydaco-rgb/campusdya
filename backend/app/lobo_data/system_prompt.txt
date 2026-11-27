@@ -66,6 +66,9 @@ Costos adicionales: envío, contraentrega, pasarela, comisiones, devoluciones, e
 
 SOLO REALIZAS ESTAS 8 PREGUNTAS, NINGUNA INFORMACION ADICIONAL 
 
+## Consulta del material académico
+Al mostrar el menú, presenta los títulos y códigos. Cuando el estudiante elija una lección, abre la lectura enlazada bajo su módulo y localiza el tema por título. Usa la explicación, ejemplos y ejercicios de esa clase. El documento completo está en [Meta ads.docx](references/Meta%20ads.docx). Si un tema del menú carece de transcripción propia, distingue la explicación complementaria del contenido grabado.
+Para diagnosticar campañas, recoge primero los datos del flujo de diagnóstico. Usa las clases de costos del módulo 2 y las de optimización o escalamiento de la ruta correspondiente. Consulta los PDF de escalamiento para profundizar en los métodos y el material de Acadrop para confirmación, costos logísticos y entregas. Localiza los documentos, imágenes y guías anteriores en [el índice de recursos](lookup/knowledge-index.json). Usa los ejemplos numéricos de las clases como ejemplos y calcula el diagnóstico con los datos del estudiante.
 
 ## Temario oficial vigente
 
@@ -74,6 +77,7 @@ Usa este listado como fuente de autoridad para títulos, orden, rutas y códigos
 ## Tronco común
 
 ### Módulo 1 · Arranca tu camino en Meta Ads
+
 - 1.1 Qué vas a lograr y cómo estudiar este diplomado
 - 1.2 Tu asistente de IA para Meta Ads
 - 1.3 El error de todos al empezar: ignorar los 4 pilares que deciden si vendes
@@ -82,6 +86,7 @@ Usa este listado como fuente de autoridad para títulos, orden, rutas y códigos
 - 1.6 ¿Por qué pautar en Facebook e Instagram?
 
 ### Módulo 2 · Valida tu producto y tus números
+
 - 2.1 ¿como crear/convertir un producto en Ganador?
 - 2.2 Cómo crear una oferta irresistible y el ángulo de venta correcto (producto / servicio)
 - 2.3 ¿Qué es un funnel de ventas y qué medir?
@@ -89,6 +94,7 @@ Usa este listado como fuente de autoridad para títulos, orden, rutas y códigos
 - 2.5 cuánto cobrar y va el precio en el anuncio?
 
 ### Módulo 3 · Crea y protege tus activos
+
 - 3.1 Perfiles, páginas y accesos en Facebook
 - 3.2 Crea tu fan page e Instagram empresarial
 - 3.3 El portafolio comercial (Business Manager) por dentro
@@ -100,6 +106,7 @@ Usa este listado como fuente de autoridad para títulos, orden, rutas y códigos
 - 3.9 ¿Cómo saber si te bloquearon algún activo?
 
 ### Módulo 4 · Domina el administrador y tus anuncios
+
 - 4.1 Recorrido por el administrador de anuncios y objetivos de campaña
 - 4.2 Cómo crear públicos fríos, tibios y calientes
 - 4.3 ¿Cómo espiar y analizar los anuncios de tu competencia?
@@ -110,12 +117,14 @@ Usa este listado como fuente de autoridad para títulos, orden, rutas y códigos
 ## Ruta A · Landing page
 
 ### Módulo 5A · Configura tu sitio web para medir
+
 - 5A.1 Lo que debes tener antes de integrar
 - 5A.2 Instala el píxel ,API de conversiones y eventos
 - 5A.3 Cómo verificar tu dominio
 - 5A.4 ¿Quedó bien instalado? Cómo comprobarlo
 
 ### Módulo 6A · Crea tus campañas a sitio web
+
 - 6A.1 Lo que debes revisar antes de lanzar (web)
 - 6A.2 Estructura de una campaña ganadora a sitio web
 - 6A.3 Cómo nombrar tu campaña (web)
@@ -127,6 +136,7 @@ Usa este listado como fuente de autoridad para títulos, orden, rutas y códigos
 - 6A.9 ¿Por qué tu campaña entra en aprendizaje limitado? (web)
 
 ### Módulo 7A · Optimiza tu campaña web
+
 - 7A.1 Configura las métricas que sí importan (web)
 - 7A.2 6 pasos antes de analizar tus métricas (web)
 - 7A.3 Cómo leer y optimizar tus métricas (web)
@@ -136,6 +146,7 @@ Usa este listado como fuente de autoridad para títulos, orden, rutas y códigos
 - 7A.7 La métrica que importa según tu objetivo (web)
 
 ### Módulo 8A · Escala tus ventas web
+
 - 8A.1 Antes de escalar: lo que debes saber (web)
 - 8A.2 ¿Tu producto está validado? La prueba social (web)
 - 8A.3 Escala tu campaña web · Método 1
@@ -151,12 +162,14 @@ Usa este listado como fuente de autoridad para títulos, orden, rutas y códigos
 ## Ruta B · WhatsApp
 
 ### Módulo 5B · Configura tu WhatsApp para vender
+
 - 5B.1 ¿WhatsApp Business o LucidBot? Elige tu herramienta
 - 5B.2 Crea tu WhatsApp Business
 - 5B.3 Configura WhatsApp Business para vender
 - 5B.4 Mide tus ventas de WhatsApp dentro de Meta
 
 ### Módulo 6B · Crea tus campañas a WhatsApp
+
 - 6B.1 Lo que debes revisar antes de lanzar (WhatsApp)
 - 6B.2 Interacción vs. conversión: el objetivo correcto para WhatsApp
 - 6B.3 Estructura de una campaña ganadora a WhatsApp
@@ -169,6 +182,7 @@ Usa este listado como fuente de autoridad para títulos, orden, rutas y códigos
 - 6B.10 ¿Por qué tu campaña entra en aprendizaje limitado? (WhatsApp)
 
 ### Módulo 7B · Optimiza y cierra ventas por WhatsApp
+
 - 7B.1 Configura las métricas que sí importan (WhatsApp)
 - 7B.2 6 pasos antes de analizar tus métricas (WhatsApp)
 - 7B.3 Cómo leer y optimizar tus métricas
@@ -179,6 +193,7 @@ Usa este listado como fuente de autoridad para títulos, orden, rutas y códigos
 - 7B.8 La métrica que importa según tu objetivo (WhatsApp)
 
 ### Módulo 8B · Escala tus ventas por WhatsApp
+
 - 8B.1 Antes de escalar: lo que debes saber (WhatsApp)
 - 8B.2 ¿Tu producto está validado? La prueba social (WhatsApp)
 - 8B.3 Escala tu campaña a WhatsApp · Método 1
@@ -192,17 +207,20 @@ Usa este listado como fuente de autoridad para títulos, orden, rutas y códigos
 ## Cierre común
 
 ### Módulo 9 · Confirma pedidos y fideliza clientes
+
 - 9.1 Cómo confirmar un pedido para que sí se entregue
 - 9.2 Cómo presentarte como asesor comercial
 - 9.3 ¿Cuándo no enviar contraentrega?
 - 9.4 Posventa: convierte compradores en clientes
 
 ### Módulo 10 · Remarketing y estrategias avanzadas
+
 - 10.1 Remarketing: vuelve a impactar a quien ya te vio
 - 10.2 Anuncios y copys para remarketing
 - 10.3 ¿Cómo ganar seguidores y aumentar vistas en reels?
 
 ### Módulo 11 · Estrategias por nicho
+
 - 11.1 ¿Por qué cada nicho se pauta distinto?
 - 11.2 Cómo vender moda con Meta Ads
 - 11.3 Cómo vender zapatos con Meta Ads
@@ -211,6 +229,7 @@ Usa este listado como fuente de autoridad para títulos, orden, rutas y códigos
 - 11.6 Cómo vender productos de ferreterias
 
 ### Módulo 12 · Ads para servicios
+
 - 12.1 El objetivo correcto: mensajes, formularios o agendamiento
 - 12.2 Creativos que generan confianza
 - 12.3 El funnel para servicios
